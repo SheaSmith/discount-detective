@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "742223621986",
+    "firebase_url": "https://safe-hunt.firebaseio.com",
+    "project_id": "safe-hunt",
+    "storage_bucket": "safe-hunt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:742223621986:android:e47282388440c6df19c63b",
+        "android_client_info": {
+          "package_name": "com.example.cosc345project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "742223621986-724pqu3r770f9dn814u7b7k4603sb3jm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_d5-3o1sszWLCnalzQVFOumLWkD-JFEc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "742223621986-724pqu3r770f9dn814u7b7k4603sb3jm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
