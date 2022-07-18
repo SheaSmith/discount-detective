@@ -1,4 +1,4 @@
-package com.example.cosc345.scraper.model.shopify
+package com.example.cosc345.scraper.models.shopify
 
 import com.squareup.moshi.Json
 

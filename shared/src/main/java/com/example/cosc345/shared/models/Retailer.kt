@@ -12,5 +12,10 @@ data class Retailer(
     /**
      * Whether the retailer was automatically added by the scraper, rather than by the retailer themselves, or a user.
      */
-    var automated: Boolean? = null
+    var automated: Boolean? = null,
+
+    /**
+     * An index of the stores associated with this retailer.
+     */
+    var stores: Map<String, Boolean>? = null,
 )

@@ -1,10 +1,10 @@
-package com.example.cosc345.scraper.model.shopify
+package com.example.cosc345.scraper.models.shopify
 
 import com.squareup.moshi.Json
 
 data class ShopifyProduct(
     @Json(name = "id")
-    val id: Int,
+    val id: String,
     @Json(name = "title")
     val title: String,
     @Json(name = "vendor")
