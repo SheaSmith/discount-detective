@@ -1,0 +1,118 @@
+package com.example.cosc345.scraper.scrapers
+
+import com.example.cosc345.scraper.Scraper
+import com.example.cosc345.scraper.api.ShopifyApi
+import com.example.cosc345.scraper.model.ScraperResult
+import com.example.cosc345.scraper.model.shopify.ShopifyProduct
+import com.example.cosc345.shared.constants.LocaleConstants
+import com.example.cosc345.shared.models.*
+import java.util.*
+import kotlin.collections.ArrayList
+
+class ShopifyScraper(
+    private val id: String,
+    private val retailer: Retailer,
+    private val store: Store,
+    private val baseUrl: String,
+    private val existingProducts: List<RetailerProductInformation>
+) : Scraper() {
+    override fun runScraper(): ScraperResult {
+        val shopifyService = generateRequest(ShopifyApi::class.java)
+
+        val products: ArrayList<RetailerProductInformation> = arrayListOf()
+        shopifyService.getProducts(baseUrl).forEach { shopifyProduct ->
+            // If we've got an existing product that matches the retailer ID, then update it.
+            val product = existingProducts.firstOrNull { it.id == shopifyProduct.id.toString() }
+                ?: RetailerProductInformation(retailer = id, id = shopifyProduct.id.toString())
+
+            // Parse any weights from the product
+            val gramsRegex = "(\\d+)[\\sgm]+".toRegex(RegexOption.IGNORE_CASE)
+            val weightGrams = extractWeight(gramsRegex, shopifyProduct)
+
+            val kilogramsRegex = "(\\d)\\s*kg".toRegex(RegexOption.IGNORE_CASE)
+            val weightKilograms = extractWeight(kilogramsRegex, shopifyProduct)
+
+            if (weightGrams != 0) {
+                product.weight = weightGrams
+                product.quantity = weightGrams.toString()
+                product.unit = Weight.GRAMS.toString()
+            } else if (weightKilograms != 0) {
+                product.weight = weightKilograms * 1000
+                product.quantity = weightKilograms.toString()
+                product.unit = Weight.KILOGRAMS.toString()
+            } else {
+                product.weight = null
+                product.quantity = null
+                product.unit = null
+            }
+
+            // We only really need to look at the first variant, as the others usually just describe different weights
+            val firstVariant = shopifyProduct.variants.first()
+
+            // If the variant, or the title contains "pack" along with a valid weight, then we should regard it as being sold as a unit, rather than per-kg
+            // Otherwise if we were able to extract a weight from the product, then we should assume it is sold by weight.
+            if (product.weight != null &&
+                !shopifyProduct.title.contains("pack", true) &&
+                !firstVariant.title.contains("pack", true)
+            ) {
+                product.saleType = SaleType.WEIGHT
+            } else {
+                product.saleType = SaleType.EACH
+            }
+
+            // Clean up title
+            var titleFormatted = shopifyProduct.title
+
+            // If the variant title has a number in it, then we should strip it out of the main product title if it exists,
+            // as that means it is likely describing the quantity
+            if (firstVariant.title.contains("\\d".toRegex())) {
+                titleFormatted = titleFormatted.replace(firstVariant.title, "", true)
+
+                // We assume that the variant is the unit, so set that if it hasn't been set already
+                if (product.unit != null) {
+                    product.unit = firstVariant.title.lowercase(LocaleConstants.NEW_ZEALAND)
+                }
+            }
+
+            // Strip out the weight from the title if it still exists
+            titleFormatted = titleFormatted
+                .replace(gramsRegex, "")
+                .replace(kilogramsRegex, "")
+
+            // Strip out the brand name, assuming that it has been set for the product
+            titleFormatted = titleFormatted.replace(shopifyProduct.vendor, "")
+
+            // Remove extra punctuation
+            titleFormatted = titleFormatted.replace("-|\\(\\s*\\)".toRegex(), "")
+
+            // Remove extra spaces
+            titleFormatted = titleFormatted.replace("\\s{2,}".toRegex(), " ")
+
+            product.name = titleFormatted
+
+            // Set brand if the vendor from Shopify is not the name of the retailer
+            if (shopifyProduct.vendor != retailer.name && shopifyProduct.vendor != store.name) {
+                product.brandName = shopifyProduct.vendor
+            }
+
+            // Set image
+            product.image = shopifyProduct.images.firstOrNull()?.url
+
+            // Set price
+            product.pricing = listOf(StorePricingInformation(id, (firstVariant.price.toDouble() * 100).toInt(), verified = true))
+
+            products.add(product)
+        }
+
+        return ScraperResult(retailer, mapOf(Pair(id, store)), products)
+    }
+
+    private fun extractWeight(regex: Regex, shopifyProduct: ShopifyProduct): Int {
+        return (
+                // Check if there is a weight in the title
+                regex.matchEntire(shopifyProduct.title)?.groups?.get(1)?.value?.toInt() ?:
+                // Check if it is in the first variant title
+                regex.matchEntire(shopifyProduct.variants.first().title)?.groups?.get(1)?.value?.toInt()
+                ?: 0)
+    }
+}
