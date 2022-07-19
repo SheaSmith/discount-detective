@@ -14,14 +14,7 @@ data class ScraperResult(
     val retailer: Retailer,
 
     /**
-     * A map of the stores, with the unique store ID acting as the key, and the store object as the value.
+     * A list of products that are carried by this retailer.
      */
-    val stores: Map<String, Store>,
-
-    /**
-     * A map of the products, including pricing information, to special IDs.
-     *
-     * These IDs are composed of the unique retailer ID combined with the retailer-specific product ID, in the format *a*-*b*, where *a* is the retailer ID and *b* is the product ID. This isn't an ideal solution, but as Firebase requires a unique key for indexing purposes, and because the retailer supplied product IDs are not guaranteed to be unique, we have to use this technique.
-     */
-    val productInformation: Map<String, RetailerProductInformation>
+    val productInformation: List<RetailerProductInformation>
 )

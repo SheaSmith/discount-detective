@@ -10,15 +10,14 @@ import com.example.cosc345.shared.models.*
 abstract class ShopifyScraper(
     private val id: String,
     private val retailer: Retailer,
-    private val store: Store,
     private val baseUrl: String,
     private val existingProducts: List<RetailerProductInformation>
 ) : Scraper() {
     override suspend fun runScraper(): ScraperResult {
-        val shopifyService = generateRequest(ShopifyApi::class.java)
+        val shopifyService = generateRequest(ShopifyApi::class.java, baseUrl)
 
-        val products: HashMap<String, RetailerProductInformation> = hashMapOf()
-        shopifyService.getProducts(String.format("%s/products.json", baseUrl)).products
+        val products: ArrayList<RetailerProductInformation> = arrayListOf()
+        shopifyService.getProducts().products
             .forEach { shopifyProduct ->
                 // If we've got an existing product that matches the retailer ID, then update it.
                 val product = existingProducts.firstOrNull { it.id == shopifyProduct.id }
@@ -90,7 +89,7 @@ abstract class ShopifyScraper(
                 product.name = titleFormatted
 
                 // Set brand if the vendor from Shopify is not the name of the retailer
-                if (shopifyProduct.vendor != retailer.name && shopifyProduct.vendor != store.name) {
+                if (shopifyProduct.vendor != retailer.name && retailer.stores?.any { it.name == shopifyProduct.vendor } != true) {
                     product.brandName = shopifyProduct.vendor
                 }
 
@@ -106,10 +105,10 @@ abstract class ShopifyScraper(
                     )
                 )
 
-                products[String.format("%s-%s", product.retailer, product.id)] = product
+                products.add(product)
             }
 
-        return ScraperResult(retailer, mapOf(Pair(id, store)), products)
+        return ScraperResult(retailer, products)
     }
 
     private fun extractWeight(regex: Regex, shopifyProduct: ShopifyProduct): Int {

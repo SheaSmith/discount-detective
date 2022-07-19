@@ -7,6 +7,6 @@ import retrofit2.http.Query
 import retrofit2.http.Url
 
 interface ShopifyApi {
-    @GET
-    suspend fun getProducts(@Url url: String, @Query("limit") limit: Int = 250): ShopifyResponse
+    @GET("products.json?limit=250")
+    suspend fun getProducts(): ShopifyResponse
 }

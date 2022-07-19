@@ -11,14 +11,15 @@ class PrincesStreetButcherScraper(allProducts: Map<String, RetailerProductInform
         Retailer(
             "Princes Street Butcher",
             true,
-            mapOf(Pair("9db1cb60-48ba-4397-abbf-7152ae0e6055", true))
-        ),
-        Store(
-            "Princes Street Butcher",
-            "416 Princes Street, Central Dunedin, Dunedin 9016",
-            -45.880502,
-            170.4998258,
-            true
+            listOf(
+                Store(
+                    "Princes Street Butcher",
+                    "416 Princes Street, Central Dunedin, Dunedin 9016",
+                    -45.880502,
+                    170.4998258,
+                    true
+                )
+            )
         ),
         "https://www.princesstreetbutcher.co.nz",
         allProducts.filter {

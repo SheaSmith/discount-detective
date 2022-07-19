@@ -17,5 +17,5 @@ data class Retailer(
     /**
      * An index of the stores associated with this retailer.
      */
-    var stores: Map<String, Boolean>? = null,
+    var stores: List<Store>? = null,
 )

@@ -15,11 +15,11 @@ abstract class Scraper() {
      */
     abstract suspend fun runScraper(): ScraperResult
 
-    protected fun <T> generateRequest(cls: Class<T>): T {
+    protected fun <T> generateRequest(cls: Class<T>, baseUrl: String): T {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create())
             // Dummy base URL as it is required by Retrofit
-            .baseUrl("https://example.com")
+            .baseUrl(baseUrl)
             .build()
 
         return retrofit.create(cls)
