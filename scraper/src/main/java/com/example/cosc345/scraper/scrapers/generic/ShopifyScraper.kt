@@ -6,6 +6,7 @@ import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.scraper.models.shopify.ShopifyProduct
 import com.example.cosc345.shared.constants.LocaleConstants
 import com.example.cosc345.shared.models.*
+import kotlin.math.roundToInt
 
 abstract class ShopifyScraper(
     private val id: String,
@@ -24,24 +25,18 @@ abstract class ShopifyScraper(
                     ?: RetailerProductInformation(retailer = id, id = shopifyProduct.id)
 
                 // Parse any weights from the product
-                val gramsRegex = "(\\d+)[\\sgm]+".toRegex(RegexOption.IGNORE_CASE)
-                val weightGrams = extractWeight(gramsRegex, shopifyProduct)
+                val weightGrams = extractWeight(Weight.GRAMS.regex, shopifyProduct)
+                val weightKilograms = extractWeight(Weight.KILOGRAMS.regex, shopifyProduct)
 
-                val kilogramsRegex = "(\\d)\\s*kg".toRegex(RegexOption.IGNORE_CASE)
-                val weightKilograms = extractWeight(kilogramsRegex, shopifyProduct)
-
-                if (weightGrams != 0) {
-                    product.weight = weightGrams
-                    product.quantity = weightGrams.toString()
-                    product.unit = Weight.GRAMS.toString()
-                } else if (weightKilograms != 0) {
-                    product.weight = weightKilograms * 1000
-                    product.quantity = weightKilograms.toString()
-                    product.unit = Weight.KILOGRAMS.toString()
+                if (weightGrams != 0.0) {
+                    product.weight = weightGrams.toInt()
+                    product.quantity = String.format("%d%s", weightGrams, Weight.GRAMS.toString())
+                } else if (weightKilograms != 0.0) {
+                    product.weight = (weightKilograms * 1000).toInt()
+                    product.quantity = String.format("%d%s", weightKilograms, Weight.KILOGRAMS.toString())
                 } else {
                     product.weight = null
                     product.quantity = null
-                    product.unit = null
                 }
 
                 // We only really need to look at the first variant, as the others usually just describe different weights
@@ -74,8 +69,8 @@ abstract class ShopifyScraper(
 
                 // Strip out the weight from the title if it still exists
                 titleFormatted = titleFormatted
-                    .replace(gramsRegex, "")
-                    .replace(kilogramsRegex, "")
+                    .replace(Weight.GRAMS.regex, "")
+                    .replace(Weight.KILOGRAMS.regex, "")
 
                 // Strip out the brand name, assuming that it has been set for the product
                 titleFormatted = titleFormatted.replace(shopifyProduct.vendor, "")
@@ -111,12 +106,12 @@ abstract class ShopifyScraper(
         return ScraperResult(retailer, products)
     }
 
-    private fun extractWeight(regex: Regex, shopifyProduct: ShopifyProduct): Int {
+    private fun extractWeight(regex: Regex, shopifyProduct: ShopifyProduct): Double {
         return (
                 // Check if there is a weight in the title
-                regex.matchEntire(shopifyProduct.title)?.groups?.get(1)?.value?.toInt() ?:
+                regex.matchEntire(shopifyProduct.title)?.groups?.get(1)?.value?.toDouble() ?:
                 // Check if it is in the first variant title
-                regex.matchEntire(shopifyProduct.variants.first().title)?.groups?.get(1)?.value?.toInt()
-                ?: 0)
+                regex.matchEntire(shopifyProduct.variants.first().title)?.groups?.get(1)?.value?.toDouble()
+                ?: 0.0)
     }
 }

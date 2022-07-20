@@ -43,11 +43,6 @@ data class RetailerProductInformation(
     var saleType: SaleType? = null,
 
     /**
-     * The unit of measurement for the product, for example kg or 50pk.
-     */
-    var unit: String? = null,
-
-    /**
      * The quantity of the product, for example 500. This may contain a unit, so may not be appropriate to run calculations on.
      */
     var quantity: String? = null,

@@ -5,6 +5,11 @@ package com.example.cosc345.shared.models
  */
 data class Store(
     /**
+     * The unique ID for this store.
+     */
+    var id: String? = null,
+
+    /**
      * The name of the store, for example, Centre City.
      */
     var name: String? = null,

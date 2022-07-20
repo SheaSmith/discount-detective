@@ -5,7 +5,7 @@ import com.squareup.moshi.Json
 
 data class CountdownProducts(
     @Json(name = "items")
-    val items: Array<Product>,
+    val items: Array<CountdownProduct>,
 
     @Json(name = "totalItems")
     val totalItems: Int,

@@ -6,10 +6,11 @@ import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.Store
 
 class LeckiesButcheryScraper(allProducts: Map<String, RetailerProductInformation>) : ShopifyScraper(
-    "ffd54e22-7b18-4492-a3fd-698f79e65b89",
+    "leckies-butchery",
     Retailer(
         "Leckies Butchery", true, listOf(
             Store(
+                "leckies-butchery",
                 "Leckies Butchery",
                 "153 Forbury Road, St Clair, Dunedin 9012",
                 -45.9070219,
