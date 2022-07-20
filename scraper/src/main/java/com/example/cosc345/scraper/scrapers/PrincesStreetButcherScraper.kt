@@ -5,7 +5,7 @@ import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.Store
 
-class PrincesStreetButcherScraper(allProducts: Map<String, RetailerProductInformation>) :
+class PrincesStreetButcherScraper() :
     ShopifyScraper(
         "princes-street-butcher",
         Retailer(
@@ -22,13 +22,5 @@ class PrincesStreetButcherScraper(allProducts: Map<String, RetailerProductInform
                 )
             )
         ),
-        "https://www.princesstreetbutcher.co.nz",
-        allProducts.filter {
-            it.key.startsWith(
-                String.format(
-                    "%s-",
-                    "9db1cb60-48ba-4397-abbf-7152ae0e6055"
-                )
-            )
-        }.values.toList()
+        "https://www.princesstreetbutcher.co.nz"
     )

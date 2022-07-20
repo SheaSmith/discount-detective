@@ -16,7 +16,7 @@ class ShopifyUnitTest {
     @Test
     fun `leckies butchery has products`() {
         runBlocking {
-            val result = LeckiesButcheryScraper(mapOf()).runScraper()
+            val result = LeckiesButcheryScraper().runScraper()
             assert(result.productInformation.isNotEmpty())
         }
     }
@@ -24,7 +24,7 @@ class ShopifyUnitTest {
     @Test
     fun `princes street butchery has products`() {
         runBlocking {
-            val result = PrincesStreetButcherScraper(mapOf()).runScraper()
+            val result = PrincesStreetButcherScraper().runScraper()
             assert(result.productInformation.isNotEmpty())
         }
     }
