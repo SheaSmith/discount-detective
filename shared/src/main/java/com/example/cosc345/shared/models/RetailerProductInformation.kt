@@ -67,5 +67,5 @@ data class RetailerProductInformation(
     /**
      * The pricing for the different stores for this retailer.
      */
-    var pricing: List<StorePricingInformation>? = null
+    var pricing: ArrayList<StorePricingInformation>? = null
 )

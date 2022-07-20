@@ -9,6 +9,9 @@ data class CountdownProductPrice(
     @Json(name = "salePrice")
     val salePrice: Double,
 
+    @Json(name = "savePrice")
+    val savePrice: Double,
+
     @Json(name = "isClubPrice")
     val isClubPrice: Boolean
 )

@@ -89,24 +89,67 @@ class CountdownScraper : Scraper() {
                                     if (countdownProduct.unit == "Kg") {
                                         product.weight = 1000
                                     } else if (countdownProduct.size?.size != null) {
-                                        // Attempt to get grams first
                                         product.weight =
-                                            Weight.GRAMS.regex.matchEntire(countdownProduct.size.size)?.groups?.get(
-                                                1
-                                            )?.value?.toDouble()?.toInt()
-                                                ?: (Weight.KILOGRAMS.regex.matchEntire(
-                                                    countdownProduct.size.size
-                                                )?.groups?.get(1)?.value?.toDouble()
-                                                    ?.times(1000))?.toInt()
+                                                // Try to get grams first
+                                            Weight.GRAMS.regex
+                                                .matchEntire(countdownProduct.size.size)
+                                                ?.groups
+                                                ?.get(1)
+                                                ?.value
+                                                // Convert to a double first, so if there is a weight like 5.4g (with 5.4 captured), there won't be an error about it not being a valid int
+                                                ?.toDouble()
+                                                // Convert to int to truncate the decimal places
+                                                ?.toInt()
+
+                                                // We don't have any valid grams captures, so try kilograms
+                                                ?: (Weight.KILOGRAMS.regex
+                                                    .matchEntire(countdownProduct.size.size)
+                                                    ?.groups
+                                                    ?.get(1)
+                                                    ?.value
+                                                    // Convert to double, e.g. for 1.5kg
+                                                    ?.toDouble()
+                                                    // Convert to grams
+                                                    ?.times(1000))
+                                                    // Convert to an int, truncating the decimal places
+                                                    ?.toInt()
                                     }
+
+                                    products.add(product)
                                 }
+
+                                if (product.pricing == null)
+                                    product.pricing = arrayListOf()
+
+                                val pricing = StorePricingInformation(
+                                    store = store.id,
+                                    price = countdownProduct.price?.originalPrice?.times(100)?.toInt(),
+                                    verified = true
+                                )
+
+                                if (countdownProduct.price?.savePrice != 0.0) {
+                                    pricing.discountPrice = countdownProduct.price?.salePrice?.times(100)?.toInt()
+                                    pricing.clubOnly = countdownProduct.price?.isClubPrice
+                                }
+
+                                if (countdownProduct.productTag?.multiBuy != null) {
+                                    pricing.multiBuyPrice = countdownProduct.productTag.multiBuy.price.times(100).toInt()
+                                    pricing.multiBuyQuantity = countdownProduct.productTag.multiBuy.quantity
+                                }
+
+                                product.pricing!!.add(pricing)
                             }
+
+                            lastSize = response.totalItems
+                            page++
                         }
                     }
                 }
             }
         }
 
-        return ScraperResult(Retailer(), listOf())
+        val retailer = Retailer("Countdown", true, stores)
+
+        return ScraperResult(retailer, products)
     }
 }

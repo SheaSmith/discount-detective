@@ -6,13 +6,11 @@ import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.scraper.models.shopify.ShopifyProduct
 import com.example.cosc345.shared.constants.LocaleConstants
 import com.example.cosc345.shared.models.*
-import kotlin.math.roundToInt
 
 abstract class ShopifyScraper(
     private val id: String,
     private val retailer: Retailer,
-    private val baseUrl: String,
-    private val existingProducts: List<RetailerProductInformation>
+    private val baseUrl: String
 ) : Scraper() {
     override suspend fun runScraper(): ScraperResult {
         val shopifyService = generateRequest(ShopifyApi::class.java, baseUrl)
@@ -21,8 +19,7 @@ abstract class ShopifyScraper(
         shopifyService.getProducts().products
             .forEach { shopifyProduct ->
                 // If we've got an existing product that matches the retailer ID, then update it.
-                val product = existingProducts.firstOrNull { it.id == shopifyProduct.id }
-                    ?: RetailerProductInformation(retailer = id, id = shopifyProduct.id)
+                val product = RetailerProductInformation(retailer = id, id = shopifyProduct.id)
 
                 // Parse any weights from the product
                 val weightGrams = extractWeight(Weight.GRAMS.regex, shopifyProduct)
@@ -92,7 +89,7 @@ abstract class ShopifyScraper(
                 product.image = shopifyProduct.images.firstOrNull()?.url
 
                 // Set price
-                product.pricing = listOf(
+                product.pricing = arrayListOf(
                     StorePricingInformation(
                         id,
                         (firstVariant.price.toDouble() * 100).toInt(),
