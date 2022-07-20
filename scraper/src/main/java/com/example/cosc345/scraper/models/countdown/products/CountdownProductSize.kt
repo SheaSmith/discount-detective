@@ -10,5 +10,5 @@ data class CountdownProductSize(
     val unitMeasure: String?,
 
     @Json(name = "volumeSize")
-    val size: String
+    val size: String?
 )

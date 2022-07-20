@@ -10,17 +10,29 @@ interface CountdownApi {
     @GET
     suspend fun getStores(@Url url: String): CountdownSitesResponse
 
-    @Headers("X-Requested-With: OnlineShopping.WebApp")
+    @Headers(
+        "X-Requested-With: OnlineShopping.WebApp",
+        "User-Agent: Supermarket Comparison",
+        "Accept: */*"
+    )
     @PUT("api/v1/fulfilment/my/pickup-addresses")
     suspend fun setStore(
         @Body setStoreRequest: CountdownSetStoreRequest
     )
 
-    @Headers("X-Requested-With: OnlineShopping.WebApp")
+    @Headers(
+        "X-Requested-With: OnlineShopping.WebApp",
+        "User-Agent: Supermarket Comparison",
+        "Accept: */*"
+    )
     @GET("api/v1/products/departments")
     suspend fun getDepartments(): Array<CountdownDepartment>
 
-    @Headers("X-Requested-With: OnlineShopping.WebApp")
+    @Headers(
+        "X-Requested-With: OnlineShopping.WebApp",
+        "User-Agent: Supermarket Comparison",
+        "Accept: */*"
+    )
     @GET("api/v1/products?target=browse&size=120")
     suspend fun getProducts(
         @Query("page") page: Int,
