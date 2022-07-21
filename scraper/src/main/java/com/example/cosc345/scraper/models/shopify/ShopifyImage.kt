@@ -1,10 +1,12 @@
 package com.example.cosc345.scraper.models.shopify
 
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * An object with metadata about the image, along with the URL.
  */
+@JsonClass(generateAdapter = true)
 data class ShopifyImage(
     /**
      * The URL of the image, generally hosted on Shopify's CDN.

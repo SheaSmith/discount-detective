@@ -1,8 +1,9 @@
 package com.example.cosc345.scraper.models.countdown.products
 
-import com.example.cosc345.shared.models.Product
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class CountdownProducts(
     @Json(name = "items")
     val items: Array<CountdownProduct>,

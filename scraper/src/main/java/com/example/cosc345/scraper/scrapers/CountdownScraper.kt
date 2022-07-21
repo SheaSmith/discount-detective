@@ -33,7 +33,7 @@ class CountdownScraper : Scraper() {
                     addressList.add(countdownStore.site.postcode)
 
                     val store = Store(
-                        countdownStore.site.storeId.toString(),
+                        countdownStore.site.storeId,
                         countdownStore.site.name,
                         addressList.joinToString(", "),
                         countdownStore.site.latitude,
@@ -67,7 +67,7 @@ class CountdownScraper : Scraper() {
                                             id = countdownProduct.sku,
                                             brandName = countdownProduct.brand?.titleCase()?.trim(),
                                             variant = countdownProduct.variety?.titleCase()?.trim(),
-                                            saleType = if (countdownProduct.unit == "Kg") SaleType.WEIGHT else SaleType.WEIGHT,
+                                            saleType = if (countdownProduct.unit == "Kg") SaleType.WEIGHT else SaleType.EACH,
                                             quantity = if (countdownProduct.unit != "Kg") countdownProduct.size?.size else null,
                                             barcodes = if (countdownProduct.barcode != null) listOf(
                                                 countdownProduct.barcode
@@ -86,6 +86,11 @@ class CountdownScraper : Scraper() {
                                         }
 
                                         product.name = title.trim().titleCase()
+
+                                        if (product.name.isNullOrEmpty()) {
+                                            product.name = product.variant
+                                            product.variant = null
+                                        }
 
                                         if (countdownProduct.unit == "Kg") {
                                             product.weight = 1000
@@ -119,37 +124,37 @@ class CountdownScraper : Scraper() {
                                         products.add(product)
                                     }
 
-                                    if (product.name.equals("bananas", true)) {
-                                        val i =0
+                                    if (product.pricing?.none { it.store == store.id } != false) {
+
+                                        product = products.first { it.id == countdownProduct.sku }
+
+                                        if (product.pricing == null)
+                                            product.pricing = arrayListOf()
+
+                                        val pricing = StorePricingInformation(
+                                            store = store.id,
+                                            price = countdownProduct.price?.originalPrice?.times(100)
+                                                ?.toInt(),
+                                            verified = true
+                                        )
+
+                                        if (countdownProduct.price?.savePrice != 0.0) {
+                                            pricing.discountPrice =
+                                                countdownProduct.price?.salePrice?.times(100)
+                                                    ?.toInt()
+                                            pricing.clubOnly = countdownProduct.price?.isClubPrice
+                                        }
+
+                                        if (countdownProduct.productTag?.multiBuy != null) {
+                                            pricing.multiBuyPrice =
+                                                countdownProduct.productTag.multiBuy.price.times(100)
+                                                    .toInt()
+                                            pricing.multiBuyQuantity =
+                                                countdownProduct.productTag.multiBuy.quantity
+                                        }
+
+                                        product.pricing!!.add(pricing)
                                     }
-
-                                    product = products.first { it.id == countdownProduct.sku }
-
-                                    if (product.pricing == null)
-                                        product.pricing = arrayListOf()
-
-                                    val pricing = StorePricingInformation(
-                                        store = store.id,
-                                        price = countdownProduct.price?.originalPrice?.times(100)
-                                            ?.toInt(),
-                                        verified = true
-                                    )
-
-                                    if (countdownProduct.price?.savePrice != 0.0) {
-                                        pricing.discountPrice =
-                                            countdownProduct.price?.salePrice?.times(100)?.toInt()
-                                        pricing.clubOnly = countdownProduct.price?.isClubPrice
-                                    }
-
-                                    if (countdownProduct.productTag?.multiBuy != null) {
-                                        pricing.multiBuyPrice =
-                                            countdownProduct.productTag.multiBuy.price.times(100)
-                                                .toInt()
-                                        pricing.multiBuyQuantity =
-                                            countdownProduct.productTag.multiBuy.quantity
-                                    }
-
-                                    product.pricing!!.add(pricing)
                                 }
                             }
 

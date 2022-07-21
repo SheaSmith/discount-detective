@@ -1,7 +1,9 @@
 package com.example.cosc345.scraper.models.shopify
 
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class ShopifyResponse(
     @Json(name = "products")
     val products: Array<ShopifyProduct>

@@ -1,7 +1,7 @@
 package com.example.cosc345.scraper.scrapers.generic
 
-import com.example.cosc345.scraper.interfaces.Scraper
 import com.example.cosc345.scraper.api.ShopifyApi
+import com.example.cosc345.scraper.interfaces.Scraper
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.scraper.models.shopify.ShopifyProduct
 import com.example.cosc345.shared.constants.LocaleConstants
@@ -18,7 +18,6 @@ abstract class ShopifyScraper(
         val products: ArrayList<RetailerProductInformation> = arrayListOf()
         shopifyService.getProducts().products
             .forEach { shopifyProduct ->
-                // If we've got an existing product that matches the retailer ID, then update it.
                 val product = RetailerProductInformation(retailer = id, id = shopifyProduct.id)
 
                 // Parse any weights from the product
