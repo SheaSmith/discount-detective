@@ -1,26 +1,26 @@
-package com.example.cosc345.scraper.models.myfoodlink
+package com.example.cosc345.scraper.models.myfoodlink.products
 
 import pl.droidsonroids.jspoon.annotation.Selector
 
 data class MyFoodLinkLine(
     @Selector(".ln__name > span")
-    val name: String,
+    var name: String? = null,
 
     @Selector(".item-per-unit-cost", regex = "\\\$([\\d.]+)")
-    val price: Double,
+    var price: Double? = null,
 
     @Selector(".comparison_price", regex = "\\\$([\\d.]+)")
-    val unitPrice: String?,
+    var unitPrice: String? = null,
 
     @Selector(".comparison_price", regex = "(\\d+[A-z]+)")
-    val unitPriceUnit: String?,
+    var unitPriceUnit: String? = null,
 
     @Selector(".saving-amount", regex = "\\\$([\\d.]+)")
-    val savingsDollars: Double?,
+    var savingsDollars: String? = null,
 
     @Selector(".saving-amount", regex = "(\\d+)c")
-    val savingsCents: Int?,
+    var savingsCents: String? = null,
 
     @Selector(".ln__img > img", attr = "src")
-    val image: String
+    var image: String? = null
 )

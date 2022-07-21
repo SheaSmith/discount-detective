@@ -13,10 +13,10 @@ abstract class MoshiElementConverter<T>(private val cls: Class<T>, private val r
 
         val jsonAdapter: JsonAdapter<T> = moshi.adapter(cls)
 
-        val nodeText = node.text()
+        val nodeText = node.data()
 
-        if (regex.matches(nodeText)) {
-            val json = regex.matchEntire(nodeText)!!.groups[1]!!.value.trim()
+        if (regex.containsMatchIn(nodeText)) {
+            val json = regex.find(nodeText)!!.groups[1]!!.value.trim()
 
             return jsonAdapter.fromJson(json)
         }

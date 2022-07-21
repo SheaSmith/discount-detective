@@ -1,11 +1,10 @@
-package com.example.cosc345.scraper.scrapers
+package com.example.cosc345.scraper.scrapers.shopify
 
 import com.example.cosc345.scraper.scrapers.generic.ShopifyScraper
 import com.example.cosc345.shared.models.Retailer
-import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.Store
 
-class PrincesStreetButcherScraper() :
+class PrincesStreetButcherScraper :
     ShopifyScraper(
         "princes-street-butcher",
         Retailer(

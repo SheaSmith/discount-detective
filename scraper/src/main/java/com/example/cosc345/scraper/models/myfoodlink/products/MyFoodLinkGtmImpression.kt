@@ -1,4 +1,4 @@
-package com.example.cosc345.scraper.models.myfoodlink
+package com.example.cosc345.scraper.models.myfoodlink.products
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -15,7 +15,7 @@ data class MyFoodLinkGtmImpression(
     val price: String,
 
     @Json(name = "brand")
-    val brand: String,
+    val brand: String?,
 
     @Json(name = "dimension4")
     val saleType: String

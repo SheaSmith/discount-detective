@@ -3,6 +3,7 @@ package com.example.cosc345.scraper.interfaces
 import com.example.cosc345.scraper.helpers.MoshiHelper
 import com.example.cosc345.scraper.models.ScraperResult
 import pl.droidsonroids.retrofit2.JspoonConverterFactory
+import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -17,12 +18,23 @@ abstract class Scraper {
      */
     abstract suspend fun runScraper(): ScraperResult
 
-    protected fun <T> generateRequest(cls: Class<T>, baseUrl: String): T {
+    protected fun <T> generateJsonRequest(cls: Class<T>, baseUrl: String): T {
         val moshi = MoshiHelper.getMoshi()
 
+        return getRetrofit(cls, baseUrl, MoshiConverterFactory.create(moshi))
+    }
+
+    protected fun <T> generateHtmlRequest(cls: Class<T>, baseUrl: String): T {
+        return getRetrofit(cls, baseUrl, JspoonConverterFactory.create())
+    }
+
+    private fun <T> getRetrofit(
+        cls: Class<T>,
+        baseUrl: String,
+        converterFactory: Converter.Factory
+    ): T {
         val retrofit = Retrofit.Builder()
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .addConverterFactory(JspoonConverterFactory.create())
+            .addConverterFactory(converterFactory)
             .baseUrl(baseUrl)
             .build()
 

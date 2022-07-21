@@ -13,7 +13,7 @@ abstract class ShopifyScraper(
     private val baseUrl: String
 ) : Scraper() {
     override suspend fun runScraper(): ScraperResult {
-        val shopifyService = generateRequest(ShopifyApi::class.java, baseUrl)
+        val shopifyService = generateJsonRequest(ShopifyApi::class.java, baseUrl)
 
         val products: ArrayList<RetailerProductInformation> = arrayListOf()
         shopifyService.getProducts().products

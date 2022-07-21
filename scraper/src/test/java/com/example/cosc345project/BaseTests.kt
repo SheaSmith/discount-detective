@@ -34,9 +34,6 @@ abstract class BaseTests {
     fun allStoresHaveRequiredFields(stores: List<Store>) {
         assert(stores.none { it.id.isNullOrEmpty() })
         assert(stores.none { it.name.isNullOrEmpty() })
-        assert(stores.none { it.address.isNullOrEmpty() })
-        assert(stores.none { it.latitude == null })
-        assert(stores.none { it.longitude == null })
         assert(stores.none { it.automated == null })
     }
 }

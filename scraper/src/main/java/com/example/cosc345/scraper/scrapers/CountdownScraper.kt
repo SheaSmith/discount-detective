@@ -10,7 +10,7 @@ import com.example.cosc345.shared.models.*
 class CountdownScraper : Scraper() {
     override suspend fun runScraper(): ScraperResult {
         val countdownService =
-            generateRequest(CountdownApi::class.java, "https://www.countdown.co.nz")
+            generateJsonRequest(CountdownApi::class.java, "https://www.countdown.co.nz")
         val retailerId = "countdown"
 
         val stores: ArrayList<Store> = arrayListOf()
