@@ -2,10 +2,12 @@ package com.example.cosc345.scraper.interfaces
 
 import com.example.cosc345.scraper.helpers.MoshiHelper
 import com.example.cosc345.scraper.models.ScraperResult
+import okhttp3.OkHttpClient
 import pl.droidsonroids.retrofit2.JspoonConverterFactory
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.time.Duration
 
 /**
  * The interface which defines the basic scraper framework.
@@ -33,7 +35,14 @@ abstract class Scraper {
         baseUrl: String,
         converterFactory: Converter.Factory
     ): T {
+        val client = OkHttpClient.Builder()
+            .readTimeout(Duration.ofMinutes(1))
+            .writeTimeout(Duration.ofMinutes(1))
+            .connectTimeout(Duration.ofMinutes(1))
+            .build()
+
         val retrofit = Retrofit.Builder()
+            .client(client)
             .addConverterFactory(converterFactory)
             .baseUrl(baseUrl)
             .build()
