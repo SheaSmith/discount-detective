@@ -46,20 +46,6 @@ abstract class MyFoodLinkScraper(
                     val response = myFoodLinkHtmlService.getProducts(page)
 
                     response.lines!!.forEach { line ->
-                        if (response.gtmData!!.first { it.eventType == "productListImpression" }.ecommerce.impressions!!.none {
-                                it.name.trim().replace(Regex("\\s+"), " ")
-                                    .replace(nbsp.toString(), " ")
-                                    .equals(
-                                        line.name!!.replace(
-                                            Regex("\\s+").replace(
-                                                nbsp.toString(),
-                                                " "
-                                            ), " "
-                                        ).trim(), true
-                                    )
-                            }) {
-                            val i = 0
-                        }
 
                         val gtmData =
                             response.gtmData!!.first { it.eventType == "productListImpression" }.ecommerce.impressions!!.first {
@@ -84,6 +70,7 @@ abstract class MyFoodLinkScraper(
                                 id = gtmData.id,
                                 brandName = gtmData.brand,
                                 saleType = if (gtmData.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
+                                weight = if (gtmData.saleType == "kg") 1000 else null,
                                 barcodes = listOf(gtmData.id),
                                 image = line.image
                             )
@@ -122,33 +109,39 @@ abstract class MyFoodLinkScraper(
 
                         product = products.first { it.id == gtmData.id }
 
-                        if (product.pricing == null)
-                            product.pricing = arrayListOf()
+                        if (product.pricing?.none { it.store == myFoodLinkStore.id } != false) {
+                            if (product.pricing == null)
+                                product.pricing = arrayListOf()
 
-                        val pricing = StorePricingInformation(
-                            store = myFoodLinkStore.id,
-                            verified = true,
-                        )
+                            val pricing = StorePricingInformation(
+                                store = myFoodLinkStore.id,
+                                verified = true,
+                            )
 
-                        val centsRegex = Regex("(\\d+)c")
-                        val dollarsRegex = Regex("\\\$([\\d.]+)")
+                            val centsRegex = Regex("(\\d+)c")
+                            val dollarsRegex = Regex("\\\$([\\d.]+)")
 
 
-                        val discount =
-                            line.savingsDollars?.let { dollarsRegex.find(it)?.groups?.get(1)?.value?.toDouble() }
-                                ?: line.savingsCents?.let {
-                                    centsRegex.find(it)?.groups?.get(1)?.value?.toDouble()?.div(100)
-                                }
+                            val discount =
+                                line.savingsDollars?.let { dollarsRegex.find(it)?.groups?.get(1)?.value?.toDouble() }
+                                    ?: line.savingsCents?.let {
+                                        centsRegex.find(it)?.groups?.get(1)?.value?.toDouble()
+                                            ?.div(100)
+                                    }
 
-                        if (discount != null) {
-                            pricing.discountPrice = (line.price!! * 100).toInt()
-                            pricing.price = ((line.price!! + discount) * 100).toInt()
-                        } else {
-                            pricing.price = (line.price!! * 100).toInt()
+                            if (discount != null) {
+                                pricing.discountPrice = (line.price!! * 100).toInt()
+                                pricing.price = ((line.price!! + discount) * 100).toInt()
+                            } else {
+                                pricing.price = (line.price!! * 100).toInt()
+                            }
+
+                            product.pricing?.add(pricing)
                         }
                     }
 
-                    lastPage = response.pages!!
+                    if (response.pages != null)
+                        lastPage = response.pages!!.toInt()
                     page++
                 }
             }

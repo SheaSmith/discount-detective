@@ -1,6 +1,7 @@
 package com.example.cosc345.scraper.interfaces
 
 import com.example.cosc345.scraper.helpers.MoshiHelper
+import com.example.cosc345.scraper.interceptors.RetrofitRetryInterceptor
 import com.example.cosc345.scraper.models.ScraperResult
 import okhttp3.OkHttpClient
 import pl.droidsonroids.retrofit2.JspoonConverterFactory
@@ -39,6 +40,7 @@ abstract class Scraper {
             .readTimeout(Duration.ofMinutes(1))
             .writeTimeout(Duration.ofMinutes(1))
             .connectTimeout(Duration.ofMinutes(1))
+            .addInterceptor(RetrofitRetryInterceptor())
             .build()
 
         val retrofit = Retrofit.Builder()

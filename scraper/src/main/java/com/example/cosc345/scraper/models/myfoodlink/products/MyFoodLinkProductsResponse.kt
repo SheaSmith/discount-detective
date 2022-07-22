@@ -11,8 +11,8 @@ data class MyFoodLinkProductsResponse(
     var gtmData: Array<MyFoodLinkGtmData>? = null,
 
     // https://stackoverflow.com/questions/5418744/select-second-last-element-with-css
-    @Selector(".mfl-pagination a:nth-last-child(2)")
-    var pages: Int? = null
+    @Selector(".mfl-pagination :nth-last-child(2)")
+    var pages: String? = null
 ) {
     // Kotlin boilerplate
     override fun equals(other: Any?): Boolean {
@@ -34,7 +34,7 @@ data class MyFoodLinkProductsResponse(
     override fun hashCode(): Int {
         var result = lines?.hashCode() ?: 0
         result = 31 * result + (gtmData?.contentHashCode() ?: 0)
-        result = 31 * result + (pages ?: 0)
+        result = 31 * result + (pages?.hashCode() ?: 0)
         return result
     }
 
