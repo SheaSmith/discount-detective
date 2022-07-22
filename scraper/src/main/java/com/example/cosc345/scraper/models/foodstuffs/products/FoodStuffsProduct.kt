@@ -8,6 +8,9 @@ data class FoodStuffsProduct(
     @Json(name = "barcodes")
     val barcodes: String,
 
+    @Json(name = "brand")
+    val brand: String?,
+
     @Json(name = "category1")
     val categories: Array<String>,
 
@@ -22,6 +25,9 @@ data class FoodStuffsProduct(
 
     @Json(name = "prices")
     val prices: Map<String, String>,
+
+    @Json(name = "stores")
+    val stores: List<String>,
 
     @Json(name = "productID")
     val productId: String,

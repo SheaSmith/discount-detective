@@ -19,6 +19,8 @@ abstract class BaseTests {
 
         System.out.format("+------------------+--------------------+%n")
 
+        assert(products.none { product -> product.pricing?.any { it.price == null && it.discountPrice == null } == true })
+
         return products.none { it.pricing!!.isEmpty() }
     }
 

@@ -5,7 +5,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class FoodStuffsCategory(
-    @Json(name = "CategoryID")
+    @Json(name = "DisplayName")
     val categoryId: String,
 
     @Json(name = "sitecoreId")

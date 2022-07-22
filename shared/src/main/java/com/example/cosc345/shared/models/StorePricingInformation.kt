@@ -1,7 +1,5 @@
 package com.example.cosc345.shared.models
 
-import java.time.ZonedDateTime
-
 /**
  * Specifies the pricing for a particular product in a particular store, including discounts and multi-buy pricing.
  */
@@ -24,16 +22,6 @@ data class StorePricingInformation(
      * The discounted price, even if the promotion is yet to begin. Again this is multiplied by 100.
      */
     var discountPrice: Int? = null,
-
-    /**
-     * The date and time when the discount starts (if applicable). Not all stores use this, so if it missing, we assume the discount is current.
-     */
-    var discountStart: ZonedDateTime? = null,
-
-    /**
-     * The date and time when the discount ends (if applicable). Again, not all stores use this, so if it missing, we assume the discount is current.
-     */
-    var discountEnd: ZonedDateTime? = null,
 
     /**
      * If there is a multi-buy promotion (for example, buy 2 for $5), then this specifies the quantity for that promotion.

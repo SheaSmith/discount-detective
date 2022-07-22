@@ -17,8 +17,8 @@ abstract class MyFoodLinkScraper(
     override suspend fun runScraper(): ScraperResult {
         val myFoodLinkJsonService = generateJsonRequest(MyFoodLinkApi::class.java, baseUrl)
 
-        val stores = arrayListOf<Store>()
-        val products = arrayListOf<RetailerProductInformation>()
+        val stores = mutableListOf<Store>()
+        val products = mutableListOf<RetailerProductInformation>()
 
         myFoodLinkJsonService.getStores().forEach { myFoodLinkStore ->
             if (myFoodLinkStore.name != null && myFoodLinkStore.type == "ecommerce"
@@ -34,14 +34,13 @@ abstract class MyFoodLinkScraper(
 
                 val myFoodLinkHtmlService = generateHtmlRequest(
                     MyFoodLinkApi::class.java,
-                    String.format("https://%s", myFoodLinkStore.hostname)
+                    "https://${myFoodLinkStore.hostname}"
                 )
 
                 var page = 1
                 // Dummy value for first loop
                 var lastPage = 1
 
-                // todo: fix numberformatexception on last page
                 while (page <= lastPage) {
                     val response = myFoodLinkHtmlService.getProducts(page)
 
@@ -89,9 +88,9 @@ abstract class MyFoodLinkScraper(
                             }
 
                             product.quantity = if (weightGrams != null) {
-                                String.format("%dg", weightGrams)
+                                "${weightGrams}${Weight.GRAMS}"
                             } else if (weightKilograms != null) {
-                                String.format("%dkg", weightKilograms)
+                                "${weightKilograms}${Weight.KILOGRAMS}"
                             } else {
                                 null
                             }
@@ -111,7 +110,7 @@ abstract class MyFoodLinkScraper(
 
                         if (product.pricing?.none { it.store == myFoodLinkStore.id } != false) {
                             if (product.pricing == null)
-                                product.pricing = arrayListOf()
+                                product.pricing = mutableListOf()
 
                             val pricing = StorePricingInformation(
                                 store = myFoodLinkStore.id,

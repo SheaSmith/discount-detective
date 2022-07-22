@@ -13,14 +13,14 @@ class CountdownScraper : Scraper() {
             generateJsonRequest(CountdownApi::class.java, "https://www.countdown.co.nz")
         val retailerId = "countdown"
 
-        val stores: ArrayList<Store> = arrayListOf()
-        val products: ArrayList<RetailerProductInformation> = arrayListOf()
+        val stores: MutableList<Store> = mutableListOf()
+        val products: MutableList<RetailerProductInformation> = mutableListOf()
         countdownService.getStores("https://api.cdx.nz/site-location/api/v1/sites/").siteDetails
             .forEach { countdownStore ->
                 if (countdownStore.site.suburb == "Dunedin") {
-                    val addressList = arrayListOf(
+                    val addressList = mutableListOf(
                         countdownStore.site.addressLine1.replace(
-                            String.format(", %s", countdownStore.site.suburb),
+                            ", ${countdownStore.site.suburb}",
                             ""
                         )
                     )
@@ -53,7 +53,7 @@ class CountdownScraper : Scraper() {
                         while ((page - 1) * 120 < lastSize) {
                             val response = countdownService.getProducts(
                                 page,
-                                String.format("Department;;%s;false", countdownDepartment)
+                                "Department;;${countdownDepartment};false"
                             ).products
 
                             response.items.forEach { countdownProduct ->
@@ -129,7 +129,7 @@ class CountdownScraper : Scraper() {
                                         product = products.first { it.id == countdownProduct.sku }
 
                                         if (product.pricing == null)
-                                            product.pricing = arrayListOf()
+                                            product.pricing = mutableListOf()
 
                                         val pricing = StorePricingInformation(
                                             store = store.id,

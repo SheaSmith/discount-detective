@@ -15,7 +15,7 @@ abstract class ShopifyScraper(
     override suspend fun runScraper(): ScraperResult {
         val shopifyService = generateJsonRequest(ShopifyApi::class.java, baseUrl)
 
-        val products: ArrayList<RetailerProductInformation> = arrayListOf()
+        val products: MutableList<RetailerProductInformation> = mutableListOf()
         shopifyService.getProducts().products
             .forEach { shopifyProduct ->
                 val product = RetailerProductInformation(retailer = id, id = shopifyProduct.id)
@@ -26,10 +26,10 @@ abstract class ShopifyScraper(
 
                 if (weightGrams != 0.0) {
                     product.weight = weightGrams.toInt()
-                    product.quantity = String.format("%d%s", weightGrams, Weight.GRAMS.toString())
+                    product.quantity = "${weightGrams}${Weight.GRAMS}"
                 } else if (weightKilograms != 0.0) {
                     product.weight = (weightKilograms * 1000).toInt()
-                    product.quantity = String.format("%d%s", weightKilograms, Weight.KILOGRAMS.toString())
+                    product.quantity = "${weightKilograms}${Weight.KILOGRAMS}"
                 } else {
                     product.weight = null
                     product.quantity = null
@@ -88,7 +88,7 @@ abstract class ShopifyScraper(
                 product.image = shopifyProduct.images.firstOrNull()?.url
 
                 // Set price
-                product.pricing = arrayListOf(
+                product.pricing = mutableListOf(
                     StorePricingInformation(
                         id,
                         (firstVariant.price.toDouble() * 100).toInt(),
