@@ -118,7 +118,7 @@ class FourSquareScraper : Scraper() {
                         id = fourSquareProduct.name?.trim(),
                         saleType = if (fourSquareProduct.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
                         weight = if (fourSquareProduct.saleType == "kg") 1000 else null,
-                        image = fourSquareProduct.imagePath
+                        image = "${baseUrl}${fourSquareProduct.imagePath}"
                     )
 
                     var name = fourSquareProduct.name!!.trim()
@@ -183,12 +183,5 @@ class FourSquareScraper : Scraper() {
         val retailer = Retailer("Four Square", true, stores)
 
         return ScraperResult(retailer, products)
-    }
-
-    private fun extractAndRemoveQuantity(name: String, unit: Units): Pair<String, Double?> {
-        val capture = unit.regex.find(name)?.groups?.get(1)?.value?.toDouble()
-        val newName = name.replace(unit.regex, "").replace(Regex("\\s+"), " ").trim()
-
-        return Pair(newName, capture)
     }
 }
