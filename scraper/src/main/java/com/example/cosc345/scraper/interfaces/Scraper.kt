@@ -3,6 +3,7 @@ package com.example.cosc345.scraper.interfaces
 import com.example.cosc345.scraper.helpers.MoshiHelper
 import com.example.cosc345.scraper.interceptors.RetrofitRetryInterceptor
 import com.example.cosc345.scraper.models.ScraperResult
+import com.example.cosc345.shared.models.Units
 import okhttp3.OkHttpClient
 import pl.droidsonroids.retrofit2.JspoonConverterFactory
 import retrofit2.Converter
@@ -50,5 +51,12 @@ abstract class Scraper {
             .build()
 
         return retrofit.create(cls)
+    }
+
+    protected fun extractAndRemoveQuantity(name: String, unit: Units): Pair<String, Double?> {
+        val capture = unit.regex.find(name)?.groups?.get(1)?.value?.toDouble()
+        val newName = name.replace(unit.regex, "").replace(Regex("\\s+"), " ").trim()
+
+        return Pair(newName, capture)
     }
 }
