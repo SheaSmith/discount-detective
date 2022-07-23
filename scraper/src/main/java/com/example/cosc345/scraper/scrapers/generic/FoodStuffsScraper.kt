@@ -94,10 +94,10 @@ abstract class FoodStuffsScraper(
                     if (product.weight == null) {
                         var weight = foodStuffsProduct.netContent?.toDouble()
 
-                        if (foodStuffsProduct.netContentUnit == Weight.KILOGRAMS.toString()) {
+                        if (foodStuffsProduct.netContentUnit == Units.KILOGRAMS.toString()) {
                             weight = weight?.times(1000)
                             product.weight = weight?.toInt()
-                        } else if (foodStuffsProduct.netContentUnit == Weight.GRAMS.toString()) {
+                        } else if (foodStuffsProduct.netContentUnit == Units.GRAMS.toString()) {
                             product.weight = weight?.toInt()
                         }
                     }

@@ -54,17 +54,17 @@ class WarehouseScraper : Scraper() {
                                     .trim()
 
                                 val weightInGrams =
-                                    Weight.GRAMS.regex.find(name)?.groups?.get(1)?.value?.toDouble()
+                                    Units.GRAMS.regex.find(name)?.groups?.get(1)?.value?.toDouble()
                                         ?.toInt()
                                 val weightInKilograms =
-                                    Weight.KILOGRAMS.regex.find(name)?.groups?.get(1)?.value?.toDouble()
+                                    Units.KILOGRAMS.regex.find(name)?.groups?.get(1)?.value?.toDouble()
 
                                 product.weight =
                                     weightInGrams ?: weightInKilograms?.times(1000)?.toInt()
 
                                 name = name
-                                    .replace(Weight.GRAMS.regex, "")
-                                    .replace(Weight.KILOGRAMS.regex, "")
+                                    .replace(Units.GRAMS.regex, "")
+                                    .replace(Units.KILOGRAMS.regex, "")
                                     .replace(Regex("\\s+"), " ")
                                     .trim()
 
@@ -75,7 +75,7 @@ class WarehouseScraper : Scraper() {
 
                                 product.name = name
                                 product.quantity =
-                                    if (weightInGrams != null) "${weightInGrams}${Weight.GRAMS}" else "${weightInKilograms}${Weight.KILOGRAMS}"
+                                    if (weightInGrams != null) "${weightInGrams}${Units.GRAMS}" else "${weightInKilograms}${Units.KILOGRAMS}"
                             }
 
                             if (warehouseProduct.inventory.available && product.pricing?.none { it.store == warehouseStore.branchId } != false) {

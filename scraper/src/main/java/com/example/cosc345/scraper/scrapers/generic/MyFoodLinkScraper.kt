@@ -75,11 +75,11 @@ abstract class MyFoodLinkScraper(
                             )
 
                             val weightGrams =
-                                Weight.GRAMS.regex.matchEntire(gtmData.name)?.groups
+                                Units.GRAMS.regex.matchEntire(gtmData.name)?.groups
                                     ?.get(1)?.value?.toDouble()
 
                             val weightKilograms =
-                                Weight.GRAMS.regex.matchEntire(gtmData.name)?.groups
+                                Units.GRAMS.regex.matchEntire(gtmData.name)?.groups
                                     ?.get(1)?.value?.toDouble()
 
                             if (product.weight == null) {
@@ -88,16 +88,16 @@ abstract class MyFoodLinkScraper(
                             }
 
                             product.quantity = if (weightGrams != null) {
-                                "${weightGrams}${Weight.GRAMS}"
+                                "${weightGrams}${Units.GRAMS}"
                             } else if (weightKilograms != null) {
-                                "${weightKilograms}${Weight.KILOGRAMS}"
+                                "${weightKilograms}${Units.KILOGRAMS}"
                             } else {
                                 null
                             }
 
                             product.name = gtmData.name
-                                .replace(Weight.GRAMS.regex, "")
-                                .replace(Weight.KILOGRAMS.regex, "")
+                                .replace(Units.GRAMS.regex, "")
+                                .replace(Units.KILOGRAMS.regex, "")
                                 .replace(" Kg", "")
                                 .lowercase()
                                 .titleCase()

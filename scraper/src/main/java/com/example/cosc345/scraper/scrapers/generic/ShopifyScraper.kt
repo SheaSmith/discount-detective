@@ -21,15 +21,15 @@ abstract class ShopifyScraper(
                 val product = RetailerProductInformation(retailer = id, id = shopifyProduct.id)
 
                 // Parse any weights from the product
-                val weightGrams = extractWeight(Weight.GRAMS.regex, shopifyProduct)
-                val weightKilograms = extractWeight(Weight.KILOGRAMS.regex, shopifyProduct)
+                val weightGrams = extractWeight(Units.GRAMS.regex, shopifyProduct)
+                val weightKilograms = extractWeight(Units.KILOGRAMS.regex, shopifyProduct)
 
                 if (weightGrams != 0.0) {
                     product.weight = weightGrams.toInt()
-                    product.quantity = "${weightGrams}${Weight.GRAMS}"
+                    product.quantity = "${weightGrams}${Units.GRAMS}"
                 } else if (weightKilograms != 0.0) {
                     product.weight = (weightKilograms * 1000).toInt()
-                    product.quantity = "${weightKilograms}${Weight.KILOGRAMS}"
+                    product.quantity = "${weightKilograms}${Units.KILOGRAMS}"
                 } else {
                     product.weight = null
                     product.quantity = null
@@ -65,8 +65,8 @@ abstract class ShopifyScraper(
 
                 // Strip out the weight from the title if it still exists
                 titleFormatted = titleFormatted
-                    .replace(Weight.GRAMS.regex, "")
-                    .replace(Weight.KILOGRAMS.regex, "")
+                    .replace(Units.GRAMS.regex, "")
+                    .replace(Units.KILOGRAMS.regex, "")
 
                 // Strip out the brand name, assuming that it has been set for the product
                 titleFormatted = titleFormatted.replace(shopifyProduct.vendor, "")
