@@ -21,6 +21,15 @@ data class MyFoodLinkLine(
     @Selector(".saving-amount", regex = "(\\d+)c")
     var savingsCents: String? = null,
 
+    @Selector("span.label-special:nth-child(2) > span", regex = "(\\d+) for ")
+    var multiBuyQuantity: String? = null,
+
+    @Selector("span.label-special:nth-child(2) > span", regex = "\\d+ for \\\$([\\d.]+)")
+    var multiBuyDollars: String? = null,
+
+    @Selector("span.label-special:nth-child(2) > span", regex = "\\d+ for (\\d+)c")
+    var multiBuyCents: String? = null,
+
     @Selector(".ln__img > img", attr = "src")
     var image: String? = null
 )

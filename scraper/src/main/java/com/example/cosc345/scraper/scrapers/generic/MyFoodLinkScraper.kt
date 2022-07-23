@@ -135,6 +135,14 @@ abstract class MyFoodLinkScraper(
                                 pricing.price = (line.price!! * 100).toInt()
                             }
 
+                            if (line.multiBuyQuantity != null && (line.multiBuyDollars != null || line.multiBuyCents != null)) {
+                                pricing.multiBuyQuantity = line.multiBuyQuantity?.toInt()
+
+                                pricing.multiBuyPrice =
+                                    line.multiBuyDollars?.toDouble()?.times(100)?.toInt()
+                                        ?: line.multiBuyCents?.toInt()
+                            }
+
                             product.pricing?.add(pricing)
                         }
                     }
