@@ -29,22 +29,27 @@ class FourSquareUnitTest : BaseTests() {
     }
 
     @Test
+    @DisplayName("Four Square has stores")
     fun `Four Square has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
+    @DisplayName("Four Square stores have required fields")
     fun `Four Square stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
+    @DisplayName("Four Square has products")
     fun `Four Square has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
+    @DisplayName("Four Square products have prices")
     fun `Four Square products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
+    @DisplayName("Four Square products have required fields")
     fun `Four Square products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation)
 }

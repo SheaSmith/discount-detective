@@ -1,7 +1,8 @@
-package com.example.cosc345project
+package com.example.cosc345project.shopify
 
 import com.example.cosc345.scraper.models.ScraperResult
-import com.example.cosc345.scraper.scrapers.foodstuffs.PakNSaveScraper
+import com.example.cosc345.scraper.scrapers.shopify.LeckiesButcheryScraper
+import com.example.cosc345project.BaseTests
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -10,8 +11,8 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
-@DisplayName("Pak'nSave tests")
-class PakNSaveUnitTest : BaseTests() {
+@DisplayName("Leckies Butchery tests")
+class LeckiesButcheryUnitTest : BaseTests() {
     companion object {
         private var response: ScraperResult? = null
     }
@@ -20,7 +21,7 @@ class PakNSaveUnitTest : BaseTests() {
         if (response == null) {
             runBlocking {
                 val time = measureTime {
-                    response = PakNSaveScraper().runScraper()
+                    response = LeckiesButcheryScraper().runScraper()
                 }
 
                 println("Time taken to get products: ${time.toString(DurationUnit.SECONDS, 1)}")
@@ -29,22 +30,27 @@ class PakNSaveUnitTest : BaseTests() {
     }
 
     @Test
-    fun `Pak'nSave has stores`() =
+    @DisplayName("Leckies Butchery has stores")
+    fun `Leckies Butchery has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
-    fun `Pak'nSave stores have required fields`() =
+    @DisplayName("Leckies Butchery stores have required fields")
+    fun `Leckies Butchery stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
-    fun `Pak'nSave has products`() =
+    @DisplayName("Leckies Butchery has products")
+    fun `Leckies Butchery has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
-    fun `Pak'nSave products have prices`() =
+    @DisplayName("Leckies Butchery products have prices")
+    fun `Leckies Butchery products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
-    fun `Pak'nSave products have required fields`() =
-        allProductsHaveRequiredFields(response!!.productInformation)
+    @DisplayName("Leckies Butchery products have required fields")
+    fun `Leckies Butchery products have required fields`() =
+        allProductsHaveRequiredFields(response!!.productInformation, false)
 }

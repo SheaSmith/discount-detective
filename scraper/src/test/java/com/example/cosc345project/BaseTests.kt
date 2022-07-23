@@ -24,12 +24,16 @@ abstract class BaseTests {
         return products.none { it.pricing!!.isEmpty() }
     }
 
-    protected fun allProductsHaveRequiredFields(products: List<RetailerProductInformation>) {
+    protected fun allProductsHaveRequiredFields(
+        products: List<RetailerProductInformation>,
+        imagesRequired: Boolean = true
+    ) {
         assert(products.none { it.retailer.isNullOrEmpty() })
         assert(products.none { it.id.isNullOrEmpty() })
         assert(products.none { it.name.isNullOrEmpty() })
         assert(products.none { it.saleType == null })
-        assert(products.none { it.image.isNullOrEmpty() })
+        if (imagesRequired)
+            assert(products.none { it.image.isNullOrEmpty() })
         assert(products.none { it.saleType == SaleType.WEIGHT && it.weight == null })
     }
 

@@ -1,7 +1,8 @@
-package com.example.cosc345project
+package com.example.cosc345project.myfoodlink
 
 import com.example.cosc345.scraper.models.ScraperResult
-import com.example.cosc345.scraper.scrapers.myfoodlink.SuperValueScraper
+import com.example.cosc345.scraper.scrapers.myfoodlink.FreshChoiceScraper
+import com.example.cosc345project.BaseTests
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -10,8 +11,8 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
-@DisplayName("SuperValue tests")
-class SuperValueUnitTest : BaseTests() {
+@DisplayName("FreshChoice tests")
+class FreshChoiceUnitTest : BaseTests() {
     companion object {
         private var response: ScraperResult? = null
     }
@@ -20,7 +21,7 @@ class SuperValueUnitTest : BaseTests() {
         if (response == null) {
             runBlocking {
                 val time = measureTime {
-                    response = SuperValueScraper().runScraper()
+                    response = FreshChoiceScraper().runScraper()
                 }
 
                 println("Time taken to get products: ${time.toString(DurationUnit.SECONDS, 1)}")
@@ -29,22 +30,27 @@ class SuperValueUnitTest : BaseTests() {
     }
 
     @Test
-    fun `SuperValue has stores`() =
+    @DisplayName("FreshChoice has stores")
+    fun `FreshChoice has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
-    fun `SuperValue stores have required fields`() =
+    @DisplayName("FreshChoice stores have required fields")
+    fun `FreshChoice stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
-    fun `SuperValue has products`() =
+    @DisplayName("FreshChoice has products")
+    fun `FreshChoice has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
-    fun `SuperValue products have prices`() =
+    @DisplayName("FreshChoice products have prices")
+    fun `FreshChoice products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
-    fun `SuperValue products have required fields`() =
+    @DisplayName("FreshChoice products have required fields")
+    fun `FreshChoice products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation)
 }

@@ -29,22 +29,27 @@ class WarehouseUnitTest : BaseTests() {
     }
 
     @Test
+    @DisplayName("The Warehouse has stores")
     fun `The Warehouse has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
+    @DisplayName("The Warehouse stores have required fields")
     fun `The Warehouse stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
+    @DisplayName("The Warehouse has products")
     fun `The Warehouse has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
+    @DisplayName("The Warehouse products have prices")
     fun `The Warehouse products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
+    @DisplayName("The Warehouse products have required fields")
     fun `The Warehouse products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation)
 }

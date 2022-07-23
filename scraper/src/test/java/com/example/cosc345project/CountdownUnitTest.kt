@@ -29,22 +29,27 @@ class CountdownUnitTest : BaseTests() {
     }
 
     @Test
+    @DisplayName("Countdown has stores")
     fun `Countdown has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
+    @DisplayName("Countdown stores have required fields")
     fun `Countdown stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
+    @DisplayName("Countdown has products")
     fun `Countdown has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
+    @DisplayName("Countdown products have prices")
     fun `Countdown products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
+    @DisplayName("Countdown products have required fields")
     fun `Countdown products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation)
 }
