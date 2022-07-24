@@ -98,7 +98,7 @@ class CountdownScraper : Scraper() {
                                             product.weight =
                                                     // Try to get grams first
                                                 Units.GRAMS.regex
-                                                    .matchEntire(countdownProduct.size.size)
+                                                    .find(countdownProduct.size.size)
                                                     ?.groups
                                                     ?.get(1)
                                                     ?.value
@@ -109,7 +109,7 @@ class CountdownScraper : Scraper() {
 
                                                         // We don't have any valid grams captures, so try kilograms
                                                     ?: (Units.KILOGRAMS.regex
-                                                        .matchEntire(countdownProduct.size.size)
+                                                        .find(countdownProduct.size.size)
                                                         ?.groups
                                                         ?.get(1)
                                                         ?.value

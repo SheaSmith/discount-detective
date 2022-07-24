@@ -16,23 +16,28 @@ abstract class ShopifyScraper(
         val shopifyService = generateJsonRequest(ShopifyApi::class.java, baseUrl)
 
         val products: MutableList<RetailerProductInformation> = mutableListOf()
-        shopifyService.getProducts().products
-            .forEach { shopifyProduct ->
+        var page = 1
+        var lastSize = 250
+
+        while (lastSize == 250) {
+            val response = shopifyService.getProducts(page)
+
+            response.products.forEach { shopifyProduct ->
                 val product = RetailerProductInformation(retailer = id, id = shopifyProduct.id)
 
                 // Parse any weights from the product
-                val weightGrams = extractWeight(Units.GRAMS.regex, shopifyProduct)
-                val weightKilograms = extractWeight(Units.KILOGRAMS.regex, shopifyProduct)
+                Units.all.forEach {
+                    val quantity = extractWeight(it.regex, shopifyProduct)
 
-                if (weightGrams != 0.0) {
-                    product.weight = weightGrams.toInt()
-                    product.quantity = "${weightGrams}${Units.GRAMS}"
-                } else if (weightKilograms != 0.0) {
-                    product.weight = (weightKilograms * 1000).toInt()
-                    product.quantity = "${weightKilograms}${Units.KILOGRAMS}"
-                } else {
-                    product.weight = null
-                    product.quantity = null
+                    if (quantity != 0.0) {
+                        product.quantity = "${quantity}${it}"
+
+                        if (it == Units.GRAMS) {
+                            product.weight = quantity.toInt()
+                        } else if (it == Units.KILOGRAMS) {
+                            product.weight = quantity.times(1000).toInt()
+                        }
+                    }
                 }
 
                 // We only really need to look at the first variant, as the others usually just describe different weights
@@ -59,14 +64,16 @@ abstract class ShopifyScraper(
 
                     // We assume that the variant is the unit, so set that if it hasn't been set already
                     if (product.quantity == null) {
-                        product.quantity = firstVariant.title.lowercase(LocaleConstants.NEW_ZEALAND)
+                        product.quantity =
+                            firstVariant.title.lowercase(LocaleConstants.NEW_ZEALAND)
                     }
                 }
 
                 // Strip out the weight from the title if it still exists
-                titleFormatted = titleFormatted
-                    .replace(Units.GRAMS.regex, "")
-                    .replace(Units.KILOGRAMS.regex, "")
+                Units.all.forEach {
+                    titleFormatted = titleFormatted
+                        .replace(it.regex, "")
+                }
 
                 // Strip out the brand name, assuming that it has been set for the product
                 titleFormatted = titleFormatted.replace(shopifyProduct.vendor, "")
@@ -77,12 +84,17 @@ abstract class ShopifyScraper(
                 // Remove extra spaces
                 titleFormatted = titleFormatted.replace("\\s{2,}".toRegex(), " ")
 
-                product.name = titleFormatted
-
                 // Set brand if the vendor from Shopify is not the name of the retailer
                 if (shopifyProduct.vendor != retailer.name && retailer.stores?.any { it.name == shopifyProduct.vendor } != true) {
-                    product.brandName = shopifyProduct.vendor
+                    product.brandName = shopifyProduct.vendor.trim()
                 }
+
+                if (titleFormatted.isBlank()) {
+                    titleFormatted = shopifyProduct.vendor.trim()
+                    product.brandName = null
+                }
+
+                product.name = titleFormatted.trim()
 
                 // Set image
                 product.image = shopifyProduct.images.firstOrNull()?.url
@@ -99,15 +111,19 @@ abstract class ShopifyScraper(
                 products.add(product)
             }
 
+            lastSize = response.products.size
+            page++
+        }
+
         return ScraperResult(retailer, products)
     }
 
     private fun extractWeight(regex: Regex, shopifyProduct: ShopifyProduct): Double {
         return (
                 // Check if there is a weight in the title
-                regex.matchEntire(shopifyProduct.title)?.groups?.get(1)?.value?.toDouble() ?:
+                regex.find(shopifyProduct.title)?.groups?.get(1)?.value?.toDouble() ?:
                 // Check if it is in the first variant title
-                regex.matchEntire(shopifyProduct.variants.first().title)?.groups?.get(1)?.value?.toDouble()
+                regex.find(shopifyProduct.variants.first().title)?.groups?.get(1)?.value?.toDouble()
                 ?: 0.0)
     }
 }
