@@ -1,18 +1,17 @@
-package com.example.cosc345.scraper.scrapers.wooCommerce
+package com.example.cosc345.scraper.scrapers.woocommerce
 
-import com.example.cosc345.scraper.scrapers.generic.WooComScraper
+import com.example.cosc345.scraper.scrapers.generic.WooCommerceScraper
 import com.example.cosc345.shared.models.Retailer
-import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.Store
 
-class CouplandsScraper(allProducts: Map<String, RetailerProductInformation>) : WooComScraper(
+class CouplandsScraper : WooCommerceScraper(
     "couplands",
     Retailer(
         "Couplands", true, listOf(
             Store(
                 "couplands-kv",
                 "Couplands",
-                "560 Kaikorai Rd",
+                "560 Kaikorai Rd, Kenmure, Dunedin 9011",
                 -45.8864384,
                 170.4666199,
                 true
@@ -20,7 +19,7 @@ class CouplandsScraper(allProducts: Map<String, RetailerProductInformation>) : W
             Store(
                 "couplands-ab",
                 "Couplands",
-                "446 Andersons Bay",
+                "446 Andersons Bay Rd, South Dunedin, Dunedin 9012",
                 -45.8837276,
                 170.4878583,
                 true

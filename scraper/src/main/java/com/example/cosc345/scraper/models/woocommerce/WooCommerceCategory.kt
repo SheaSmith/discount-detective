@@ -1,4 +1,4 @@
-package com.example.cosc345.scraper.models.wooCom
+package com.example.cosc345.scraper.models.woocommerce
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
  * Object to hold category metadata
  */
 @JsonClass(generateAdapter = true)
-data class wooComCategories(
+data class WooCommerceCategory(
 
     @Json(name = "id")
     val id: String?,

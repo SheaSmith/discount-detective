@@ -1,29 +1,33 @@
-package com.example.cosc345.scraper.models.wooCom
+package com.example.cosc345.scraper.models.woocommerce
 
-import com.example.cosc345.scraper.models.shopify.ShopifyImage
-import com.example.cosc345.scraper.models.shopify.ShopifyVariant
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class wooComProduct(
+data class WooCommerceProduct(
     @Json(name = "id")
     val id: String?,
 
     @Json(name = "name")
-    val name: String?,
+    val name: String,
 
     @Json(name = "type")
     val type: String?,
 
+    @Json(name = "on_sale")
+    val onSale: Boolean,
+
+    @Json(name = "is_in_stock")
+    val inStock: Boolean,
+
     @Json(name = "prices")
-    val prices: wooComPrice,
+    val prices: WooCommercePrice,
 
     @Json(name = "images")
-    val images: List<wooComImage>,
+    val images: List<WooCommerceImage>,
 
     @Json(name = "categories")
-    val categories: List<wooComCategories>,
+    val categories: List<WooCommerceCategory>,
 
     /**
      * Need in order to get weights
@@ -32,9 +36,9 @@ data class wooComProduct(
     val permaLink: String,
 
     @Json(name = "variations")
-    val variants: List<wooComVariants>,
+    val variants: List<WooCommerceVariant>,
 
     @Json(name = "attributes")
-    val attributes: List<wooComVariants.wooComAttributes>
+    val attributes: List<WooCommerceAttribute>
 )
 

@@ -46,13 +46,7 @@ class VeggieBoysScraper : Scraper() {
                 )
 
                 var name = veggieBoysProduct.name!!
-                arrayOf(
-                    Units.GRAMS,
-                    Units.KILOGRAMS,
-                    Units.LITRES,
-                    Units.MILLILITRES,
-                    Units.PACK
-                ).forEach {
+                Units.all.forEach {
                     val result = extractAndRemoveQuantity(name, it)
 
                     name = result.first
@@ -78,7 +72,7 @@ class VeggieBoysScraper : Scraper() {
                     .replace("(", "")
                     .replace(")", "")
 
-                val nameParts = name.split("-")
+                val nameParts = name.split("-", limit = 1)
 
                 name = nameParts[0]
                     .replace(Regex("\\s+"), " ")

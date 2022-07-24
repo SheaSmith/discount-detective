@@ -55,15 +55,7 @@ class FourSquareScraper : Scraper() {
 
                     var name = fourSquareProduct.name.trim()
 
-                    arrayOf(
-                        Units.GRAMS,
-                        Units.GRAMS_RANGE,
-                        Units.KILOGRAMS,
-                        Units.LITRES,
-                        Units.METRES,
-                        Units.MILLILITRES,
-                        Units.PACK
-                    ).forEach {
+                    Units.all.forEach {
                         val pair = extractAndRemoveQuantity(name, it)
 
                         if (pair.second != null) {
@@ -123,15 +115,7 @@ class FourSquareScraper : Scraper() {
 
                     var name = fourSquareProduct.name!!.trim()
 
-                    arrayOf(
-                        Units.GRAMS,
-                        Units.GRAMS_RANGE,
-                        Units.KILOGRAMS,
-                        Units.LITRES,
-                        Units.MILLILITRES,
-                        Units.METRES,
-                        Units.PACK
-                    ).forEach {
+                    Units.all.forEach {
                         val pair = extractAndRemoveQuantity(name, it)
 
                         if (pair.second != null) {
