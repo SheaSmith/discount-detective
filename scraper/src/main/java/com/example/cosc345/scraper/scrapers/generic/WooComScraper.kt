@@ -45,22 +45,21 @@ abstract class WooComScraper (
                         wooComProduct.prices.price.toInt() * unit_conv,
                         verified = true,
                     )
-
                 )
 
-                //weight
-                // TODO: ONLY DEALING WITH ONE WEIGHT (ie might be 2kg and 4kg variants)
+                //weight processing
                 wooComProduct.variants.forEach { variant ->
                     variant.attributes.forEach { attribute ->
                         if (attribute.id == "Weight") {
                             val match =
                                 Regex("([\\d.]+)([\\w]+)").find(attribute.value.toString())!!
                             val (number, unit) = match.destructured
-                            var numericalVal = number.toInt()
+                            var numericalVal = number.toDouble()
                             if (unit.lowercase() == "kg") {
                                 numericalVal *= 1000
                             }
-                            product.weight = numericalVal
+                            if (product.weight != null)//taking the first variant as the weight
+                                product.weight = numericalVal.toInt()
                         }
                     }
                 }
@@ -71,7 +70,7 @@ abstract class WooComScraper (
                 //grams anywhere
                 val matchg = Regex("\\dg").containsMatchIn(search)
                 if (matchkg or matchg) {
-                    val match = Regex("([0\\d.]+)([\\w]+)").find(search)!!
+                    val match = Regex("([0\\d.]+)([kg]+)").find(search)!!
                     val (number, unit) = match.destructured
                     var numericalVal = number.toDouble()
                     if (unit.lowercase() == "kg") {
@@ -80,6 +79,11 @@ abstract class WooComScraper (
                     product.weight = numericalVal.toInt()
                     product.saleType = SaleType.WEIGHT
                 }
+                //replace ascii with "-"
+                product.name = wooComProduct.name?.replace("&#8211;".toRegex(), "-")
+                    ?.replace("&#8216;".toRegex(), "-")
+                    ?.replace("&#8217;".toRegex(), "-")
+                    ?.replace("&#038;".toRegex(), "-")
                 products.add(product)
             }
             page++
@@ -89,5 +93,4 @@ abstract class WooComScraper (
         }
         return ScraperResult(retailer, products)
     }
-
 }
