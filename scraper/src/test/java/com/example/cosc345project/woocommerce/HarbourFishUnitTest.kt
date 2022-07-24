@@ -52,5 +52,5 @@ class HarbourFishUnitTest : BaseTests() {
     @Test
     @DisplayName("Harbour Fish products have required fields")
     fun `Harbour Fish products have required fields`() =
-        allProductsHaveRequiredFields(response!!.productInformation, false)
+        allProductsHaveRequiredFields(response!!.productInformation)
 }

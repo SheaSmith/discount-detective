@@ -52,5 +52,5 @@ class MadButcherUnitTest : BaseTests() {
     @Test
     @DisplayName("Mad Butcher products have required fields")
     fun `Mad Butcher products have required fields`() =
-        allProductsHaveRequiredFields(response!!.productInformation, false)
+        allProductsHaveRequiredFields(response!!.productInformation)
 }
