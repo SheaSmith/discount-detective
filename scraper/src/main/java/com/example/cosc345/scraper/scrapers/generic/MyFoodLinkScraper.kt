@@ -70,7 +70,7 @@ abstract class MyFoodLinkScraper(
                                 brandName = gtmData.brand,
                                 saleType = if (gtmData.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
                                 weight = if (gtmData.saleType == "kg") 1000 else null,
-                                barcodes = listOf(gtmData.id),
+                                barcodes = setOf(gtmData.id),
                                 image = line.image
                             )
 

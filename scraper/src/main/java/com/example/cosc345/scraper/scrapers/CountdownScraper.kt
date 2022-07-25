@@ -69,7 +69,7 @@ class CountdownScraper : Scraper() {
                                             variant = countdownProduct.variety?.titleCase()?.trim(),
                                             saleType = if (countdownProduct.unit == "Kg") SaleType.WEIGHT else SaleType.EACH,
                                             quantity = if (countdownProduct.unit != "Kg") countdownProduct.size?.size else null,
-                                            barcodes = if (countdownProduct.barcode != null) listOf(
+                                            barcodes = if (countdownProduct.barcode != null) setOf(
                                                 countdownProduct.barcode
                                             ) else null,
                                             image = countdownProduct.images?.imageUrl
@@ -121,12 +121,16 @@ class CountdownScraper : Scraper() {
                                                         ?.toInt()
                                         }
 
-                                        products.add(product)
+                                        val checkProduct =
+                                            products.firstOrNull { it.name == product!!.name && it.brandName == product!!.brandName && it.variant == product!!.variant && it.saleType == product!!.saleType && it.quantity == product!!.quantity }
+
+                                        if (checkProduct == null)
+                                            products.add(product)
+                                        else
+                                            product = checkProduct
                                     }
 
                                     if (product.pricing?.none { it.store == store.id } != false) {
-
-                                        product = products.first { it.id == countdownProduct.sku }
 
                                         if (product.pricing == null)
                                             product.pricing = mutableListOf()

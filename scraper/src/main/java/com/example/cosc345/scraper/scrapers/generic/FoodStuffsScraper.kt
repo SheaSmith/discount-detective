@@ -83,13 +83,18 @@ abstract class FoodStuffsScraper(
                         saleType = if (foodStuffsProduct.saleType == "WEIGHT") SaleType.WEIGHT else SaleType.EACH,
                         weight = if (foodStuffsProduct.saleType == "WEIGHT") 1000 else null,
                         quantity = if (foodStuffsProduct.saleType != "WEIGHT") foodStuffsProduct.netContentDisplay else null,
-                        barcodes = foodStuffsProduct.barcodes.split(","),
                         image = "https://a.fsimg.co.nz/product/retail/fan/image/500x500/${
                             foodStuffsProduct.productId.split(
                                 "-"
                             )[0]
                         }.png"
                     )
+
+                    if (foodStuffsProduct.barcodes.isNotBlank()) {
+                        val barcodes =
+                            foodStuffsProduct.barcodes.split(",").filter { it.length > 7 }.toSet()
+                        product.barcodes = barcodes
+                    }
 
                     if (product.weight == null) {
                         var weight = foodStuffsProduct.netContent?.toDouble()

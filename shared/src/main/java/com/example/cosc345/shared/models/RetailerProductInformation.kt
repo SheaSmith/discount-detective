@@ -55,7 +55,7 @@ data class RetailerProductInformation(
     /**
      * A list of barcode numbers associated with this product.
      */
-    var barcodes: List<String>? = null,
+    var barcodes: Set<String>? = null,
 
     /**
      * An URL of the image for this product, hosted on the retailer's server.
