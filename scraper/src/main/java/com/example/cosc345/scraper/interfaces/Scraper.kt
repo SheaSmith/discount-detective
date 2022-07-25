@@ -1,6 +1,6 @@
 package com.example.cosc345.scraper.interfaces
 
-import com.example.cosc345.scraper.helpers.MoshiHelper
+import com.example.cosc345.scraper.helpers.getMoshi
 import com.example.cosc345.scraper.interceptors.RetrofitRetryInterceptor
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.shared.models.Units
@@ -23,7 +23,7 @@ abstract class Scraper {
     abstract suspend fun runScraper(): ScraperResult
 
     protected fun <T> generateJsonRequest(cls: Class<T>, baseUrl: String): T {
-        val moshi = MoshiHelper.getMoshi()
+        val moshi = getMoshi()
 
         return getRetrofit(cls, baseUrl, MoshiConverterFactory.create(moshi))
     }
