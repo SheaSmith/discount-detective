@@ -15,7 +15,7 @@ class CountdownScraper : Scraper() {
 
         val stores: MutableList<Store> = mutableListOf()
         val products: MutableList<RetailerProductInformation> = mutableListOf()
-        countdownService.getStores("https://api.cdx.nz/site-location/api/v1/sites/").siteDetails
+        countdownService.getStores().siteDetails
             .forEach { countdownStore ->
                 if (countdownStore.site.suburb == "Dunedin") {
                     val addressList = mutableListOf(

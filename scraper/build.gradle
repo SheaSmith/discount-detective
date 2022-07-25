@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
     id 'kotlin-kapt'
     id("com.google.devtools.ksp").version("1.7.10-1.0.6")
+    id 'org.jetbrains.dokka'
 }
 
 java {
@@ -38,4 +39,14 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+dokkaHtmlPartial {
+    moduleName.set("Scrapers")
+
+    dokkaSourceSets {
+        configureEach {
+            includes.from("Module.md")
+        }
+    }
 }
