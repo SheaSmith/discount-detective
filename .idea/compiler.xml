@@ -4,6 +4,7 @@
     <bytecodeTargetLevel target="1.8">
       <module name="COSC345_Project.app" target="11" />
       <module name="Discount_Detective.app" target="11" />
+      <module name="Discount_Detective.scraperapp" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

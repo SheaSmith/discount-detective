@@ -166,6 +166,6 @@ class FourSquareScraper : Scraper() {
 
         val retailer = Retailer("Four Square", true, stores)
 
-        return ScraperResult(retailer, products)
+        return ScraperResult(retailer, products, retailerId)
     }
 }

@@ -171,6 +171,6 @@ class CountdownScraper : Scraper() {
 
         val retailer = Retailer("Countdown", true, stores)
 
-        return ScraperResult(retailer, products)
+        return ScraperResult(retailer, products, retailerId)
     }
 }

@@ -65,7 +65,7 @@ class RobertsonsMeatsScraper : Scraper() {
 
         val retailer = Retailer("Robertsons Meats", true, stores)
 
-        return ScraperResult(retailer, products)
+        return ScraperResult(retailer, products, retailerId)
     }
 
 }

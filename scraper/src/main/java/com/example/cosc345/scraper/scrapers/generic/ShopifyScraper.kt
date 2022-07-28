@@ -115,7 +115,7 @@ abstract class ShopifyScraper(
             page++
         }
 
-        return ScraperResult(retailer, products)
+        return ScraperResult(retailer, products, id)
     }
 
     private fun extractWeight(regex: Regex, shopifyProduct: ShopifyProduct): Double {

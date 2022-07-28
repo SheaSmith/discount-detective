@@ -133,6 +133,6 @@ class WarehouseScraper : Scraper() {
 
         val retailer = Retailer("The Warehouse", true, stores)
 
-        return ScraperResult(retailer, products)
+        return ScraperResult(retailer, products, retailerId)
     }
 }

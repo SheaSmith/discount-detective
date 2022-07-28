@@ -80,9 +80,9 @@ abstract class FoodStuffsScraper(
                         id = foodStuffsProduct.productId,
                         name = foodStuffsProduct.name,
                         brandName = foodStuffsProduct.brand,
-                        saleType = if (foodStuffsProduct.saleType == "WEIGHT") SaleType.WEIGHT else SaleType.EACH,
-                        weight = if (foodStuffsProduct.saleType == "WEIGHT") 1000 else null,
-                        quantity = if (foodStuffsProduct.saleType != "WEIGHT") foodStuffsProduct.netContentDisplay else null,
+                        saleType = if (foodStuffsProduct.saleType != "UNITS") SaleType.WEIGHT else SaleType.EACH,
+                        weight = if (foodStuffsProduct.saleType != "UNITS") 1000 else null,
+                        quantity = if (foodStuffsProduct.saleType == "UNITS") foodStuffsProduct.netContentDisplay else null,
                         image = "https://a.fsimg.co.nz/product/retail/fan/image/500x500/${
                             foodStuffsProduct.productId.split(
                                 "-"
@@ -150,7 +150,7 @@ abstract class FoodStuffsScraper(
 
         retailer.stores = stores
 
-        return ScraperResult(retailer, products)
+        return ScraperResult(retailer, products, id)
     }
 
     private fun parsePromotion(

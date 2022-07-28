@@ -121,6 +121,6 @@ abstract class WooCommerceScraper(
                 lastPage++
             }
         }
-        return ScraperResult(retailer, products)
+        return ScraperResult(retailer, products, id)
     }
 }

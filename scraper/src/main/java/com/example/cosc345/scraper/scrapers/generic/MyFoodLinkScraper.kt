@@ -95,13 +95,25 @@ abstract class MyFoodLinkScraper(
                                 null
                             }
 
-                            product.name = gtmData.name
-                                .replace(Units.GRAMS.regex, "")
-                                .replace(Units.KILOGRAMS.regex, "")
-                                .replace(" Kg", "")
+                            var name = gtmData.name
+                            // Strip out the weight from the title if it still exists
+                            Units.all.forEach {
+                                name = name
+                                    .replace(it.regex, "")
+                            }
+
+                            product.name = name
+                                .replace(" Kg", "", ignoreCase = true)
                                 .lowercase()
                                 .titleCase()
                                 .capitaliseNZ()
+                                .replace(Regex("\\s+"), " ")
+                                .trim()
+
+                            if (product.saleType == SaleType.WEIGHT) {
+                                product.name =
+                                    product.name!!.replace(" Loose", "", ignoreCase = true)
+                            }
 
                             products.add(product)
                         }
@@ -156,6 +168,6 @@ abstract class MyFoodLinkScraper(
 
         retailer.stores = stores
 
-        return ScraperResult(retailer, products)
+        return ScraperResult(retailer, products, id)
     }
 }
