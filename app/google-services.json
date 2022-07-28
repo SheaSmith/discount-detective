@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "742223621986",
-    "firebase_url": "https://safe-hunt.firebaseio.com",
-    "project_id": "safe-hunt",
-    "storage_bucket": "safe-hunt.appspot.com"
+    "project_number": "452541404422",
+    "project_id": "discount-detective",
+    "storage_bucket": "discount-detective.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:742223621986:android:e47282388440c6df19c63b",
+        "mobilesdk_app_id": "1:452541404422:android:ecb0e16408d52eaba3ba87",
         "android_client_info": {
-          "package_name": "com.example.cosc345project"
+          "package_name": "com.example.cosc345"
         }
       },
       "oauth_client": [
         {
-          "client_id": "742223621986-724pqu3r770f9dn814u7b7k4603sb3jm.apps.googleusercontent.com",
+          "client_id": "452541404422-j6ijnejre442ic5cq9nqi2so605cgkhr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD_d5-3o1sszWLCnalzQVFOumLWkD-JFEc"
+          "current_key": "AIzaSyDXeJ-Fo5laDXa3KgwpDEXixnP_to6TE1I"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "742223621986-724pqu3r770f9dn814u7b7k4603sb3jm.apps.googleusercontent.com",
+              "client_id": "452541404422-j6ijnejre442ic5cq9nqi2so605cgkhr.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
