@@ -3,21 +3,41 @@ package com.example.cosc345.scraper.models.foodstuffs.categories
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+/**
+ * A category for categorising different products, for example, Fruit and Vegetables.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this object. This should only be used by Moshi.
+ */
 @JsonClass(generateAdapter = true)
 data class FoodStuffsCategory(
+    /**
+     * The ID used for the products query.
+     */
     @Json(name = "DisplayName")
     val categoryId: String,
 
+    /**
+     * The ID used to cross-reference any child categories.
+     */
     @Json(name = "sitecoreId")
     val id: String,
 
+    /**
+     * A list of child category IDs.
+     */
     @Json(name = "childrenCategories")
     val childrenCategories: Array<String>,
 
+    /**
+     * The category level, essentially what depth this category exists at. 1 for top-level categories, 2 for sub-categories, etc.
+     */
     @Json(name = "level")
     val level: Int
 ) {
-    // Kotlin boilerplate
+    /**
+     * Whether this object equals another, taking into account the array. This is boilerplate suggested by Kotlin.
+     */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -32,6 +52,9 @@ data class FoodStuffsCategory(
         return true
     }
 
+    /**
+     * Generates a hashcode for this class, taking into account the array. This is boilerplate suggested by Kotlin.
+     */
     override fun hashCode(): Int {
         var result = categoryId.hashCode()
         result = 31 * result + id.hashCode()

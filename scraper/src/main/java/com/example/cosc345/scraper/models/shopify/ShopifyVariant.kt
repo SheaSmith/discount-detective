@@ -5,6 +5,9 @@ import com.squareup.moshi.JsonClass
 
 /**
  * The different product variants, which include the prices.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)
 data class ShopifyVariant(

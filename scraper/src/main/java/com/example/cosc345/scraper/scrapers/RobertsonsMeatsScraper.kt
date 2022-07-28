@@ -5,6 +5,17 @@ import com.example.cosc345.scraper.interfaces.Scraper
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.shared.models.*
 
+/**
+ * The bespoke scraper for getting data from Robertsons Meats.
+ *
+ * # Process
+ * The home page of Robertsons Meats is the first to be called, as the list of categories in the navigation can be scraped.
+ *
+ * Then each category is iterated, and the products for each is requested. This data is then scraped, processed and cleaned up.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper.
+ */
 class RobertsonsMeatsScraper : Scraper() {
     override suspend fun runScraper(): ScraperResult {
         val baseUrl = "https://www.robertsonsmeats.co.nz"

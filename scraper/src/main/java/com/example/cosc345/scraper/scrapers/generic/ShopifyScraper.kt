@@ -7,6 +7,19 @@ import com.example.cosc345.scraper.models.shopify.ShopifyProduct
 import com.example.cosc345.shared.constants.LocaleConstants
 import com.example.cosc345.shared.models.*
 
+/**
+ * A generic scraper for getting products from Shopify based stores (for example, Leckies Butchery).
+ *
+ * # Process
+ * The process for the Shopify scrapers is very simple. Essentially, we just make a request to the get all products endpoint that Shopify provides, use paging if the items returned equal 250 (which is the maximum Shopify returns on that endpoint), and then clean up each product to try and get it to match the supermarket standards.
+ *
+ * @param id The ID of the retailer that should be used.
+ * @param retailer The retailer to return.
+ * @param baseUrl The base URL that all requests are done from.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
+ */
 abstract class ShopifyScraper(
     private val id: String,
     private val retailer: Retailer,
@@ -118,6 +131,9 @@ abstract class ShopifyScraper(
         return ScraperResult(retailer, products, id)
     }
 
+    /**
+     * Extract the weight from a particular product.
+     */
     private fun extractWeight(regex: Regex, shopifyProduct: ShopifyProduct): Double {
         return (
                 // Check if there is a weight in the title

@@ -13,6 +13,8 @@ import java.time.Duration
 
 /**
  * The interface which defines the basic scraper framework.
+ *
+ * @author Shea Smith
  */
 abstract class Scraper {
     /**
@@ -22,16 +24,41 @@ abstract class Scraper {
      */
     abstract suspend fun runScraper(): ScraperResult
 
+    /**
+     * Generate an instance of an API service that will return a JSON response
+     *
+     * @param cls The class of the API service to generate.
+     * @param baseUrl The base URL of the request, which all API endpoint definitions are relative to.
+     * @param T The type of the API service to generate.
+     * @return An instance of the API service.
+     */
     protected fun <T> generateJsonRequest(cls: Class<T>, baseUrl: String): T {
         val moshi = getMoshi()
 
         return getRetrofit(cls, baseUrl, MoshiConverterFactory.create(moshi))
     }
 
+    /**
+     * Generate an instance of an API service that will return a HTML response
+     *
+     * @param cls The class of the API service to generate.
+     * @param baseUrl The base URL of the request, which all API endpoint definitions are relative to.
+     * @param T The type of the API service to generate.
+     * @return An instance of the API service.
+     */
     protected fun <T> generateHtmlRequest(cls: Class<T>, baseUrl: String): T {
         return getRetrofit(cls, baseUrl, JspoonConverterFactory.create())
     }
 
+    /**
+     * Get an instance of a Retrofit service with the addons we need.
+     *
+     * @param cls The class of the API service to generate.
+     * @param baseUrl The base URL of the request, which all API endpoint definitions are relative to.
+     * @param T The type of the API service to generate.
+     * @param converterFactory The converter factory to use (typically a JSON or HTML response parser).
+     * @return An instance of the API service.
+     */
     private fun <T> getRetrofit(
         cls: Class<T>,
         baseUrl: String,
@@ -53,6 +80,13 @@ abstract class Scraper {
         return retrofit.create(cls)
     }
 
+    /**
+     * A utility method to extract and remove a quantity from a specific string.
+     *
+     * @param name The string to search and remove the quantity from.
+     * @param unit The unit to extract and remove.
+     * @return A pair, containing the new name and the extracted quantity (if any).
+     */
     protected fun extractAndRemoveQuantity(name: String, unit: Units): Pair<String, Double?> {
         val capture = unit.regex.find(name)?.groups?.get(1)?.value?.toDouble()
         val newName = name.replace(unit.regex, "").replace(Regex("\\s+"), " ").trim()

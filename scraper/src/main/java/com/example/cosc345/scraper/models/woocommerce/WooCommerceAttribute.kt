@@ -3,11 +3,23 @@ package com.example.cosc345.scraper.models.woocommerce
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+/**
+ * An attribute for a particular product.
+ *
+ * @author William Hadden
+ * @constructor Create a new instance of this object. This should only be used by Moshi.
+ */
 @JsonClass(generateAdapter = true)
 data class WooCommerceAttribute(
+    /**
+     * The name of the attribute, for example weight.
+     */
     @Json(name = "name")
     val name: String,
 
+    /**
+     * A list of the options for this attribute, for example specific weights
+     */
     @Json(name = "terms")
     val terms: Array<WooCommerceTerm>
 ) {

@@ -1,19 +1,19 @@
-package com.example.cosc345.scraper.models.wixstores.products
+package com.example.cosc345.scraper.models.countdown.products
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * An object containing information about the product image.
+ * An image for a particular product.
  *
  * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)
-data class WixStoresImage(
+data class CountdownProductImage(
     /**
      * The URL of the image.
      */
-    @Json(name = "fullUrl")
+    @Json(name = "big")
     val imageUrl: String
 )

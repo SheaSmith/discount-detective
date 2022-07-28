@@ -5,6 +5,19 @@ import com.example.cosc345.scraper.interfaces.Scraper
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.shared.models.*
 
+/**
+ * The bespoke scraper for getting data from Four Square, specifically the specials and products in the mailer.
+ *
+ * # Process
+ * Firstly, the scraper gets a list of all stores from the Four Square API. Each store is then grouped by its region code, which is either SI for South Island, LNI for Lower North Island, or UNI for Upper North Island.
+ *
+ * For each region, the mailer is then requested. Firstly, a list of issues is requested, with the ID being taken from the latest mailer issue. Then the clickable elements of mailer page are requested, and then parsed into products.
+ *
+ * Then the local specials page for each region is scraped. This data is cleaned up in a similar way to the mailer data.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper.
+ */
 class FourSquareScraper : Scraper() {
     override suspend fun runScraper(): ScraperResult {
         val baseUrl = "https://www.foursquare.co.nz"

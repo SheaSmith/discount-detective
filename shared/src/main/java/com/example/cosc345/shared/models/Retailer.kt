@@ -2,6 +2,9 @@ package com.example.cosc345.shared.models
 
 /**
  * A retailer, which is the overarching brand for bigger stores, but the individual brand for smaller stores.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this object. Some of the nullable parameters are not nullable in practice, but are required to be for Firebase.
  */
 data class Retailer(
     /**

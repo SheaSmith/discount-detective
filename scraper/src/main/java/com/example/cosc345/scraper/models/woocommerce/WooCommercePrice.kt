@@ -4,7 +4,10 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * An object containg Metadata about the price
+ * An object containing metadata about the price.
+ *
+ * @author William Hadden
+ * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)
 data class WooCommercePrice(

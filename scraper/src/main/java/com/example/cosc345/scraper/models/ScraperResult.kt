@@ -5,6 +5,9 @@ import com.example.cosc345.shared.models.RetailerProductInformation
 
 /**
  * The results from the scraper, containing the retailer, store and product information.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this object. This should only be needed for Scrapers.
  */
 data class ScraperResult(
     /**

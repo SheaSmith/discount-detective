@@ -2,6 +2,9 @@ package com.example.cosc345.shared.models
 
 /**
  * Specifies the pricing for a particular product in a particular store, including discounts and multi-buy pricing.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this object. Some of the nullable parameters are not nullable in practice, but are required to be for Firebase.
  */
 data class StorePricingInformation(
     /**

@@ -4,10 +4,16 @@ import com.example.cosc345.scraper.scrapers.generic.WooCommerceScraper
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.Store
 
+/**
+ * The Taste Nature specific implementation of the [WooCommerceScraper], which essentially just passes information through to it.
+ *
+ * @author William Hadden
+ * @constructor Create a new instance of this scraper.
+ */
 class TasteNatureScraper : WooCommerceScraper(
     "taste nature",
     Retailer(
-        "taste-nature", true, listOf(
+        "Taste Nature", true, listOf(
             Store(
                 "taste-nature",
                 "Taste Nature",

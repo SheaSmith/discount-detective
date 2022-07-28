@@ -71,7 +71,6 @@ class Matcher {
         val time = measureTime {
             val infoWithBarcodes = retailerProductInfo.filter { it.barcodes != null }
             retailerProductInfo.removeAll(infoWithBarcodes)
-
             infoWithBarcodes.forEach { info ->
                 val productMatches = products.filter { product ->
                     product.information!!.any {
@@ -107,8 +106,7 @@ class Matcher {
             productWithMatcherGroup.forEach { map ->
                 val matches = productWithMatcherGroup.filter { match ->
                     match.key.information!!.isNotEmpty() &&
-                            match != map && match.value.intersect(map.value)
-                        .isNotEmpty() && match.key.information!!.none { grouping -> map.key.information!!.any { it.retailer == grouping.retailer } }
+                            match != map && match.key.information!!.none { grouping -> map.key.information!!.any { it.retailer == grouping.retailer } } && match.value.any { out -> map.value.any { it == out } }
                 }
 
                 if (matches.isNotEmpty()) {
@@ -119,8 +117,9 @@ class Matcher {
                             if (index != 0 && product.information!!.none { retailerInfo -> firstMatch.information!!.any { retailerInfo.retailer == it.retailer } }) {
                                 firstMatch.information!!.addAll(product.information!!)
                                 products.remove(product)
-                                firstMatchValues!!.addAll(matches[product]!!)
-                                matches[product]?.clear()
+                                val value = matches.filterKeys { it == product }.values.first()
+                                firstMatchValues!!.addAll(value)
+                                value.clear()
                                 product.information!!.clear()
                             }
                         }
@@ -128,7 +127,7 @@ class Matcher {
 
                     val match = matches.keys.first()
                     match.information!!.addAll(map.key.information!!)
-                    matches[match]!!.addAll(map.value)
+                    matches.filterKeys { it == match }.values.first().addAll(map.value)
                     products.remove(map.key)
                     map.key.information!!.clear()
                     map.value.clear()
