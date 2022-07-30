@@ -58,7 +58,7 @@ class WarehouseScraper : Scraper() {
                                     id = warehouseProduct.id,
                                     brandName = warehouseProduct.brand,
                                     saleType = SaleType.EACH,
-                                    barcodes = setOf(warehouseProduct.barcode),
+                                    barcodes = listOf(warehouseProduct.barcode),
                                     image = warehouseProduct.imageUrl
                                 )
 

@@ -70,13 +70,13 @@ class VeggieBoysScraper : Scraper() {
                     }
                 }
 
-                name = name.replace("Milk - ", "", ignoreCase = true)
+                name = name
                     .replace("loose", "", ignoreCase = true)
                     .replace("Biscuits - ", "", ignoreCase = true)
                     .replace("Cream - ", "", ignoreCase = true)
                     .replace(" kg", "")
                     .replace("Heinz -", "Heinz ")
-                    .replace("Dairy Dale -", "Dairy Dale ")
+                    .replace("Dairy Dale -", "Dairy Dale Milk ")
                     .replace("Milk Nutri ", "Nutri ")
                     .replace("(", "")
                     .replace(")", "")

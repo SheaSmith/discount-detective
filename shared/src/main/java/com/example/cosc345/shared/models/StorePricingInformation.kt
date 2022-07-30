@@ -8,7 +8,7 @@ package com.example.cosc345.shared.models
  */
 data class StorePricingInformation(
     /**
-     * The retailer-specified unique ID of a store. For small retailers (e.g. those without multiple stores), this will be the same as the retailer ID.
+     * The retailer-specified unique ID of a store. For small retailers (for example, those without multiple stores), this will be the same as the retailer ID.
      *
      * Not nullable in practice, but Firebase requires an object with no arguments for the database.
      */

@@ -38,7 +38,7 @@ data class MatcherGrouping(
     /**
      * The sale type of the product (whether it is sold by weight or not).
      */
-    val saleType: SaleType,
+    val saleType: String,
 
     /**
      * The quantity of the product.
@@ -77,7 +77,8 @@ data class MatcherGrouping(
                 }
             }
 
-            brand = brandName.split(" ").filter { it.isNotBlank() }
+            brand = brandName.tidy().lowercase().replace(Regex("\\s+"), " ").split(" ")
+                .filter { it.isNotBlank() }
 
             if (brand?.size == 0)
                 brand = null
@@ -92,7 +93,8 @@ data class MatcherGrouping(
                 }
             }
 
-            name = newName.split(" ").filter { it.isNotBlank() }
+            name = newName.tidy().lowercase().replace(Regex("\\s+"), " ").split(" ")
+                .filter { it.isNotBlank() }
 
             if (name.isEmpty()) {
                 name = brand!!
@@ -105,12 +107,12 @@ data class MatcherGrouping(
         /**
          * Regex to extract the numbers from a quality field in order to normalise it.
          */
-        val quantityRegex = Regex("([\\d.]+)")
+        private val quantityRegex = Regex("([\\d.]+)")
 
         /**
          * A per-retailer list of brands that should be ignored, as these are essentially generic products.
          */
-        val ignoredWords = mapOf(
+        private val ignoredWords = mapOf(
             Pair(
                 listOf("countdown"),
                 listOf(
@@ -129,7 +131,7 @@ data class MatcherGrouping(
                 )
             ),
             Pair(
-                listOf("new-world", "paknsave"),
+                listOf("new-world", "paknsave", "foursquare"),
                 listOf("Pams", "Pams Superfoods", "Pams Finest", "Pams Fresh", "Value")
             ),
             Pair(
@@ -142,6 +144,15 @@ data class MatcherGrouping(
                     "Macro",
                     "Select",
                     "Signature Range"
+                )
+            ),
+            Pair(
+                listOf("Couplands"),
+                listOf(
+                    "Our Finest",
+                    "Our Daily Fresh",
+                    "Our Southern Plains",
+                    "Our Country Harvest"
                 )
             )
         )
@@ -235,12 +246,10 @@ data class MatcherGrouping(
      * Generates a hashcode for this class, taking into account the array. This is boilerplate suggested by Kotlin.
      */
     override fun hashCode(): Int {
-        var result = brand?.hashCode() ?: 0
-        result = 31 * result + name.hashCode()
-        result = 31 * result + (variant?.hashCode() ?: 0)
-        result = 31 * result + saleType.hashCode()
-        result = 31 * result + (quantity?.hashCode() ?: 0)
-        return result
+        var hashcode = name.size
+        hashcode += brand?.size ?: 0
+        hashcode += saleType.hashCode()
+        return hashcode
     }
 }
 

@@ -118,7 +118,7 @@ abstract class FoodStuffsScraper(
 
                     if (foodStuffsProduct.barcodes.isNotBlank()) {
                         val barcodes =
-                            foodStuffsProduct.barcodes.split(",").filter { it.length > 7 }.toSet()
+                            foodStuffsProduct.barcodes.split(",").filter { it.length > 7 }
                         product.barcodes = barcodes
                     }
 

@@ -18,7 +18,7 @@ data class CountdownSite(
     val name: String,
 
     /**
-     * The first line of the address, e.g. 144 Example St
+     * The first line of the address, for example, 144 Example St
      */
     @Json(name = "addressLine1")
     val addressLine1: String,

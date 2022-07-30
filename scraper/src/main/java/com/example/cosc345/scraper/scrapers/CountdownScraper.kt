@@ -82,7 +82,7 @@ class CountdownScraper : Scraper() {
                                             variant = countdownProduct.variety?.titleCase()?.trim(),
                                             saleType = if (countdownProduct.unit == "Kg") SaleType.WEIGHT else SaleType.EACH,
                                             quantity = if (countdownProduct.unit != "Kg") countdownProduct.size?.size else null,
-                                            barcodes = if (countdownProduct.barcode != null) setOf(
+                                            barcodes = if (countdownProduct.barcode != null) listOf(
                                                 countdownProduct.barcode
                                             ) else null,
                                             image = countdownProduct.image?.imageUrl

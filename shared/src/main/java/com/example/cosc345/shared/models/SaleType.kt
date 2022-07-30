@@ -5,14 +5,14 @@ package com.example.cosc345.shared.models
  *
  * @author Shea Smith
  */
-enum class SaleType {
+object SaleType {
     /**
      * The product is sold individually, so the price is determined by how many units are being bought.
      */
-    EACH,
+    const val EACH = "each"
 
     /**
      * The product is sold by weight, so the price is determined by the weight of the product.
      */
-    WEIGHT
+    const val WEIGHT = "weight"
 }

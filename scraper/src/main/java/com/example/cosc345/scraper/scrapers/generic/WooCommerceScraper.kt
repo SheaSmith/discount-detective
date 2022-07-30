@@ -26,7 +26,7 @@ abstract class WooCommerceScraper(
     private val retailer: Retailer,
     private val baseUrl: String,
 ) : Scraper() {
-    var madButcherMap: Map<String, SaleType>? = null
+    protected var madButcherMap: Map<String, String>? = null
 
     override suspend fun runScraper(): ScraperResult {
         val wooComService = generateJsonRequest(WooComAPI::class.java, baseUrl)

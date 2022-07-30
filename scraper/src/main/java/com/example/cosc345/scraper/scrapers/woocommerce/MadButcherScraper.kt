@@ -40,7 +40,7 @@ class MadButcherScraper : WooCommerceScraper(
         var page = 1
         var maxPage = 1
 
-        val saleTypeMap = mutableMapOf<String, SaleType>()
+        val saleTypeMap = mutableMapOf<String, String>()
         while (page <= maxPage) {
             val response = madButcherService.getProductsListing(page)
 

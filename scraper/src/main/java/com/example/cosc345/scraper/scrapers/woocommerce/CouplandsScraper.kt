@@ -1,8 +1,11 @@
 package com.example.cosc345.scraper.scrapers.woocommerce
 
+import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.scraper.scrapers.generic.WooCommerceScraper
 import com.example.cosc345.shared.models.Retailer
+import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.Store
+import com.example.cosc345.shared.models.Units
 
 /**
  * The Couplands specific implementation of the [WooCommerceScraper], which essentially just passes information through to it.
@@ -31,5 +34,29 @@ class CouplandsScraper : WooCommerceScraper(
                 true
             )
         )
-    ),"https://www.couplands.co.nz"
-)
+    ), "https://www.couplands.co.nz"
+) {
+    override suspend fun runScraper(): ScraperResult {
+        val result = super.runScraper()
+
+        val productsToRemove = mutableListOf<RetailerProductInformation>()
+        result.productInformation.forEach {
+            if (it.name!!.contains("Our Daily Fresh", ignoreCase = true) ||
+                it.name!!.contains("Our Country Harvest", ignoreCase = true) ||
+                it.name!!.contains("Our Southern Plains", ignoreCase = true)
+            ) {
+                if (!it.name!!.contains("Bread", ignoreCase = true)) {
+                    it.name = "${it.name} Bread"
+                }
+
+                if (it.quantity != null && Units.PACK.regex.matches(it.quantity!!)) {
+                    productsToRemove.add(it)
+                }
+            }
+        }
+
+        result.productInformation.removeAll(productsToRemove)
+
+        return result
+    }
+}

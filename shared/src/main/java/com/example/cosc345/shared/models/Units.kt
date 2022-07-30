@@ -50,7 +50,7 @@ enum class Units(
     /**
      * A "pack" of something, for example a 6 pack of cans.
      */
-    PACK(" pack", "(\\d+\\.?\\d*)\\s*Pack".toRegex(RegexOption.IGNORE_CASE)),
+    PACK(" pack", "(\\d+\\.?\\d*)\\s*(?:Pack|pk)".toRegex(RegexOption.IGNORE_CASE)),
 
     /**
      * The distance unit metres, for example 10m.

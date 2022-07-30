@@ -18,7 +18,7 @@ data class ScraperResult(
     /**
      * A list of products that are carried by this retailer.
      */
-    val productInformation: List<RetailerProductInformation>,
+    val productInformation: MutableList<RetailerProductInformation>,
 
     /**
      * The unique ID of this retailer.

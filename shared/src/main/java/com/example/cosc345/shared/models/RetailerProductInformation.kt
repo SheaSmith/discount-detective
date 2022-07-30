@@ -43,7 +43,7 @@ data class RetailerProductInformation(
      *
      * Required in practice, however Firebase requires nullable values.
      */
-    var saleType: SaleType? = null,
+    var saleType: String? = null,
 
     /**
      * The quantity of the product, for example 500. This may contain a unit, so may not be appropriate to run calculations on.
@@ -58,7 +58,7 @@ data class RetailerProductInformation(
     /**
      * A list of barcode numbers associated with this product.
      */
-    var barcodes: Set<String>? = null,
+    var barcodes: List<String>? = null,
 
     /**
      * An URL of the image for this product, hosted on the retailer's server.
@@ -71,4 +71,6 @@ data class RetailerProductInformation(
      * The pricing for the different stores for this retailer.
      */
     var pricing: MutableList<StorePricingInformation>? = null
+
+
 )
