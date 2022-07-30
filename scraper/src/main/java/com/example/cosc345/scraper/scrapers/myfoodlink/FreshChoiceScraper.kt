@@ -16,5 +16,5 @@ class FreshChoiceScraper : MyFoodLinkScraper(
         true
     ),
     "https://www.freshchoice.co.nz",
-    arrayOf("FreshChoice Roslyn")
+    arrayOf("FreshChoice Roslyn", "FreshChoice Green Island")
 )
