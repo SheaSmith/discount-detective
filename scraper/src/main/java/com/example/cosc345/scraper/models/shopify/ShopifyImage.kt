@@ -5,6 +5,9 @@ import com.squareup.moshi.JsonClass
 
 /**
  * An object with metadata about the image, along with the URL.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)
 data class ShopifyImage(

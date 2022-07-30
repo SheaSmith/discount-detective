@@ -7,6 +7,19 @@ import com.example.cosc345.scraper.models.countdown.CountdownSetStoreRequest
 import com.example.cosc345.shared.extensions.titleCase
 import com.example.cosc345.shared.models.*
 
+/**
+ * The bespoke scraper just for scraping information from Countdown.
+ *
+ * # Process
+ * Firstly, the scraper lists all of the different Countdown stores. It then sets the active store to this one, and then gets a list of the departments in this store.
+ *
+ * Each department is iterated through, and the products request for it. If the amount of products returned is greater than the limit, then paging is used. We split the requests into departments as the Countdown API has a hard limit of 10,000 products per request, even with paging.
+ *
+ * Finally, each product is processed and tidied up.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper.
+ */
 class CountdownScraper : Scraper() {
     override suspend fun runScraper(): ScraperResult {
         val countdownService =
@@ -69,10 +82,10 @@ class CountdownScraper : Scraper() {
                                             variant = countdownProduct.variety?.titleCase()?.trim(),
                                             saleType = if (countdownProduct.unit == "Kg") SaleType.WEIGHT else SaleType.EACH,
                                             quantity = if (countdownProduct.unit != "Kg") countdownProduct.size?.size else null,
-                                            barcodes = if (countdownProduct.barcode != null) setOf(
+                                            barcodes = if (countdownProduct.barcode != null) listOf(
                                                 countdownProduct.barcode
                                             ) else null,
-                                            image = countdownProduct.images?.imageUrl
+                                            image = countdownProduct.image?.imageUrl
                                         )
 
                                         var title = countdownProduct.name

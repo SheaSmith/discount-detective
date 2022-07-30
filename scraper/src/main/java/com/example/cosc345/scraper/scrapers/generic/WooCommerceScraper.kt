@@ -6,12 +6,27 @@ import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.shared.models.*
 
 
+/**
+ * A generic scraper for WooCommerce based stores (for example, the Mad Butcher or Harbour Fish).
+ *
+ * # Process
+ * This is a reasonably simple process. Essentially we just request the products for the particular store, if there is more than 1 page, we using pagination to get the rest of the products.
+ *
+ * The products then have their data extracted and cleaned up.
+ *
+ * @param id The ID of the retailer to use.
+ * @param retailer The retailer to return.
+ * @param baseUrl The base URL that all API requests are made relative to.
+ *
+ * @author William Hadden
+ * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
+ */
 abstract class WooCommerceScraper(
     private val id: String,
     private val retailer: Retailer,
     private val baseUrl: String,
 ) : Scraper() {
-    var madButcherMap: Map<String, SaleType>? = null
+    protected var madButcherMap: Map<String, String>? = null
 
     override suspend fun runScraper(): ScraperResult {
         val wooComService = generateJsonRequest(WooComAPI::class.java, baseUrl)

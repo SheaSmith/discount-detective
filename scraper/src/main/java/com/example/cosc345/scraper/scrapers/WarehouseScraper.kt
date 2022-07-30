@@ -5,6 +5,19 @@ import com.example.cosc345.scraper.interfaces.Scraper
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.shared.models.*
 
+/**
+ * The scraper for the bespoke The Warehouse shop.
+ *
+ * # Process
+ * A list of stores is requested from The Warehouse API. These are then iterated, and for each store the products for a set of hardcoded categories is requested.
+ *
+ * The store is included in the request to ensure inventory is returned for the specific store.
+ *
+ * Each product is then processed and cleaned up as normal.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper.
+ */
 class WarehouseScraper : Scraper() {
     override suspend fun runScraper(): ScraperResult {
         val warehouseService =
@@ -45,7 +58,7 @@ class WarehouseScraper : Scraper() {
                                     id = warehouseProduct.id,
                                     brandName = warehouseProduct.brand,
                                     saleType = SaleType.EACH,
-                                    barcodes = setOf(warehouseProduct.barcode),
+                                    barcodes = listOf(warehouseProduct.barcode),
                                     image = warehouseProduct.imageUrl
                                 )
 

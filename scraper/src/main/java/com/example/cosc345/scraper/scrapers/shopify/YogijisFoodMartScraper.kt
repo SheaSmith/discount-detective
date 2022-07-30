@@ -3,7 +3,12 @@ package com.example.cosc345.scraper.scrapers.shopify
 import com.example.cosc345.scraper.scrapers.generic.ShopifyScraper
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.Store
-
+/**
+ * The Yogiji's Food Mart specific implementation of the [ShopifyScraper] that just passes through some information to it.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper.
+ */
 class YogijisFoodMartScraper : ShopifyScraper(
     "yogijis",
     Retailer(

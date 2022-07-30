@@ -9,6 +9,19 @@ import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.SaleType
 import com.example.cosc345.shared.models.StorePricingInformation
 
+/**
+ * A generic scraper for all Wix Stores based retailers (for example Spelt Bakery).
+ *
+ * # Process
+ * Again, this is a reasonably simple process. We just need to get an access token for the Wix Stores section, in order to authenticate the requests, and then use this token to make requests to the Wix Stores API. No pagination seems to be necessary.
+ *
+ * @param id The ID of the retailer to use.
+ * @param retailer The retailer to return.
+ * @param baseUrl The base URL all API requests are made relative to.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
+ */
 abstract class WixStoresScraper(
     private val id: String,
     private val retailer: Retailer,

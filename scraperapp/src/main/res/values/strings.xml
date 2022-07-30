@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Scraper App</string>
+    <string name="notification_channel_id">scraper</string>
+    <string name="notification_title">Discount Detective Scraper</string>
+    <string name="cancel">Cancel</string>
+    <string name="notification_text">Scraping data</string>
 </resources>

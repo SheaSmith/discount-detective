@@ -1,14 +1,10 @@
 package com.example.cosc345.scraper
 
 import com.example.cosc345.scraper.models.MatcherGrouping
-import com.example.cosc345.scraper.scrapers.CountdownScraper
-import com.example.cosc345.scraper.scrapers.RobertsonsMeatsScraper
-import com.example.cosc345.scraper.scrapers.VeggieBoysScraper
-import com.example.cosc345.scraper.scrapers.WarehouseScraper
+import com.example.cosc345.scraper.scrapers.*
 import com.example.cosc345.scraper.scrapers.foodstuffs.NewWorldScraper
 import com.example.cosc345.scraper.scrapers.foodstuffs.PakNSaveScraper
 import com.example.cosc345.scraper.scrapers.myfoodlink.FreshChoiceScraper
-import com.example.cosc345.scraper.scrapers.myfoodlink.SuperValueScraper
 import com.example.cosc345.scraper.scrapers.shopify.LeckiesButcheryScraper
 import com.example.cosc345.scraper.scrapers.shopify.PrincesStreetButcherScraper
 import com.example.cosc345.scraper.scrapers.shopify.YogijisFoodMartScraper
@@ -24,13 +20,14 @@ import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
 class Matcher {
-    suspend fun run() {
+    suspend fun run(): Pair<Map<String, Retailer>, Map<String, Product>> {
         val scrapers = setOf(
             CountdownScraper(),
             NewWorldScraper(),
             PakNSaveScraper(),
             FreshChoiceScraper(),
-            SuperValueScraper(),
+            // SuperValue disabled for now, as there aren't any in the Dunedin area.
+            //SuperValueScraper(),
             LeckiesButcheryScraper(),
             PrincesStreetButcherScraper(),
             YogijisFoodMartScraper(),
@@ -41,6 +38,7 @@ class Matcher {
             MadButcherScraper(),
             OriginFoodScraper(),
             TasteNatureScraper(),
+            FourSquareScraper(),
             RobertsonsMeatsScraper(),
             VeggieBoysScraper(),
             WarehouseScraper()
@@ -71,19 +69,19 @@ class Matcher {
         val time = measureTime {
             val infoWithBarcodes = retailerProductInfo.filter { it.barcodes != null }
             retailerProductInfo.removeAll(infoWithBarcodes)
-
             infoWithBarcodes.forEach { info ->
+                val barcodes = info.barcodes!!.toSet()
                 val productMatches = products.filter { product ->
                     product.information!!.any {
-                        it.barcodes?.intersect(info.barcodes!!)?.isNotEmpty() == true
+                        it.barcodes?.intersect(barcodes)?.isNotEmpty() == true
                     } && product.information!!.none { it.retailer == info.retailer }
                 }
 
                 if (productMatches.isEmpty()) {
-                    products.add(Product(mutableListOf(info)))
+                    products.add(Product(arrayListOf(info)))
                 } else if (productMatches.size == 1) {
                     productMatches.first().information!!.add(info)
-                } else if (productMatches.size == 2) {
+                } else if (productMatches.size >= 2) {
                     val firstMatch = productMatches.first()
                     productMatches.forEachIndexed { index, product ->
                         if (index != 0 && product.information!!.none { retailerInfo -> firstMatch.information!!.any { retailerInfo.retailer == it.retailer } }) {
@@ -96,7 +94,7 @@ class Matcher {
                 }
             }
 
-            products.addAll(retailerProductInfo.map { Product(mutableListOf(it)) })
+            products.addAll(retailerProductInfo.map { Product(arrayListOf(it)) })
 
             printStatus(products, retailers)
 
@@ -105,10 +103,14 @@ class Matcher {
             }
 
             productWithMatcherGroup.forEach { map ->
+                val retailersForProduct = map.key.information!!.map { it.retailer }
                 val matches = productWithMatcherGroup.filter { match ->
                     match.key.information!!.isNotEmpty() &&
-                            match != map && match.value.intersect(map.value)
-                        .isNotEmpty() && match.key.information!!.none { grouping -> map.key.information!!.any { it.retailer == grouping.retailer } }
+                            match != map && match.key.information!!.none {
+                        retailersForProduct.contains(
+                            it.retailer
+                        )
+                    } && match.value.intersect(map.value).isNotEmpty()
                 }
 
                 if (matches.isNotEmpty()) {
@@ -119,8 +121,9 @@ class Matcher {
                             if (index != 0 && product.information!!.none { retailerInfo -> firstMatch.information!!.any { retailerInfo.retailer == it.retailer } }) {
                                 firstMatch.information!!.addAll(product.information!!)
                                 products.remove(product)
-                                firstMatchValues!!.addAll(matches[product]!!)
-                                matches[product]?.clear()
+                                val value = matches.filterKeys { it == product }.values.first()
+                                firstMatchValues!!.addAll(value)
+                                value.clear()
                                 product.information!!.clear()
                             }
                         }
@@ -128,7 +131,7 @@ class Matcher {
 
                     val match = matches.keys.first()
                     match.information!!.addAll(map.key.information!!)
-                    matches[match]!!.addAll(map.value)
+                    matches.filterKeys { it == match }.values.first().addAll(map.value)
                     products.remove(map.key)
                     map.key.information!!.clear()
                     map.value.clear()
@@ -138,6 +141,22 @@ class Matcher {
 
         printStatus(products, retailers)
         print("Matching took ${time.toString(DurationUnit.SECONDS, 1)}")
+
+        val mappedProducts = products.associateBy { product ->
+            val barcodes =
+                product.information!!.filter { it.barcodes != null }.flatMap { it.barcodes!! }
+
+            if (barcodes.isNotEmpty()) {
+                val barcodeUsage = barcodes.groupingBy { it }.eachCount()
+
+                barcodeUsage.maxBy { it.value }.key
+            } else {
+                val info = product.information!!.first()
+                "${info.id!!.replace(Regex("[/.#$\\[\\]]"), "")}-${info.retailer!!}"
+            }
+        }
+
+        return Pair(retailers, mappedProducts)
     }
 
     private fun printStatus(products: List<Product>, retailers: Map<String, Retailer>) {

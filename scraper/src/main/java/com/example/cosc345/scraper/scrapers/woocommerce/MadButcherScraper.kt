@@ -6,7 +6,18 @@ import com.example.cosc345.scraper.scrapers.generic.WooCommerceScraper
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.SaleType
 import com.example.cosc345.shared.models.Store
-
+/**
+ * The Mad Butcher specific implementation of the [WooCommerceScraper]. However, as the sale type for individual products at the Mad Butcher doesn't seem to be present in the API, it needs to be scraped from the HTML, so this acts as an extension to the WooCommerce scraper to facilitate this.
+ *
+ * # Process
+ * Essentially the product listing page is loaded, all of the items scraped, and then moved into a map containing the sale type and the ID of the product.
+ *
+ * The main WooCommerce scraper is then called, which utilises this data.
+ *
+ * @author William Hadden
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper.
+ */
 class MadButcherScraper : WooCommerceScraper(
     "mad-butcher",
     Retailer(
@@ -29,7 +40,7 @@ class MadButcherScraper : WooCommerceScraper(
         var page = 1
         var maxPage = 1
 
-        val saleTypeMap = mutableMapOf<String, SaleType>()
+        val saleTypeMap = mutableMapOf<String, String>()
         while (page <= maxPage) {
             val response = madButcherService.getProductsListing(page)
 

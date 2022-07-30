@@ -5,6 +5,9 @@ import com.example.cosc345.shared.models.RetailerProductInformation
 
 /**
  * The results from the scraper, containing the retailer, store and product information.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this object. This should only be needed for Scrapers.
  */
 data class ScraperResult(
     /**
@@ -15,7 +18,7 @@ data class ScraperResult(
     /**
      * A list of products that are carried by this retailer.
      */
-    val productInformation: List<RetailerProductInformation>,
+    val productInformation: MutableList<RetailerProductInformation>,
 
     /**
      * The unique ID of this retailer.

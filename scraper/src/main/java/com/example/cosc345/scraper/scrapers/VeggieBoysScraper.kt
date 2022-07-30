@@ -5,6 +5,15 @@ import com.example.cosc345.scraper.interfaces.Scraper
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.shared.models.*
 
+/**
+ * The scraper for the bespoke Veggie Boys store.
+ *
+ * # Process
+ * A list of all Veggie Boys products is requested. Then each product is scraped, processed and cleaned up. For some products, it is necessary to determine whether it is sold per KG or not, so a specific request to the product details page is required.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper.
+ */
 class VeggieBoysScraper : Scraper() {
     override suspend fun runScraper(): ScraperResult {
         val baseUrl = "https://veggieboys.co.nz"
@@ -61,13 +70,13 @@ class VeggieBoysScraper : Scraper() {
                     }
                 }
 
-                name = name.replace("Milk - ", "", ignoreCase = true)
+                name = name
                     .replace("loose", "", ignoreCase = true)
                     .replace("Biscuits - ", "", ignoreCase = true)
                     .replace("Cream - ", "", ignoreCase = true)
                     .replace(" kg", "")
                     .replace("Heinz -", "Heinz ")
-                    .replace("Dairy Dale -", "Dairy Dale ")
+                    .replace("Dairy Dale -", "Dairy Dale Milk ")
                     .replace("Milk Nutri ", "Nutri ")
                     .replace("(", "")
                     .replace(")", "")

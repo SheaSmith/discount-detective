@@ -8,6 +8,24 @@ import com.example.cosc345.shared.extensions.titleCase
 import com.example.cosc345.shared.models.*
 import kotlin.text.Typography.nbsp
 
+/**
+ * A generic scraper that scrapes from MyFoodLink based stores (for example, FreshChoice and SuperValue).
+ *
+ * # Process
+ * Firstly, all of the stores for the particular retailer are queried. At least for FreshChoice and SuperValue, each store has its own dedicated website. Only websites of the type "ecommerce" are looked at, as the others do not have online shopping available.
+ *
+ * Each store is then iterated, and for each store we essentially do a search request without any filters and then iterate through each page. A combination of HTML and JSON parsing is used to try and find as much data as we can.
+ *
+ * The name of the product has significant cleaning done to it, to try and make sure it is consistent with the other supermarkets with more structured naming fields.
+ *
+ * @param id The ID of the retailer we want to use.
+ * @param retailer The retailer object to attach stores to.
+ * @param baseUrl The base URL for the get stores request.
+ * @param storeWhiteList The stores that we can query as they we are currently geolocked to Dunedin.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
+ */
 abstract class MyFoodLinkScraper(
     private val id: String,
     private val retailer: Retailer,
@@ -70,7 +88,7 @@ abstract class MyFoodLinkScraper(
                                 brandName = gtmData.brand,
                                 saleType = if (gtmData.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
                                 weight = if (gtmData.saleType == "kg") 1000 else null,
-                                barcodes = setOf(gtmData.id),
+                                barcodes = listOf(gtmData.id),
                                 image = line.image
                             )
 

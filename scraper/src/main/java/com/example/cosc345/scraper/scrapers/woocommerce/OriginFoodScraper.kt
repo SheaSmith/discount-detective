@@ -4,6 +4,12 @@ import com.example.cosc345.scraper.scrapers.generic.WooCommerceScraper
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.Store
 
+/**
+ * The Origin Foods specific implementation of the [WooCommerceScraper], which essentially just passes information through to it.
+ *
+ * @author William Hadden
+ * @constructor Create a new instance of this scraper.
+ */
 class OriginFoodScraper : WooCommerceScraper(
     "origin-food",
     Retailer(

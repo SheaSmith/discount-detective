@@ -2,6 +2,9 @@ package com.example.cosc345.shared.models
 
 /**
  * An individual store. For small stores, this will essentially be the same as the retailer, but for bigger ones it will specify the attributes of particular stores.
+ *
+ * @author Shea Smith
+ * @constructor Create a new instance of this object. Some of the nullable parameters are not nullable in practice, but are required to be for Firebase.
  */
 data class Store(
     /**
