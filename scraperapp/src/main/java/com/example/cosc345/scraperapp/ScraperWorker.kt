@@ -10,6 +10,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -27,6 +29,7 @@ class ScraperWorker @AssistedInject constructor(
             scraperRepository.saveScrapers(response.first, response.second)
         } catch (e: Exception) {
             e.printStackTrace()
+            Firebase.crashlytics.recordException(e)
             return Result.retry()
         }
 

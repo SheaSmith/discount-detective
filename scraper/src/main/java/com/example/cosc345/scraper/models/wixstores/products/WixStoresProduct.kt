@@ -12,6 +12,12 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class WixStoresProduct(
     /**
+     * The ID of the product.
+     */
+    @Json(name = "id")
+    val id: String,
+
+    /**
      * The name of the product.
      */
     @Json(name = "name")

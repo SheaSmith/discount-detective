@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -104,4 +105,6 @@ dependencies {
 
     implementation project(':scraper')
     implementation project(':shared')
+
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
 }

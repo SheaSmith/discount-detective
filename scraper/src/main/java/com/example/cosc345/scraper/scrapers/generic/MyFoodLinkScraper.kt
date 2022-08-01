@@ -6,6 +6,7 @@ import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.shared.extensions.capitaliseNZ
 import com.example.cosc345.shared.extensions.titleCase
 import com.example.cosc345.shared.models.*
+import kotlinx.coroutines.delay
 import kotlin.text.Typography.nbsp
 
 /**
@@ -55,48 +56,55 @@ abstract class MyFoodLinkScraper(
                     "https://${myFoodLinkStore.hostname}"
                 )
 
-                var page = 1
+                var page = 276
                 // Dummy value for first loop
-                var lastPage = 1
+                var lastPage = 276
 
                 while (page <= lastPage) {
                     val response = myFoodLinkHtmlService.getProducts(page)
 
+                    if (response.gtmData == null) {
+                        delay(1000)
+                        continue
+                    }
+
                     response.lines!!.forEach { line ->
 
-                        val gtmData =
-                            response.gtmData!!.first { it.eventType == "productListImpression" }.ecommerce.impressions!!.first {
-                                it.name
-                                    .trim()
-                                    .replace(Regex("\\s+"), " ")
-                                    .replace(nbsp.toString(), " ")
-                                    .equals(
-                                        line.name!!
-                                            .trim()
-                                            .replace(Regex("\\s+"), " ")
-                                            .replace(nbsp.toString(), " "),
-                                        true
-                                    )
-                            }
+                        try {
+                            val gtmData =
+                                response.gtmData!!.first { it.eventType == "productListImpression" }.ecommerce.impressions!!.first {
+                                    it.name
+                                        .trim()
+                                        .replace(Regex("\\s+"), " ")
+                                        .replace(nbsp.toString(), " ")
+                                        .equals(
+                                            line.name!!
+                                                .trim()
+                                                .replace(Regex("\\s+"), " ")
+                                                .replace(nbsp.toString(), " "),
+                                            true
+                                        )
+                                }
 
-                        var product = products.firstOrNull { it.id == gtmData.id }
 
-                        if (product == null) {
-                            product = RetailerProductInformation(
-                                retailer = id,
-                                id = gtmData.id,
-                                brandName = gtmData.brand,
-                                saleType = if (gtmData.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
-                                weight = if (gtmData.saleType == "kg") 1000 else null,
-                                barcodes = listOf(gtmData.id),
-                                image = line.image
-                            )
+                            var product = products.firstOrNull { it.id == gtmData.id }
 
-                            val weightGrams =
-                                Units.GRAMS.regex.find(gtmData.name)?.groups
-                                    ?.get(1)?.value?.toDouble()
+                            if (product == null) {
+                                product = RetailerProductInformation(
+                                    retailer = id,
+                                    id = gtmData.id,
+                                    brandName = gtmData.brand,
+                                    saleType = if (gtmData.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
+                                    weight = if (gtmData.saleType == "kg") 1000 else null,
+                                    barcodes = listOf(gtmData.id),
+                                    image = line.image
+                                )
 
-                            val weightKilograms =
+                                val weightGrams =
+                                    Units.GRAMS.regex.find(gtmData.name)?.groups
+                                        ?.get(1)?.value?.toDouble()
+
+                                val weightKilograms =
                                 Units.GRAMS.regex.find(gtmData.name)?.groups
                                     ?.get(1)?.value?.toDouble()
 
@@ -174,6 +182,10 @@ abstract class MyFoodLinkScraper(
                             }
 
                             product.pricing?.add(pricing)
+                        }
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                     }
 
