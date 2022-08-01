@@ -14,7 +14,7 @@ data class SearchableProduct(
     @Document.Score
     val size: Int,
 
-    @Document.DocumentProperty(indexNestedProperties = true, required = true)
+    @Document.DocumentProperty(indexNestedProperties = true)
     val information: List<SearchableRetailerProductInformation>
 ) {
     constructor(product: Product, id: String) : this(

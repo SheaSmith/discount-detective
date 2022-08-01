@@ -76,7 +76,7 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
         LazyColumn {
             items(searchResults!!) {
                 ListItem(
-                    headlineText = { Text(it.name) }
+                    headlineText = { Text(it.information.first().name) }
                 )
             }
         }

@@ -23,7 +23,7 @@ data class SearchableRetailerProductInformation(
     val id: String,
 
     @Document.StringProperty(indexingType = INDEXING_TYPE_EXACT_TERMS)
-    val barcodes: List<String>?,
+    val barcodes: String?,
 
     @Document.StringProperty(indexingType = INDEXING_TYPE_PREFIXES)
     val quantity: String?,
@@ -32,12 +32,12 @@ data class SearchableRetailerProductInformation(
     val weight: Int?
 ) {
     constructor(info: RetailerProductInformation) : this(
-        info.retailer!!,
+        "all",
         info.brandName,
         info.name!!,
         info.variant,
         info.id!!,
-        info.barcodes,
+        info.barcodes?.joinToString { " " },
         info.quantity,
         info.weight
     )

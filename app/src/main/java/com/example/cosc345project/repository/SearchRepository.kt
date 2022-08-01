@@ -3,7 +3,7 @@ package com.example.cosc345project.repository
 import android.content.Context
 import android.util.Log
 import androidx.appsearch.app.*
-import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_RELEVANCE_SCORE
+import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_DOCUMENT_SCORE
 import androidx.appsearch.localstorage.LocalStorage
 import androidx.work.await
 import com.example.cosc345.shared.models.Product
@@ -37,7 +37,8 @@ class SearchRepository @Inject constructor(
                 LocalStorage.SearchContext.Builder(
                     context,
                     "products"
-                ).build()
+                )
+                    .build()
             ).await()
 
         try {
@@ -62,8 +63,8 @@ class SearchRepository @Inject constructor(
         awaitInitialization()
 
         val request = PutDocumentsRequest.Builder()
-            .addDocuments(products.map { SearchableProduct(it.value, it.key) }
-                .flatMap { it.information }).build()
+            .addDocuments(products.map { SearchableProduct(it.value, it.key) })
+            .build()
 
         val test = appSearchSession.putAsync(request).await()
         Log.d("Yes", "Tes")
@@ -74,21 +75,22 @@ class SearchRepository @Inject constructor(
         awaitInitialization()
 
         val searchSpec = SearchSpec.Builder()
-            .setRankingStrategy(RANKING_STRATEGY_RELEVANCE_SCORE)
+            .setRankingStrategy(RANKING_STRATEGY_DOCUMENT_SCORE)
             .setSnippetCount(10)
             .build()
 
         val searchResults = appSearchSession.search(query, searchSpec)
+        Log.d("Searc", "results")
         return searchResults.nextPageAsync.await()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun queryProductsFirebase(query: String): List<SearchableRetailerProductInformation> {
+    suspend fun queryProductsFirebase(query: String): List<SearchableProduct> {
         return suspendCancellableCoroutine { continuation ->
             val successListener = OnSuccessListener<DataSnapshot> { snapshot ->
                 continuation.resume(
                     snapshot.getValue<Map<String, Product>>()
-                        ?.map { SearchableProduct(it.value, it.key) }?.flatMap { it.information }
+                        ?.map { SearchableProduct(it.value, it.key) }
                         ?: listOf(),
                     null
                 )
@@ -114,5 +116,9 @@ class SearchRepository @Inject constructor(
         if (!isInitialized.value) {
             isInitialized.first { it }
         }
+    }
+
+    private suspend fun isAny() {
+
     }
 }

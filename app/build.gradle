@@ -122,7 +122,5 @@ dependencies {
     kapt "androidx.appsearch:appsearch-compiler:$appsearch_version"
     implementation "androidx.appsearch:appsearch-local-storage:$appsearch_version"
 
-    implementation "io.github.kaustubhpatange:realtime-extensions:0.1.4"
-
     implementation project(':shared')
 }
