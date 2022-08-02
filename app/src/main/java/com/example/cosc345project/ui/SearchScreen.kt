@@ -30,7 +30,12 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
     var search by remember { mutableStateOf("") }
     val searchResults by viewModel.searchLiveData
     val productResults = searchResults.collectAsLazyPagingItems()
-    val loading by viewModel.loading
+    val loading by remember {
+        viewModel.loading
+    }
+    remember {
+        viewModel.query()
+    }
 
     Scaffold(
         topBar = {
@@ -76,8 +81,10 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
                         AnimatedVisibility(visible = loading) {
                             CircularProgressIndicator(
                                 modifier = Modifier
-                                    .padding(start = 16.dp)
-                                    .height(8.dp),
+                                    .padding(end = 16.dp)
+                                    .height(20.dp)
+                                    .width(20.dp),
+                                strokeWidth = 3.dp
                             )
                         }
                     }
