@@ -20,5 +20,5 @@ data class SearchableProduct(
     constructor(product: Product, id: String) : this(
         id = id,
         size = product.information!!.size,
-        information = product.information!!.map { SearchableRetailerProductInformation(it) })
+        information = product.information!!.map { SearchableRetailerProductInformation(it, id) })
 }

@@ -73,12 +73,15 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
             }
         }
     ) { paddingValues ->
-        LazyColumn {
-            items(searchResults!!) {
-                ListItem(
-                    headlineText = { Text(it.information.first().name) }
-                )
+        LazyColumn(modifier = Modifier.padding(top = 100.dp)) {
+                items(searchResults!!) {
+                    ListItem(
+                        headlineText = { Text(it.name) },
+                        overlineText = { Text(text = it.brandName ?: "") },
+                        supportingText = { Text(text = it.variant ?: "") }
+                    )
+                }
             }
-        }
+
     }
 }

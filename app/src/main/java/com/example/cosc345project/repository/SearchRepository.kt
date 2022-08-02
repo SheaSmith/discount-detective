@@ -59,11 +59,11 @@ class SearchRepository @Inject constructor(
         }
     }
 
-    suspend fun setProducts(products: Map<String, Product>): AppSearchBatchResult<String, Void> {
+    suspend fun setProducts(products: List<Pair<String, Product>>): AppSearchBatchResult<String, Void> {
         awaitInitialization()
 
         val request = PutDocumentsRequest.Builder()
-            .addDocuments(products.map { SearchableProduct(it.value, it.key) })
+            .addDocuments(products.map { SearchableProduct(it.second, it.first) }.flatMap { it.information })
             .build()
 
         val test = appSearchSession.putAsync(request).await()
@@ -76,7 +76,7 @@ class SearchRepository @Inject constructor(
 
         val searchSpec = SearchSpec.Builder()
             .setRankingStrategy(RANKING_STRATEGY_DOCUMENT_SCORE)
-            .setSnippetCount(10)
+            .setSnippetCount(100)
             .build()
 
         val searchResults = appSearchSession.search(query, searchSpec)

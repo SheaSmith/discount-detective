@@ -31,12 +31,12 @@ data class SearchableRetailerProductInformation(
     @Document.LongProperty
     val weight: Int?
 ) {
-    constructor(info: RetailerProductInformation) : this(
+    constructor(info: RetailerProductInformation, productId: String) : this(
         "all",
         info.brandName,
         info.name!!,
         info.variant,
-        info.id!!,
+        productId,
         info.barcodes?.joinToString { " " },
         info.quantity,
         info.weight
