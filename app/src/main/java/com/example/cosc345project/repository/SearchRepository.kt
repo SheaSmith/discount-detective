@@ -6,14 +6,16 @@ import androidx.appsearch.app.*
 import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_DOCUMENT_SCORE
 import androidx.appsearch.localstorage.LocalStorage
 import androidx.work.await
+import com.example.cosc345.shared.extensions.capitaliseNZ
+import com.example.cosc345.shared.extensions.titleCase
 import com.example.cosc345.shared.models.Product
+import com.example.cosc345project.models.SearchablePricingInformation
 import com.example.cosc345project.models.SearchableProduct
 import com.example.cosc345project.models.SearchableRetailerProductInformation
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.ktx.database
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
@@ -25,10 +27,10 @@ import javax.inject.Singleton
 
 @Singleton
 class SearchRepository @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val database: FirebaseDatabase
 ) {
     private val isInitialized: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isFinished: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private lateinit var appSearchSession: AppSearchSession
 
     suspend fun initialise() {
@@ -45,7 +47,8 @@ class SearchRepository @Inject constructor(
             val setSchemaRequest = SetSchemaRequest.Builder()
                 .addDocumentClasses(
                     SearchableProduct::class.java,
-                    SearchableRetailerProductInformation::class.java
+                    SearchableRetailerProductInformation::class.java,
+                    SearchablePricingInformation::class.java
                 )
                 .build()
 
@@ -63,7 +66,8 @@ class SearchRepository @Inject constructor(
         awaitInitialization()
 
         val request = PutDocumentsRequest.Builder()
-            .addDocuments(products.map { SearchableProduct(it.second, it.first) }.flatMap { it.information })
+            .addDocuments(products.map { SearchableProduct(it.second, it.first) }
+                .flatMap { it.information })
             .build()
 
         val test = appSearchSession.putAsync(request).await()
@@ -71,44 +75,51 @@ class SearchRepository @Inject constructor(
         return test
     }
 
-    suspend fun queryProducts(query: String): List<SearchResult> {
+    suspend fun queryProducts(query: String, count: Int): SearchResults {
         awaitInitialization()
 
         val searchSpec = SearchSpec.Builder()
             .setRankingStrategy(RANKING_STRATEGY_DOCUMENT_SCORE)
-            .setSnippetCount(100)
+            .setResultCountPerPage(count)
             .build()
 
         val searchResults = appSearchSession.search(query, searchSpec)
         Log.d("Searc", "results")
-        return searchResults.nextPageAsync.await()
+        return searchResults
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun queryProductsFirebase(query: String): List<SearchableProduct> {
+    suspend fun queryProductsFirebase(
+        query: String,
+        startAt: String?,
+        count: Int
+    ): Pair<List<SearchableProduct>, String> {
         return suspendCancellableCoroutine { continuation ->
             val successListener = OnSuccessListener<DataSnapshot> { snapshot ->
+                val key = snapshot.children.last().key!!
+
                 continuation.resume(
-                    snapshot.getValue<Map<String, Product>>()
+                    Pair(snapshot
+                        .getValue<Map<String, Product>>()
                         ?.map { SearchableProduct(it.value, it.key) }
-                        ?: listOf(),
+                        ?: listOf(), key),
                     null
                 )
             }
 
-            val task =
-                Firebase.database("https://discount-detective-default-rtdb.asia-southeast1.firebasedatabase.app/").reference.child(
-                    "products"
-                ).orderByChild("information/0/name")
-                    .equalTo(query).limitToFirst(10)
-                    .get()
-                    .addOnFailureListener {
-                        it.printStackTrace()
-                    }
-                    .addOnCanceledListener {
-                        Log.d("cancel", "cancel")
-                    }
-            task.addOnSuccessListener(successListener)
+            var firebaseQuery = database.reference
+                .child("products")
+                .orderByChild("information/0/name")
+                .startAt(query.titleCase().capitaliseNZ())
+                .endAt("${query.titleCase().capitaliseNZ()}~")
+                .limitToFirst(count)
+
+            if (startAt != null) {
+                firebaseQuery = firebaseQuery.startAfter(startAt)
+            }
+
+            firebaseQuery.get()
+                .addOnSuccessListener(successListener)
         }
     }
 
@@ -118,7 +129,19 @@ class SearchRepository @Inject constructor(
         }
     }
 
-    private suspend fun isAny() {
+    suspend fun isAny(): Boolean {
+        awaitInitialization()
 
+        val searchSpec = SearchSpec.Builder()
+            .setSnippetCount(1)
+            .build()
+
+        val searchResults = appSearchSession.search("", searchSpec).nextPageAsync.await()
+
+        return searchResults.isNotEmpty()
+    }
+
+    suspend fun saveSearchDatabase() {
+        appSearchSession.requestFlushAsync().await()
     }
 }

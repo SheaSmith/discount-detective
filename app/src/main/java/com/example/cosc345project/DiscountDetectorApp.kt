@@ -3,6 +3,7 @@ package com.example.cosc345project
 import android.app.Application
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345project.repository.SearchRepository
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
@@ -19,25 +20,28 @@ class DiscountDetectorApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val repo = SearchRepository(this@DiscountDetectorApp)
-        applicationScope.launch(Dispatchers.IO) {
-            repo.initialise()
-        }
+        if (false) {
+            val database =
+                Firebase.database("https://discount-detective-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            val repo = SearchRepository(this@DiscountDetectorApp, database)
+            applicationScope.launch(Dispatchers.IO) {
+                repo.initialise()
+            }
 
-        getProducts(repo)
+            getProducts(repo, database = database)
+        }
     }
 
     @Suppress("UNUSED_VALUE")
     private fun getProducts(
         repo: SearchRepository,
         firstKey: String? = null,
-        previousKey: String? = null
+        database: FirebaseDatabase
     ) {
-        var query =
-            Firebase.database("https://discount-detective-default-rtdb.asia-southeast1.firebasedatabase.app/").reference
-                .child("products")
-                .limitToFirst(2000)
-                .orderByKey()
+        var query = database.reference
+            .child("products")
+            .limitToFirst(2000)
+            .orderByKey()
 
         if (firstKey != null) {
             query = query.startAt(firstKey)
@@ -45,17 +49,18 @@ class DiscountDetectorApp : Application() {
 
         query.get().addOnSuccessListener {
             applicationScope.launch(Dispatchers.IO) {
-                var products: List<Pair<String, Product>>? = it.children.map { Pair(it.key!!, it.getValue<Product>()!!) }
+                var products: List<Pair<String, Product>>? =
+                    it.children.map { Pair(it.key!!, it.getValue<Product>()!!) }
 
 
                 val newKey = products!!.last().first
 
                 repo.setProducts(products)
                 val size = products.size
-                    products = null
-                    System.gc()
+                products = null
+                System.gc()
                 if (size == 2000) {
-                    getProducts(repo, newKey, firstKey)
+                    getProducts(repo, newKey, database)
                 }
             }
         }

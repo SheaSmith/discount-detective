@@ -1,13 +1,21 @@
 package com.example.cosc345project.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cosc345project.models.SearchableProduct
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.cosc345project.models.SearchableRetailerProductInformation
+import com.example.cosc345project.paging.FirebaseProductsPagingSource
+import com.example.cosc345project.paging.ProductsSearchPagingSource
 import com.example.cosc345project.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,18 +30,37 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private val _searchLiveData: MutableLiveData<List<SearchableRetailerProductInformation>> =
-        MutableLiveData(mutableListOf())
-    val searchLiveData: LiveData<List<SearchableRetailerProductInformation>> = _searchLiveData
+    val searchLiveData: MutableState<Flow<PagingData<SearchableRetailerProductInformation>>> =
+        mutableStateOf(
+            flowOf()
+        )
+
+    val loading = mutableStateOf(false)
 
     fun query(query: String = "") {
+        loading.value = true
         viewModelScope.launch {
-            val result = if (true) {
-                searchRepository.queryProducts(query)
-                    .map { it.getDocument(SearchableRetailerProductInformation::class.java) }
-            } else
-                searchRepository.queryProductsFirebase(query).map { it.information.first() }
-            _searchLiveData.postValue(result)
+            if (searchRepository.isAny()) {
+                searchLiveData.value = Pager(PagingConfig(pageSize = 50)) {
+                    ProductsSearchPagingSource(searchRepository, query)
+                }
+                    .flow
+                    .map {
+                        loading.value = false
+                        it
+                    }
+                    .cachedIn(viewModelScope)
+            } else {
+                searchLiveData.value = Pager(PagingConfig(pageSize = 50)) {
+                    FirebaseProductsPagingSource(searchRepository, query)
+                }
+                    .flow
+                    .map {
+                        loading.value = false
+                        it
+                    }
+                    .cachedIn(viewModelScope)
+            }
         }
     }
 }
