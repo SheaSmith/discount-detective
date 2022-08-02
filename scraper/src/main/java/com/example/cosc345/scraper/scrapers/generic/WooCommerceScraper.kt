@@ -25,6 +25,7 @@ abstract class WooCommerceScraper(
     private val id: String,
     private val retailer: Retailer,
     private val baseUrl: String,
+    private val bannedCategories: List<Int> = listOf()
 ) : Scraper() {
     protected var madButcherMap: Map<String, String>? = null
 
@@ -38,99 +39,107 @@ abstract class WooCommerceScraper(
         var lastPage = 1
         while (page <= lastPage) {
             //for each product in service
-            wooComService.getProducts(page).filter { it.inStock }.forEach { wooComProduct ->
+            wooComService.getProducts(page)
+                .filter {
+                    it.inStock && it.categories.none { category ->
+                        bannedCategories.contains(
+                            category.id
+                        )
+                    }
+                }
+                .forEach { wooComProduct ->
 
-                //can be found from permalink
-                val product = RetailerProductInformation(
-                    retailer = id,
-                    id = wooComProduct.id,
-                    name = wooComProduct.name,
-                    image = wooComProduct.images.firstOrNull()?.url,
-                    saleType = SaleType.EACH
-                )
-
-                product.pricing = retailer.stores!!.map {
-                    StorePricingInformation(
-                        it.id,
-                        wooComProduct.prices.price.toInt(),
-                        discountPrice = if (wooComProduct.onSale) wooComProduct.prices.discountPrice.toInt() else null,
-                        verified = true,
+                    //can be found from permalink
+                    val product = RetailerProductInformation(
+                        retailer = id,
+                        id = wooComProduct.id,
+                        name = wooComProduct.name,
+                        image = wooComProduct.images.firstOrNull()?.url,
+                        saleType = SaleType.EACH
                     )
-                }.toMutableList()
 
-                val weightCandidate =
-                    wooComProduct.attributes.firstOrNull { it.name == "Weight" }?.terms?.first()
+                    product.pricing = retailer.stores!!.map {
+                        StorePricingInformation(
+                            it.id,
+                            wooComProduct.prices.price.toInt(),
+                            discountPrice = if (wooComProduct.onSale) wooComProduct.prices.discountPrice.toInt() else null,
+                            verified = true,
+                        )
+                    }.toMutableList()
 
-                if (weightCandidate != null) {
-                    val weightInGrams =
-                        Units.GRAMS.regex.find(weightCandidate.name)?.groups?.get(1)?.value
-                    val weightInKilograms =
-                        Units.KILOGRAMS.regex.find(weightCandidate.name)?.groups?.get(1)?.value
+                    val weightCandidate =
+                        wooComProduct.attributes.firstOrNull { it.name == "Weight" }?.terms?.first()
 
-                    if (weightInGrams != null) {
-                        product.saleType = SaleType.WEIGHT
-                        product.weight = weightInGrams.toDouble().toInt()
-                    } else if (weightInKilograms != null) {
-                        product.saleType = SaleType.WEIGHT
-                        product.weight = weightInKilograms.toDouble().times(1000).toInt()
-                    }
-                }
+                    if (weightCandidate != null) {
+                        val weightInGrams =
+                            Units.GRAMS.regex.find(weightCandidate.name)?.groups?.get(1)?.value
+                        val weightInKilograms =
+                            Units.KILOGRAMS.regex.find(weightCandidate.name)?.groups?.get(1)?.value
 
-                //replace ascii with "-"
-                var name = wooComProduct.name.replace("&#8211;".toRegex(), "-")
-                    .replace("&#8216;".toRegex(), "-")
-                    .replace("&#8217;".toRegex(), "-")
-                    .replace("&#038;".toRegex(), "-")
-                    .replace("*", "")
-                    .trim()
-
-                Units.all.forEach {
-                    val pair = extractAndRemoveQuantity(name, it)
-
-                    if (pair.second != null) {
-                        name = pair.first
-
-                        when (it) {
-                            Units.GRAMS -> {
-                                product.weight = pair.second?.toInt()
-                            }
-                            Units.KILOGRAMS -> {
-                                product.weight = pair.second?.times(1000)?.toInt()
-                            }
-                            else -> {
-                                product.weight = null
-                            }
+                        if (weightInGrams != null) {
+                            product.saleType = SaleType.WEIGHT
+                            product.weight = weightInGrams.toDouble().toInt()
+                        } else if (weightInKilograms != null) {
+                            product.saleType = SaleType.WEIGHT
+                            product.weight = weightInKilograms.toDouble().times(1000).toInt()
                         }
-
-                        product.quantity =
-                            "${product.quantity ?: ""} ${pair.second}${it}".trim()
                     }
+
+                    //replace ascii with "-"
+                    var name = wooComProduct.name.replace("&#8211;".toRegex(), "-")
+                        .replace("&#8216;".toRegex(), "-")
+                        .replace("&#8217;".toRegex(), "-")
+                        .replace("&#038;".toRegex(), "-")
+                        .replace("*", "")
+                        .trim()
+
+                    Units.all.forEach {
+                        val pair = extractAndRemoveQuantity(name, it)
+
+                        if (pair.second != null) {
+                            name = pair.first
+
+                            when (it) {
+                                Units.GRAMS -> {
+                                    product.weight = pair.second?.toInt()
+                                }
+                                Units.KILOGRAMS -> {
+                                    product.weight = pair.second?.times(1000)?.toInt()
+                                }
+                                else -> {
+                                    product.weight = null
+                                }
+                            }
+
+                            product.quantity =
+                                "${product.quantity ?: ""} ${pair.second}${it}".trim()
+                        }
+                    }
+
+                    val nameParts = name.split(" - ", limit = 2)
+
+                    name = nameParts[0]
+                        .replace(Regex("\\s+"), " ")
+                        .replace("()", "")
+                        .trim()
+
+                    product.variant = nameParts.getOrNull(1)
+                        ?.replace(Regex("\\s+"), " ")
+                        ?.trim()
+                    if (product.variant?.isBlank() == true)
+                        product.variant = null
+
+                    product.name = name
+
+                    if (product.weight == null && madButcherMap != null) {
+                        product.saleType = madButcherMap!![wooComProduct.permaLink]
+
+                        if (product.saleType == SaleType.WEIGHT)
+                            product.weight = 1000
+                    }
+
+                    products.add(product)
                 }
-
-                val nameParts = name.split(" - ", limit = 2)
-
-                name = nameParts[0]
-                    .replace(Regex("\\s+"), " ")
-                    .replace("()", "")
-                    .trim()
-
-                product.variant = nameParts.getOrNull(1)
-                    ?.replace(Regex("\\s+"), " ")
-                    ?.trim()
-                if (product.variant?.isBlank() == true)
-                    product.variant = null
-
-                product.name = name
-
-                if (product.weight == null && madButcherMap != null) {
-                    product.saleType = madButcherMap!![wooComProduct.permaLink]
-
-                    if (product.saleType == SaleType.WEIGHT)
-                        product.weight = 1000
-                }
-
-                products.add(product)
-            }
             page++
             if (wooComService.getProducts(page).isNotEmpty()) {
                 lastPage++

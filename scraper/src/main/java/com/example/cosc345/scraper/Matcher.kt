@@ -1,11 +1,10 @@
 package com.example.cosc345.scraper
 
 import com.example.cosc345.scraper.models.MatcherGrouping
-import com.example.cosc345.scraper.scrapers.FourSquareScraper
-import com.example.cosc345.scraper.scrapers.RobertsonsMeatsScraper
-import com.example.cosc345.scraper.scrapers.VeggieBoysScraper
-import com.example.cosc345.scraper.scrapers.WarehouseScraper
+import com.example.cosc345.scraper.scrapers.*
+import com.example.cosc345.scraper.scrapers.foodstuffs.NewWorldScraper
 import com.example.cosc345.scraper.scrapers.foodstuffs.PakNSaveScraper
+import com.example.cosc345.scraper.scrapers.myfoodlink.FreshChoiceScraper
 import com.example.cosc345.scraper.scrapers.shopify.LeckiesButcheryScraper
 import com.example.cosc345.scraper.scrapers.shopify.PrincesStreetButcherScraper
 import com.example.cosc345.scraper.scrapers.shopify.YogijisFoodMartScraper
@@ -23,10 +22,10 @@ import kotlin.time.measureTime
 class Matcher {
     suspend fun run(): Pair<Map<String, Retailer>, Map<String, Product>> {
         val scrapers = setOf(
-//            CountdownScraper(),
-//            NewWorldScraper(),
+            CountdownScraper(),
+            NewWorldScraper(),
             PakNSaveScraper(),
-//            FreshChoiceScraper(),
+            FreshChoiceScraper(),
             // SuperValue disabled for now, as there aren't any in the Dunedin area.
             //SuperValueScraper(),
             LeckiesButcheryScraper(),

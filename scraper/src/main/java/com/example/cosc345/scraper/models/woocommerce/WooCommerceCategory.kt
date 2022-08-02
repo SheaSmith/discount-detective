@@ -16,7 +16,7 @@ data class WooCommerceCategory(
      * The unique ID of the category.
      */
     @Json(name = "id")
-    val id: String?,
+    val id: Int,
 
     /**
      * The name of the category.

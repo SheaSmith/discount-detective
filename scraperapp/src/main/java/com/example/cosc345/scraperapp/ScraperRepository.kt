@@ -21,17 +21,29 @@ class ScraperRepository @Inject constructor(
     suspend fun saveScrapers(retailers: Map<String, Retailer>, products: Map<String, Product>) {
         saveRetailers(retailers)
 
-        deleteProducts()
+        val deletedProducts = getKeys().toMutableList()
+        deletedProducts.removeAll(products.keys)
+
+        deleteProducts(deletedProducts)
+        updateDeletedProductsList(deletedProducts)
 
         products.forEach {
             saveProduct(it.key, it.value)
         }
     }
 
-
-    private suspend fun deleteProducts() {
+    private suspend fun deleteProducts(keys: List<String>) {
         return suspendCancellableCoroutine { continuation ->
-            firebaseDatabase.getReference("products").removeValue().addOnSuccessListener {
+            firebaseDatabase.getReference("products").updateChildren(keys.associateWith { null })
+                .addOnSuccessListener {
+                    continuation.resume(run {}, null)
+                }
+        }
+    }
+
+    private suspend fun updateDeletedProductsList(keys: List<String>) {
+        return suspendCancellableCoroutine { continuation ->
+            firebaseDatabase.getReference("deletedProducts").setValue(keys).addOnSuccessListener {
                 continuation.resume(run {}, null)
             }
         }
@@ -41,6 +53,14 @@ class ScraperRepository @Inject constructor(
         return suspendCancellableCoroutine { continuation ->
             firebaseDatabase.getReference("retailers").setValue(retailers).addOnSuccessListener {
                 continuation.resume(run {}, null)
+            }
+        }
+    }
+
+    private suspend fun getKeys(): List<String> {
+        return suspendCancellableCoroutine { continuation ->
+            firebaseDatabase.reference.child("products").get().addOnSuccessListener {
+                continuation.resume(it.children.map { it.key!! }, null)
             }
         }
     }
