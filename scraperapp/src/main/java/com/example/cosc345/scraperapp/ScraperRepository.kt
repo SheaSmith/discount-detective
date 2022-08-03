@@ -73,4 +73,13 @@ class ScraperRepository @Inject constructor(
                 }
         }
     }
+
+    private suspend fun setLastUpdated() {
+        return suspendCancellableCoroutine { continuation ->
+            firebaseDatabase.getReference("lastUpdated").setValue(System.currentTimeMillis())
+                .addOnSuccessListener {
+                    continuation.resume(run {}, null)
+                }
+        }
+    }
 }

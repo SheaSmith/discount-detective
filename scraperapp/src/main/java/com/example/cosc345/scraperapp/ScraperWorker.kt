@@ -4,7 +4,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -23,6 +25,14 @@ class ScraperWorker @AssistedInject constructor(
     private val scraperRepository: ScraperRepository
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
+        val wakeLock: PowerManager.WakeLock =
+            (getSystemService(applicationContext, PowerManager::class.java) as PowerManager).run {
+                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag").apply {
+                    acquire()
+                }
+            }
+
+
         setForeground(createForegroundInfo())
         try {
             val response = scraperRepository.runScrapers()
@@ -30,9 +40,12 @@ class ScraperWorker @AssistedInject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             Firebase.crashlytics.recordException(e)
+            wakeLock.release()
             return Result.retry()
         }
 
+
+        wakeLock.release()
         return Result.success()
     }
 
