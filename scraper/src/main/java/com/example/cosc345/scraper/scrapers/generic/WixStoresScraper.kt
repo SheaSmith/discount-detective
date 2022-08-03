@@ -43,7 +43,7 @@ abstract class WixStoresScraper(
             products.add(
                 RetailerProductInformation(
                     retailer = id,
-                    id = id,
+                    id = wixStoresProduct.id,
                     name = wixStoresProduct.name
                         .replace(Regex("\\s+"), " ")
                         .replace(Regex("\\s([()])"), "$1")

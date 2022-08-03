@@ -23,5 +23,6 @@ class OriginFoodScraper : WooCommerceScraper(
                 true
             )
         )
-    ),"https://originfood.co.nz"
+    ), "https://originfood.co.nz",
+    listOf(163)
 )
