@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.cosc345.scraperapp">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <!-- https://stackoverflow.com/questions/32244851/androidjava-lang-outofmemoryerror-failed-to-allocate-a-23970828-byte-allocatio-->
     <application
         android:name=".ScraperApp"

@@ -91,7 +91,7 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
                 }
             }
         }
-    ) { paddingValues ->
+    ) {
         LazyColumn(
             modifier = Modifier.padding(top = 100.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),

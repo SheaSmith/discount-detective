@@ -24,9 +24,11 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.*
 import com.example.cosc345.scraperapp.ui.theme.DiscountDetectiveTheme
+import com.example.cosc345.scraperapp.workers.ScraperWorker
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -50,6 +52,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }
 
 @Composable
@@ -93,13 +96,7 @@ fun MainScreen(
                     }
                 }
                 Button(onClick = {
-                    val constraints = Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.UNMETERED)
-                        //.setRequiresCharging(true)
-                        .build()
-
                     val workRequest = OneTimeWorkRequestBuilder<ScraperWorker>()
-                        .setConstraints(constraints)
                         .setBackoffCriteria(
                             BackoffPolicy.LINEAR,
                             Duration.ofMinutes(30)
@@ -113,13 +110,7 @@ fun MainScreen(
                     Text(text = "Run scraper now")
                 }
                 Button(onClick = {
-                    val constraints = Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.UNMETERED)
-                        .setRequiresCharging(true)
-                        .build()
-
                     val workRequest = PeriodicWorkRequestBuilder<ScraperWorker>(Duration.ofDays(1))
-                        .setConstraints(constraints)
                         .setBackoffCriteria(
                             BackoffPolicy.LINEAR,
                             Duration.ofMinutes(30)

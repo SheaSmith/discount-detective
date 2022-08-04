@@ -12,6 +12,7 @@ import com.example.cosc345.shared.models.Product
 import com.example.cosc345project.models.SearchablePricingInformation
 import com.example.cosc345project.models.SearchableProduct
 import com.example.cosc345project.models.SearchableRetailerProductInformation
+import com.example.cosc345project.settings.indexSettingsDataStore
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
@@ -21,6 +22,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,7 +35,7 @@ class SearchRepository @Inject constructor(
     private val isInitialized: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private lateinit var appSearchSession: AppSearchSession
 
-    suspend fun initialise() {
+    suspend fun initialise(waitForever: Boolean = true) {
         appSearchSession =
             LocalStorage.createSearchSessionAsync(
                 LocalStorage.SearchContext.Builder(
@@ -56,10 +58,17 @@ class SearchRepository @Inject constructor(
 
             isInitialized.value = true
 
-            awaitCancellation()
+            if (waitForever)
+                awaitCancellation()
         } finally {
-            appSearchSession.close()
+            if (waitForever)
+                appSearchSession.close()
         }
+    }
+
+    suspend fun finish() {
+        appSearchSession.requestFlushAsync().await()
+        appSearchSession.close()
     }
 
     suspend fun setProducts(products: List<Pair<String, Product>>): AppSearchBatchResult<String, Void> {
@@ -143,5 +152,62 @@ class SearchRepository @Inject constructor(
 
     suspend fun saveSearchDatabase() {
         appSearchSession.requestFlushAsync().await()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun getLastUpdate(): Long {
+        return suspendCancellableCoroutine { continuation ->
+            database.reference.child("lastUpdated").get().addOnSuccessListener { data ->
+                continuation.resume(data.getValue<Long>() ?: 0, null)
+            }
+        }
+    }
+
+    suspend fun indexFromFirebase(context: Context) {
+        val lastUpdate = context.indexSettingsDataStore.data.first().lastUpdated
+        val databaseLastUpdated = getLastUpdate()
+
+        if (lastUpdate <= databaseLastUpdated) {
+            initialise(false)
+
+            insertProducts()
+
+            finish()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Suppress("UNUSED_VALUE")
+    private suspend fun insertProducts(
+        firstKey: String? = null
+    ) {
+        return suspendCancellableCoroutine { continuation ->
+            var query = database.reference
+                .child("products")
+                .limitToFirst(2000)
+                .orderByKey()
+
+            if (firstKey != null) {
+                query = query.startAt(firstKey)
+            }
+
+            query.get().addOnSuccessListener {
+                runBlocking {
+                    var products: List<Pair<String, Product>>? =
+                        it.children.map { Pair(it.key!!, it.getValue<Product>()!!) }
+
+                    val newKey = products!!.last().first
+
+                    setProducts(products)
+                    val size = products.size
+                    products = null
+                    System.gc()
+                    if (size == 2000) {
+                        insertProducts(newKey)
+                    }
+                }
+                continuation.resume(run {}, null)
+            }
+        }
     }
 }
