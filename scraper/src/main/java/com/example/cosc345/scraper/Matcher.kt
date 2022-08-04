@@ -20,7 +20,7 @@ import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
 class Matcher {
-    suspend fun run(): Pair<Map<String, Retailer>, Map<String, Product>> {
+    suspend fun runScrapers(): Pair<Map<String, Retailer>, List<RetailerProductInformation>> {
         val scrapers = setOf(
             CountdownScraper(),
             NewWorldScraper(),
@@ -65,6 +65,13 @@ class Matcher {
             )
         }
 
+        return Pair(retailers, retailerProductInfo)
+    }
+
+    fun matchBarcodes(
+        retailerProductInfo: MutableList<RetailerProductInformation>,
+        retailers: Map<String, Retailer>
+    ): Pair<Map<String, Retailer>, Map<String, Product>> {
         val products = mutableListOf<Product>()
         val time = measureTime {
             val infoWithBarcodes = retailerProductInfo.filter { it.barcodes != null }
@@ -96,8 +103,23 @@ class Matcher {
 
             products.addAll(retailerProductInfo.map { Product(arrayListOf(it)) })
 
-            printStatus(products, retailers)
+        }
 
+        printStatus(products, retailers)
+        print("Barcode matching took ${time.toString(DurationUnit.SECONDS, 1)}")
+
+        val mappedProducts = mapProducts(products)
+
+        return Pair(retailers, mappedProducts)
+    }
+
+    fun matchNames(
+        productMap: Map<String, Product>,
+        retailers: Map<String, Retailer>
+    ): Pair<Map<String, Retailer>, Map<String, Product>> {
+        val products = productMap.values.toMutableList()
+
+        val time = measureTime {
             val productWithMatcherGroup = products.associateWith { product ->
                 product.information!!.map { MatcherGrouping(it) }.toMutableSet()
             }
@@ -140,9 +162,15 @@ class Matcher {
         }
 
         printStatus(products, retailers)
-        print("Matching took ${time.toString(DurationUnit.SECONDS, 1)}")
+        print("Barcode matching took ${time.toString(DurationUnit.SECONDS, 1)}")
 
-        val mappedProducts = products.associateBy { product ->
+        val mappedProducts = mapProducts(products)
+
+        return Pair(retailers, mappedProducts)
+    }
+
+    private fun mapProducts(products: List<Product>): Map<String, Product> {
+        return products.associateBy { product ->
             val barcodes =
                 product.information!!.filter { it.barcodes != null }.flatMap { it.barcodes!! }
 
@@ -155,8 +183,6 @@ class Matcher {
                 "${info.id!!.replace(Regex("[/.#$\\[\\]]"), "")}-${info.retailer!!}"
             }
         }
-
-        return Pair(retailers, mappedProducts)
     }
 
     private fun printStatus(products: List<Product>, retailers: Map<String, Retailer>) {

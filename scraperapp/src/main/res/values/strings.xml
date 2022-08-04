@@ -3,5 +3,9 @@
     <string name="notification_channel_id">scraper</string>
     <string name="notification_title">Discount Detective Scraper</string>
     <string name="cancel">Cancel</string>
-    <string name="notification_text">Scraping data</string>
+
+    <string name="notification_scraper">Running scrapers</string>
+    <string name="notification_barcodes">Matching barcodes</string>
+    <string name="notification_values">Matching values</string>
+    <string name="notification_firebase">Uploading to Firebase</string>
 </resources>

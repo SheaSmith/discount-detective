@@ -1,4 +1,4 @@
-package com.example.cosc345.scraperapp
+package com.example.cosc345.scraperapp.repositories
 
 import com.example.cosc345.scraper.Matcher
 import com.example.cosc345.shared.models.Product
@@ -12,13 +12,45 @@ import javax.inject.Singleton
 @OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class ScraperRepository @Inject constructor(
-    private val firebaseDatabase: FirebaseDatabase
+    private val firebaseDatabase: FirebaseDatabase,
+    private val temporaryDatabaseRepository: TemporaryDatabaseRepository,
+    private val matcher: Matcher
 ) {
-    suspend fun runScrapers(): Pair<Map<String, Retailer>, Map<String, Product>> {
-        return Matcher().run()
+    suspend fun runScrapers() {
+        val result = matcher.runScrapers()
+        temporaryDatabaseRepository.clearDatabase()
+        temporaryDatabaseRepository.insertRetailerProductInfo(result.second)
     }
 
-    suspend fun saveScrapers(retailers: Map<String, Retailer>, products: Map<String, Product>) {
+    suspend fun matchBarcodes() {
+        val retailers = temporaryDatabaseRepository.getRetailers()
+        val productInfo = temporaryDatabaseRepository.getRetailerProductInfo()
+        val result = matcher.matchBarcodes(productInfo, retailers)
+        temporaryDatabaseRepository.clearDatabase()
+        temporaryDatabaseRepository.insertRetailers(result.first)
+        temporaryDatabaseRepository.insertProducts(result.second)
+    }
+
+    suspend fun matchValues() {
+        val retailers = temporaryDatabaseRepository.getRetailers()
+        val products = temporaryDatabaseRepository.getProducts()
+        val result = matcher.matchNames(products, retailers)
+        temporaryDatabaseRepository.clearDatabase()
+        temporaryDatabaseRepository.insertRetailers(result.first)
+        temporaryDatabaseRepository.insertProducts(result.second)
+    }
+
+    suspend fun saveToFirebase() {
+        val retailers = temporaryDatabaseRepository.getRetailers()
+        val products = temporaryDatabaseRepository.getProducts()
+        saveScrapers(retailers, products)
+        temporaryDatabaseRepository.clearDatabase()
+    }
+
+    private suspend fun saveScrapers(
+        retailers: Map<String, Retailer>,
+        products: Map<String, Product>
+    ) {
         saveRetailers(retailers)
 
         val deletedProducts = getKeys().toMutableList()
