@@ -1,4 +1,4 @@
-package com.example.cosc345project.ui
+package com.example.cosc345project.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.cosc345project.R
+import com.example.cosc345project.ui.Navigation
 import com.example.cosc345project.ui.utils.DevicePosture
 import com.example.cosc345project.ui.utils.NavigationType
 import com.example.cosc345project.viewmodel.SearchViewModel
@@ -139,8 +140,8 @@ fun MainContent(
                         val parentViewModel = hiltViewModel<SearchViewModel>()
                         SearchScreen(parentViewModel)
                     }
-                    composable(Navigation.SHOPPING_LIST.route) { Text(text = "List") }
-                    composable(Navigation.SETTINGS.route) { Text(text = "Settings") }
+                    composable(Navigation.SHOPPING_LIST.route) { ShoppingListScreen() }
+//                    composable(Navigation.SETTINGS.route) { Text(text = "Settings") }
                 }
             }
 

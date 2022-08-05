@@ -24,6 +24,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.*
 import com.example.cosc345.scraperapp.ui.theme.DiscountDetectiveTheme
+import com.example.cosc345.scraperapp.workers.BarcodeMergeWorker
 import com.example.cosc345.scraperapp.workers.ScraperWorker
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import dagger.hilt.android.AndroidEntryPoint
@@ -105,6 +106,10 @@ fun MainScreen(
 
                     WorkManager
                         .getInstance(context)
+                        .cancelAllWork()
+
+                    WorkManager
+                        .getInstance(context)
                         .enqueueUniqueWork("scraper", ExistingWorkPolicy.REPLACE, workRequest)
                 }) {
                     Text(text = "Run scraper now")
@@ -128,6 +133,25 @@ fun MainScreen(
                     )
                 }) {
                     Text(text = "Schedule scraper")
+                }
+
+                Button(onClick = {
+                    val workRequest = OneTimeWorkRequestBuilder<BarcodeMergeWorker>()
+                        .setBackoffCriteria(
+                            BackoffPolicy.LINEAR,
+                            Duration.ofMinutes(30)
+                        )
+                        .build()
+
+                    WorkManager
+                        .getInstance(context)
+                        .cancelAllWork()
+
+                    WorkManager
+                        .getInstance(context)
+                        .enqueueUniqueWork("barcodes", ExistingWorkPolicy.REPLACE, workRequest)
+                }) {
+                    Text(text = "Run value matcher")
                 }
             }
         }

@@ -30,17 +30,22 @@ class TemporaryDatabaseRepository @Inject constructor(
 
     suspend fun insertProducts(products: Map<String, Product>) {
         val storageRetailerProductInformation = products.map { map ->
-            map.value.information!!
+            map.value.information!!.map { Pair(it, map.key) }
         }.flatten()
 
-        insertRetailerProductInfo(storageRetailerProductInformation)
+        insertRetailerProductInfo(
+            storageRetailerProductInformation.map { it.first },
+            storageRetailerProductInformation.map { it.second })
     }
 
-    suspend fun insertRetailerProductInfo(retailerProductInformation: List<RetailerProductInformation>) {
-        val storageRetailerProductInformation = retailerProductInformation.map {
+    suspend fun insertRetailerProductInfo(
+        retailerProductInformation: List<RetailerProductInformation>,
+        productIds: List<String>? = null
+    ) {
+        val storageRetailerProductInformation = retailerProductInformation.mapIndexed { index, it ->
             StorageRetailerProductInformation(
                 it,
-                null
+                productIds?.get(index)
             )
         }
 
@@ -81,6 +86,7 @@ class TemporaryDatabaseRepository @Inject constructor(
 
     suspend fun getProducts(): Map<String, Product> {
         val storageInfo = retailerProductInformationDao.getRetailerProductInfo()
+        print("Test")
 
         return storageInfo
             .mapValues { storageMap ->

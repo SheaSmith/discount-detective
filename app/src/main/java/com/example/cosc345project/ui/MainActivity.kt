@@ -14,6 +14,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
+import com.example.cosc345project.ui.screens.MainScreen
 import com.example.cosc345project.ui.theme.DiscountDetectiveTheme
 import com.example.cosc345project.ui.utils.DevicePosture
 import com.example.cosc345project.ui.utils.isBookPosture
