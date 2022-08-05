@@ -10,10 +10,10 @@ import com.example.cosc345project.R
 
 enum class Navigation(val route: String, @StringRes val nameResource: Int, val icon: ImageVector) {
     SEARCH("products", R.string.search, Icons.Rounded.Search),
-    SHOPPING_LIST("list", R.string.shopping_list, Icons.Rounded.List),
-    SETTINGS("settings", R.string.settings, Icons.Rounded.Settings);
+    SHOPPING_LIST("list", R.string.shopping_list, Icons.Rounded.List);
+//    SETTINGS("settings", R.string.settings, Icons.Rounded.Settings);
 
     companion object {
-        val topLevel = arrayOf(SEARCH, SHOPPING_LIST, SETTINGS)
+        val topLevel = arrayOf(SEARCH, SHOPPING_LIST)
     }
 }
