@@ -275,7 +275,7 @@ fun ProductCard(
 
                         PricingBlock(components = bestPrice, loading = loading, local = false)
 
-                        if (localPrice != null && bestPrice != null) {
+                        if ((localPrice != null && bestPrice != null) || loading) {
                             Spacer(modifier = Modifier.weight(1.0f))
                         }
 
