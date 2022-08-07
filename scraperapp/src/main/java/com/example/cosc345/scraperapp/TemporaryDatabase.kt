@@ -15,7 +15,7 @@ import com.example.cosc345.scraperapp.typeconverters.RoomStringListConverter
 
 @Database(
     entities = [StorageRetailerProductInformation::class, StorageStorePricingInformation::class, StorageRetailer::class, StorageStore::class],
-    version = 1,
+    version = 3,
 )
 @TypeConverters(RoomStringListConverter::class)
 abstract class TemporaryDatabase : RoomDatabase() {

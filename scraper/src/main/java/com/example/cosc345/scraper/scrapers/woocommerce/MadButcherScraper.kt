@@ -21,16 +21,25 @@ import com.example.cosc345.shared.models.Store
 class MadButcherScraper : WooCommerceScraper(
     "mad-butcher",
     Retailer(
-        "Mad Butcher", true, listOf(
+        name = "Mad Butcher",
+        automated = true,
+        verified = false,
+        stores = listOf(
             Store(
                 "mad-butcher",
-                "Mad Butcher",
+                "Dunedin",
                 "280 Andersons Bay Road, South Dunedin, Dunedin 9012",
                 -45.8910911,
                 170.5030409,
                 true
             )
-        )
+        ),
+        colourLight = 0xFFffe174,
+        onColourLight = 0xFF221b00,
+        colourDark = 0xFF554500,
+        onColourDark = 0xFFffe174,
+        initialism = "MB",
+        local = false
     ), "https://madbutcher.co.nz/dunedin/"
 ) {
     override suspend fun runScraper(): ScraperResult {

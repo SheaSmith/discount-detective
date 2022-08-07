@@ -13,7 +13,10 @@ import com.example.cosc345.shared.models.Store
 class LeckiesButcheryScraper : ShopifyScraper(
     "leckies-butchery",
     Retailer(
-        "Leckies Butchery", true, listOf(
+        name = "Leckies Butchery",
+        automated = true,
+        verified = false,
+        stores = listOf(
             Store(
                 "leckies-butchery",
                 "Leckies Butchery",
@@ -22,7 +25,13 @@ class LeckiesButcheryScraper : ShopifyScraper(
                 170.4875238,
                 true
             )
-        )
+        ),
+        colourLight = 0xFFdce1ff,
+        onColourLight = 0xFF00164f,
+        colourDark = 0xFF284190,
+        onColourDark = 0xFFdce1ff,
+        initialism = "LB",
+        local = true
     ),
     "https://www.leckiesbutchery.co.nz"
 )

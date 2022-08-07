@@ -20,6 +20,7 @@ class ScraperRepository @Inject constructor(
         val result = matcher.runScrapers()
         temporaryDatabaseRepository.clearDatabase()
         temporaryDatabaseRepository.insertRetailerProductInfo(result.second)
+        temporaryDatabaseRepository.insertRetailers(result.first)
     }
 
     suspend fun matchBarcodes() {
@@ -44,7 +45,6 @@ class ScraperRepository @Inject constructor(
         val retailers = temporaryDatabaseRepository.getRetailers()
         val products = temporaryDatabaseRepository.getProducts()
         saveScrapers(retailers, products)
-        temporaryDatabaseRepository.clearDatabase()
     }
 
     private suspend fun saveScrapers(
@@ -62,6 +62,8 @@ class ScraperRepository @Inject constructor(
         products.forEach {
             saveProduct(it.key, it.value)
         }
+
+        setLastUpdated()
     }
 
     private suspend fun deleteProducts(keys: List<String>) {
@@ -91,8 +93,8 @@ class ScraperRepository @Inject constructor(
 
     private suspend fun getKeys(): List<String> {
         return suspendCancellableCoroutine { continuation ->
-            firebaseDatabase.reference.child("products").get().addOnSuccessListener {
-                continuation.resume(it.children.map { it.key!! }, null)
+            firebaseDatabase.reference.child("products").get().addOnSuccessListener { products ->
+                continuation.resume(products.children.map { it.key!! }, null)
             }
         }
     }

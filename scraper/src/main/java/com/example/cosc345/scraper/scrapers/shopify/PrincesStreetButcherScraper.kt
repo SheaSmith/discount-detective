@@ -14,9 +14,10 @@ class PrincesStreetButcherScraper :
     ShopifyScraper(
         "princes-street-butcher",
         Retailer(
-            "Princes Street Butcher",
-            true,
-            listOf(
+            name = "Princes Street Butcher",
+            automated = true,
+            verified = false,
+            stores = listOf(
                 Store(
                     "princes-street-butcher",
                     "Princes Street Butcher",
@@ -25,7 +26,13 @@ class PrincesStreetButcherScraper :
                     170.4998258,
                     true
                 )
-            )
+            ),
+            colourLight = 0xFF97f0ff,
+            onColourLight = 0xFF001f24,
+            colourDark = 0xFF004f58,
+            onColourDark = 0xFF97f0ff,
+            initialism = "PB",
+            local = true
         ),
         "https://www.princesstreetbutcher.co.nz"
     )

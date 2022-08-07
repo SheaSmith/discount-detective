@@ -55,7 +55,9 @@ abstract class WooCommerceScraper(
                         id = wooComProduct.id,
                         name = wooComProduct.name,
                         image = wooComProduct.images.firstOrNull()?.url,
-                        saleType = SaleType.EACH
+                        saleType = SaleType.EACH,
+                        automated = true,
+                        verified = false
                     )
 
                     product.pricing = retailer.stores!!.map {
@@ -63,7 +65,8 @@ abstract class WooCommerceScraper(
                             it.id,
                             wooComProduct.prices.price.toInt(),
                             discountPrice = if (wooComProduct.onSale) wooComProduct.prices.discountPrice.toInt() else null,
-                            verified = true,
+                            automated = true,
+                            verified = false
                         )
                     }.toMutableList()
 

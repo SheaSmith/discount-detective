@@ -55,7 +55,9 @@ abstract class WixStoresScraper(
                             price = wixStoresProduct.price.times(100).toInt()
                         )
                     ),
-                    saleType = SaleType.EACH
+                    saleType = SaleType.EACH,
+                    automated = true,
+                    verified = false
                 )
             )
         }

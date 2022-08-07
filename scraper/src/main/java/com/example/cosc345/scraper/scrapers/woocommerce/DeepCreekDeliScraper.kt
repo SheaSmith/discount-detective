@@ -12,7 +12,10 @@ import com.example.cosc345.shared.models.Store
 class DeepCreekDeliScraper : WooCommerceScraper(
     "deep-creek-deli",
     Retailer(
-        "Deep Creek Deli", true, listOf(
+        name = "Deep Creek Deli",
+        automated = true,
+        verified = false,
+        stores = listOf(
             Store(
                 "deep-creek-deli",
                 "Deep Creek Deli",
@@ -21,6 +24,12 @@ class DeepCreekDeliScraper : WooCommerceScraper(
                 170.5154902,
                 true
             )
-        )
+        ),
+        colourLight = 0xFFffe164,
+        onColourLight = 0xFF221b00,
+        colourDark = 0xFF544600,
+        onColourDark = 0xFFffe164,
+        initialism = "DC",
+        local = true
     ),"https://www.deepcreekdeli.co.nz"
 )

@@ -25,6 +25,7 @@ class CountdownScraper : Scraper() {
         val countdownService =
             generateJsonRequest(CountdownApi::class.java, "https://www.countdown.co.nz")
         val retailerId = "countdown"
+        val retailerName = "Countdown"
 
         val stores: MutableList<Store> = mutableListOf()
         val products: MutableList<RetailerProductInformation> = mutableListOf()
@@ -47,7 +48,7 @@ class CountdownScraper : Scraper() {
 
                     val store = Store(
                         countdownStore.site.storeId,
-                        countdownStore.site.name,
+                        countdownStore.site.name.replace(retailerName, "").trim(),
                         addressList.joinToString(", "),
                         countdownStore.site.latitude,
                         countdownStore.site.longitude,
@@ -85,7 +86,9 @@ class CountdownScraper : Scraper() {
                                             barcodes = if (countdownProduct.barcode != null) listOf(
                                                 countdownProduct.barcode
                                             ) else null,
-                                            image = countdownProduct.image?.imageUrl
+                                            image = countdownProduct.image?.imageUrl,
+                                            automated = true,
+                                            verified = false
                                         )
 
                                         var title = countdownProduct.name
@@ -152,7 +155,8 @@ class CountdownScraper : Scraper() {
                                             store = store.id,
                                             price = countdownProduct.price?.originalPrice?.times(100)
                                                 ?.toInt(),
-                                            verified = true
+                                            automated = true,
+                                            verified = false
                                         )
 
                                         if (countdownProduct.price?.savePrice != 0.0) {
@@ -182,7 +186,18 @@ class CountdownScraper : Scraper() {
                 }
             }
 
-        val retailer = Retailer("Countdown", true, stores)
+        val retailer = Retailer(
+            name = retailerName,
+            automated = true,
+            verified = false,
+            stores = stores,
+            colourLight = 0xFF95f8a8,
+            onColourLight = 0xFF00210a,
+            colourDark = 0xFF005324,
+            onColourDark = 0xFF95f8a8,
+            initialism = "CD",
+            local = false
+        )
 
         return ScraperResult(retailer, products, retailerId)
     }

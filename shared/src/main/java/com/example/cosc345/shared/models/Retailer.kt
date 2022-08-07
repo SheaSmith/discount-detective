@@ -18,7 +18,42 @@ data class Retailer(
     var automated: Boolean? = null,
 
     /**
+     * Whether this retailer was added by the retailer themselves.
+     */
+    var verified: Boolean? = null,
+
+    /**
      * An index of the stores associated with this retailer.
      */
     var stores: List<Store>? = null,
+
+    /**
+     * The colour associated with this store for light themes.
+     */
+    var colourLight: Long? = null,
+
+    /**
+     * The text colour to use for this store for light themes.
+     */
+    var onColourLight: Long? = null,
+
+    /**
+     * The colour associated with this store for dark themes.
+     */
+    var colourDark: Long? = null,
+
+    /**
+     * The text colour to uuse for this store for dark themes.
+     */
+    var onColourDark: Long? = null,
+
+    /**
+     * The two digit initialism to use for this store.
+     */
+    var initialism: String? = null,
+
+    /**
+     * Whether this retailer is local or not.
+     */
+    var local: Boolean? = null
 )

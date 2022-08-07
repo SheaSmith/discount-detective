@@ -13,9 +13,10 @@ import com.example.cosc345.shared.models.Store
 class SpeltBakeryScraper : WixStoresScraper(
     "spelt-bakery",
     Retailer(
-        "Spelt Bakery",
-        true,
-        listOf(
+        name = "Spelt Bakery",
+        automated = true,
+        verified = false,
+        stores = listOf(
             Store(
                 "spelt-bakery",
                 "Spelt Bakery",
@@ -24,7 +25,13 @@ class SpeltBakeryScraper : WixStoresScraper(
                 170.4958543,
                 true
             )
-        )
+        ),
+        colourLight = 0xFFffe07e,
+        onColourLight = 0xFF231b00,
+        colourDark = 0xFF564500,
+        onColourDark = 0xFFffe07e,
+        initialism = "SB",
+        local = true
     ),
     "https://www.speltbakery.com"
 )

@@ -42,7 +42,12 @@ data class StorePricingInformation(
     var clubOnly: Boolean? = null,
 
     /**
-     * Whether this price is 'verified'. Essentially, this is either a price extracted via automated means, or through a verified retailer submitting prices.
+     * Whether this price is scraped automatically.
+     */
+    var automated: Boolean? = null,
+
+    /**
+     * Whether this price is 'verified'. Essentially, this is either a price extracted via a verified retailer submitting prices.
      */
     var verified: Boolean? = null
 )

@@ -19,7 +19,9 @@ data class StorageRetailerProductInformation(
     val quantity: String?,
     val weight: Int?,
     val barcodes: List<String>?,
-    val image: String?
+    val image: String?,
+    val automated: Boolean,
+    val verified: Boolean
 ) {
     constructor(productInfo: RetailerProductInformation, productId: String?) : this(
         productInfo.id!!,
@@ -32,7 +34,9 @@ data class StorageRetailerProductInformation(
         productInfo.quantity,
         productInfo.weight,
         productInfo.barcodes,
-        productInfo.image
+        productInfo.image,
+        productInfo.automated!!,
+        productInfo.verified!!
     )
 
     fun toRetailerProductInformation(pricing: MutableList<StorePricingInformation>): RetailerProductInformation {
@@ -47,7 +51,9 @@ data class StorageRetailerProductInformation(
             weight,
             barcodes,
             image,
-            pricing
+            pricing,
+            automated,
+            verified
         )
     }
 }

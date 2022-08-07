@@ -16,10 +16,13 @@ import com.example.cosc345.shared.models.Units
 class CouplandsScraper : WooCommerceScraper(
     "couplands",
     Retailer(
-        "Couplands", true, listOf(
+        name = "Couplands",
+        automated = true,
+        verified = false,
+        stores = listOf(
             Store(
                 "couplands-kv",
-                "Couplands",
+                "Kaikorai Valley",
                 "560 Kaikorai Rd, Kenmure, Dunedin 9011",
                 -45.8864384,
                 170.4666199,
@@ -27,13 +30,19 @@ class CouplandsScraper : WooCommerceScraper(
             ),
             Store(
                 "couplands-ab",
-                "Couplands",
+                "Andersons Bay",
                 "446 Andersons Bay Rd, South Dunedin, Dunedin 9012",
                 -45.8837276,
                 170.4878583,
                 true
             )
-        )
+        ),
+        colourLight = 0xFFffdad7,
+        onColourLight = 0xFF410006,
+        colourDark = 0xFF930018,
+        onColourDark = 0xFFffdad7,
+        initialism = "CL",
+        local = false
     ), "https://www.couplands.co.nz"
 ) {
     override suspend fun runScraper(): ScraperResult {

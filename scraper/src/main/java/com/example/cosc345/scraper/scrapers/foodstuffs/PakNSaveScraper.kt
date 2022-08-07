@@ -12,8 +12,15 @@ import com.example.cosc345.shared.models.Retailer
 class PakNSaveScraper : FoodStuffsScraper(
     "paknsave",
     Retailer(
-        "PAK'nSAVE",
-        true
+        name = "PAK'nSAVE",
+        automated = true,
+        verified = false,
+        colourLight = 0xFFffe170,
+        onColourLight = 0xFF221b00,
+        colourDark = 0xFF544600,
+        onColourDark = 0xFFffe170,
+        initialism = "PS",
+        local = false
     ),
     "prod-online-pns-products-index",
     "prod-sitecore-pns-category-index",

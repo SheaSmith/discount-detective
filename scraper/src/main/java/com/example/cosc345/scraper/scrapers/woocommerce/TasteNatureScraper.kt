@@ -13,7 +13,10 @@ import com.example.cosc345.shared.models.Store
 class TasteNatureScraper : WooCommerceScraper(
     "taste nature",
     Retailer(
-        "Taste Nature", true, listOf(
+        name = "Taste Nature",
+        automated = true,
+        verified = true,
+        stores = listOf(
             Store(
                 "taste-nature",
                 "Taste Nature",
@@ -22,6 +25,12 @@ class TasteNatureScraper : WooCommerceScraper(
                 170.4984784,
                 true
             )
-        )
+        ),
+        colourLight = 0xFFe8e870,
+        onColourLight = 0xFF1d1d00,
+        colourDark = 0xFF494900,
+        onColourDark = 0xFFe8e870,
+        initialism = "TN",
+        local = true
     ),"https://www.tastenature.co.nz"
 )

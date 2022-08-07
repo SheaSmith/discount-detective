@@ -13,7 +13,10 @@ import com.example.cosc345.shared.models.Store
 class HarbourFishScraper : WooCommerceScraper(
     "harbour-fish",
     Retailer(
-        "Harbour Fish", true, listOf(
+        name = "Harbour Fish",
+        automated = true,
+        verified = false,
+        stores = listOf(
             Store(
                 "harbour-fish",
                 "Harbour Fish",
@@ -22,6 +25,12 @@ class HarbourFishScraper : WooCommerceScraper(
                 170.3749549,
                 true
             )
-        )
+        ),
+        colourLight = 0xFFdee0ff,
+        onColourLight = 0xFF000f5c,
+        colourDark = 0xFF313f90,
+        onColourDark = 0xFFdee0ff,
+        initialism = "HF",
+        local = true
     ),"https://harbourfish.co.nz"
 )

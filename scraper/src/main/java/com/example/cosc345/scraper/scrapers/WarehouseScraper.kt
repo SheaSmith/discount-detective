@@ -32,7 +32,7 @@ class WarehouseScraper : Scraper() {
             if (storeWhitelist.contains(warehouseStore.name)) {
                 val store = Store(
                     id = warehouseStore.branchId,
-                    name = "The Warehouse ${warehouseStore.name}",
+                    name = warehouseStore.name,
                     address = warehouseStore.address.address,
                     latitude = warehouseStore.latitude,
                     longitude = warehouseStore.longitude,
@@ -59,7 +59,9 @@ class WarehouseScraper : Scraper() {
                                     brandName = warehouseProduct.brand,
                                     saleType = SaleType.EACH,
                                     barcodes = listOf(warehouseProduct.barcode),
-                                    image = warehouseProduct.imageUrl
+                                    image = warehouseProduct.imageUrl,
+                                    automated = true,
+                                    verified = false
                                 )
 
                                 var name = warehouseProduct.name
@@ -105,7 +107,8 @@ class WarehouseScraper : Scraper() {
                                     discountPrice = if (warehouseProduct.priceInfo.date != null) warehouseProduct.priceInfo.price.times(
                                         100
                                     ).toInt() else null,
-                                    verified = true
+                                    verified = false,
+                                    automated = true
                                 )
 
                                 val discount =
@@ -144,7 +147,18 @@ class WarehouseScraper : Scraper() {
             }
         }
 
-        val retailer = Retailer("The Warehouse", true, stores)
+        val retailer = Retailer(
+            name = "The Warehouse",
+            automated = true,
+            verified = false,
+            stores = stores,
+            colourLight = 0xFFffdad4,
+            onColourLight = 0xFF410000,
+            colourDark = 0xFF930000,
+            onColourDark = 0xFFffdad4,
+            initialism = "WH",
+            local = false
+        )
 
         return ScraperResult(retailer, products, retailerId)
     }
