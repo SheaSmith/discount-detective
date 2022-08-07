@@ -12,8 +12,15 @@ import com.example.cosc345.shared.models.Retailer
 class SuperValueScraper : MyFoodLinkScraper(
     "supervalue",
     Retailer(
-        "SuperValue",
-        true
+        name = "SuperValue",
+        automated = true,
+        verified = false,
+        colourLight = 0xFFffdad4,
+        onColourLight = 0xFF400100,
+        colourDark = 0xFF920600,
+        onColourDark = 0xFFffdad4,
+        initialism = "SV",
+        local = true
     ),
     "https://www.supervalue.co.nz",
     arrayOf("SuperValue Plaza")

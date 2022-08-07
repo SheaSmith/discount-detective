@@ -12,8 +12,15 @@ import com.example.cosc345.shared.models.Retailer
 class FreshChoiceScraper : MyFoodLinkScraper(
     "freshchoice",
     Retailer(
-        "FreshChoice",
-        true
+        name = "FreshChoice",
+        automated = true,
+        verified = false,
+        colourLight = 0xFFc5e7ff,
+        onColourLight = 0xFF001e2d,
+        colourDark = 0xFF004c6a,
+        onColourDark = 0xFFc5e7ff,
+        initialism = "FC",
+        local = false
     ),
     "https://www.freshchoice.co.nz",
     arrayOf("FreshChoice Roslyn", "FreshChoice Green Island")

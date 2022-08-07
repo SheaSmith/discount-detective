@@ -46,7 +46,7 @@ abstract class MyFoodLinkScraper(
                 stores.add(
                     Store(
                         id = myFoodLinkStore.id,
-                        name = myFoodLinkStore.name,
+                        name = myFoodLinkStore.name.replace(retailer.name!!, "").trim(),
                         automated = true
                     )
                 )
@@ -56,9 +56,9 @@ abstract class MyFoodLinkScraper(
                     "https://${myFoodLinkStore.hostname}"
                 )
 
-                var page = 276
+                var page = 1
                 // Dummy value for first loop
-                var lastPage = 276
+                var lastPage = 1
 
                 while (page <= lastPage) {
                     val response = myFoodLinkHtmlService.getProducts(page)
@@ -97,7 +97,9 @@ abstract class MyFoodLinkScraper(
                                     saleType = if (gtmData.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
                                     weight = if (gtmData.saleType == "kg") 1000 else null,
                                     barcodes = listOf(gtmData.id),
-                                    image = line.image
+                                    image = line.image,
+                                    automated = true,
+                                    verified = false
                                 )
 
                                 val weightGrams =
@@ -152,7 +154,8 @@ abstract class MyFoodLinkScraper(
 
                             val pricing = StorePricingInformation(
                                 store = myFoodLinkStore.id,
-                                verified = true,
+                                automated = true,
+                                verified = false
                             )
 
                             val centsRegex = Regex("(\\d+)c")

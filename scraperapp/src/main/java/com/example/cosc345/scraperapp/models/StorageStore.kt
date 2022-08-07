@@ -1,13 +1,15 @@
 package com.example.cosc345.scraperapp.models
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.example.cosc345.shared.models.Store
 
 @Entity(
     tableName = "Stores",
-    primaryKeys = ["retailer", "id"]
+    primaryKeys = ["storeRetailer", "storeId"]
 )
 data class StorageStore(
+    @ColumnInfo(name = "storeRetailer")
     val retailer: String,
 
     /**
@@ -15,6 +17,7 @@ data class StorageStore(
      *
      * Required.
      */
+    @ColumnInfo(name = "storeId")
     val id: String,
 
     /**
@@ -22,6 +25,7 @@ data class StorageStore(
      *
      * Required.
      */
+    @ColumnInfo(name = "storeName")
     val name: String,
 
     /**
@@ -29,6 +33,7 @@ data class StorageStore(
      *
      * Required.
      */
+    @ColumnInfo(name = "storeAddress")
     val address: String?,
 
     /**
@@ -36,6 +41,7 @@ data class StorageStore(
      *
      * Required.
      */
+    @ColumnInfo(name = "storeLatitude")
     val latitude: Double?,
 
     /**
@@ -43,6 +49,7 @@ data class StorageStore(
      *
      * Required.
      */
+    @ColumnInfo(name = "storeLongitude")
     val longitude: Double?,
 
     /**
@@ -50,6 +57,7 @@ data class StorageStore(
      *
      * Required.
      */
+    @ColumnInfo(name = "storeAutomated")
     val automated: Boolean
 ) {
     constructor(store: Store, retailer: String) : this(

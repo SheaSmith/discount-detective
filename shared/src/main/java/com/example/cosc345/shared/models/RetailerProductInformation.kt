@@ -70,7 +70,15 @@ data class RetailerProductInformation(
     /**
      * The pricing for the different stores for this retailer.
      */
-    var pricing: MutableList<StorePricingInformation>? = null
+    var pricing: MutableList<StorePricingInformation>? = null,
 
+    /**
+     * Whether this product was added automatically.
+     */
+    var automated: Boolean? = null,
 
+    /**
+     * Whether this product was added by the retailer themselves.
+     */
+    var verified: Boolean? = null
 )

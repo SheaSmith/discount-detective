@@ -13,7 +13,14 @@ class NewWorldScraper : FoodStuffsScraper(
     "new-world",
     Retailer(
         name = "New World",
-        automated = true
+        automated = true,
+        verified = false,
+        colourLight = 0xFFffdad7,
+        onColourLight = 0xFF410004,
+        colourDark = 0xFF930015,
+        onColourDark = 0xFFffdad7,
+        initialism = "NW",
+        local = false
     ),
     "prod-online-nw-products-index",
     "prod-sitecore-nw-category-index",

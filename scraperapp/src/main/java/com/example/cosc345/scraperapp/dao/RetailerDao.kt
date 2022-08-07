@@ -9,7 +9,7 @@ import com.example.cosc345.scraperapp.models.StorageStore
 
 @Dao
 interface RetailerDao {
-    @Query("SELECT * FROM Retailers JOIN Stores ON Retailers.id = Stores.retailer")
+    @Query("SELECT * FROM Retailers JOIN Stores ON Retailers.id = Stores.storeRetailer")
     suspend fun getRetailers(): Map<StorageRetailer, List<StorageStore>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

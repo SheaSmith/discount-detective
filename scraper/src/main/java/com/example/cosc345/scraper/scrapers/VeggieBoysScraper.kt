@@ -23,7 +23,7 @@ class VeggieBoysScraper : Scraper() {
         val stores = listOf(
             Store(
                 "${retailerId}-south",
-                "Veggie Boys South Dunedin",
+                "South Dunedin",
                 "16 Prince Albert Road, St Kilda, Dunedin 9012",
                 -45.90009,
                 170.503682,
@@ -31,7 +31,7 @@ class VeggieBoysScraper : Scraper() {
             ),
             Store(
                 "${retailerId}-north",
-                "Veggie Boys North Dunedin",
+                "North Dunedin",
                 "16 Prince Albert Road, St Kilda, Dunedin 9012",
                 -45.867877,
                 170.514351,
@@ -51,7 +51,9 @@ class VeggieBoysScraper : Scraper() {
                 val product = RetailerProductInformation(
                     retailer = retailerId,
                     id = veggieBoysProduct.id,
-                    saleType = SaleType.EACH
+                    saleType = SaleType.EACH,
+                    automated = true,
+                    verified = false
                 )
 
                 var name = veggieBoysProduct.name!!
@@ -113,6 +115,8 @@ class VeggieBoysScraper : Scraper() {
                         discountPrice = if (veggieBoysProduct.onSpecial != null) veggieBoysProduct.price?.times(
                             100
                         )?.toInt() else null,
+                        automated = true,
+                        verified = false
                     )
                 }.toMutableList()
 
@@ -129,7 +133,18 @@ class VeggieBoysScraper : Scraper() {
             }
         }
 
-        val retailer = Retailer("Veggie Boys", true, stores)
+        val retailer = Retailer(
+            name = "Veggie Boys",
+            automated = true,
+            verified = false,
+            stores = stores,
+            colourLight = 0xFFaaf5a4,
+            onColourLight = 0xFF002204,
+            colourDark = 0xFF045316,
+            onColourDark = 0xFFaaf5a4,
+            initialism = "VB",
+            local = true
+        )
 
         return ScraperResult(retailer, products, retailerId)
     }

@@ -39,9 +39,21 @@ data class SearchableRetailerProductInformation(
     val image: String?,
 
     @Document.DocumentProperty(indexNestedProperties = false)
-    val pricing: List<SearchablePricingInformation>
+    val pricing: List<SearchablePricingInformation>,
+
+    @Document.BooleanProperty
+    val automated: Boolean,
+
+    @Document.BooleanProperty
+    val verified: Boolean,
+
+    @Document.LongProperty
+    val productsSize: Int,
+
+    @Document.BooleanProperty
+    val local: Boolean
 ) {
-    constructor(info: RetailerProductInformation) : this(
+    constructor(info: RetailerProductInformation, productsSize: Int, local: Boolean) : this(
         info.retailer!!,
         info.brandName,
         info.name!!,
@@ -52,6 +64,10 @@ data class SearchableRetailerProductInformation(
         info.weight,
         info.saleType!!,
         info.image,
-        info.pricing!!.map { SearchablePricingInformation(it, info.retailer!!) }
+        info.pricing!!.map { SearchablePricingInformation(it, info.retailer!!) },
+        info.automated ?: true,
+        info.verified ?: false,
+        productsSize,
+        local
     )
 }

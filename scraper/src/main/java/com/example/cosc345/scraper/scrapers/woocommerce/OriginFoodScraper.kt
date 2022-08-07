@@ -13,7 +13,10 @@ import com.example.cosc345.shared.models.Store
 class OriginFoodScraper : WooCommerceScraper(
     "origin-food",
     Retailer(
-        "Origin Food", true, listOf(
+        name = "Origin Food",
+        automated = true,
+        verified = false,
+        stores = listOf(
             Store(
                 "origin-food",
                 "Origin Food",
@@ -22,7 +25,13 @@ class OriginFoodScraper : WooCommerceScraper(
                 170.5047172,
                 true
             )
-        )
+        ),
+        colourLight = 0xFFffddb4,
+        onColourLight = 0xFF291800,
+        colourDark = 0xFF633f00,
+        onColourDark = 0xFFffddb4,
+        initialism = "OF",
+        local = true
     ), "https://originfood.co.nz",
     listOf(163)
 )

@@ -22,7 +22,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -66,17 +65,50 @@ class SearchRepository @Inject constructor(
         }
     }
 
-    suspend fun finish() {
+    private suspend fun finish() {
         appSearchSession.requestFlushAsync().await()
         appSearchSession.close()
     }
 
-    suspend fun setProducts(products: List<Pair<String, Product>>): AppSearchBatchResult<String, Void> {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun getRetailers(): Map<String, Boolean> {
+//        return suspendCancellableCoroutine { continuation ->
+//            database.reference.child("retailers").get().addOnSuccessListener {
+//                continuation.resume(it.getValue<Map<String, Retailer>>()!!.mapValues { it.value.local!! }, null)
+//            }
+//        }
+
+        return mapOf(
+            "new-world" to false,
+            "paknsave" to false,
+            "freshchoice" to false,
+            "supervalue" to true,
+            "leckies-butchery" to true,
+            "princes-street-butcher" to true,
+            "yogijis" to false,
+            "spelt-bakery" to true,
+            "couplands" to false,
+            "deep-creek-deli" to false,
+            "harbour-fish" to true,
+            "mad-butcher" to false,
+            "origin-food" to true,
+            "taste nature" to true,
+            "countdown" to false,
+            "veggie-boys" to true,
+            "four-square" to true,
+            "robertsons-meats" to true,
+            "warehouse" to false
+        )
+    }
+
+    private suspend fun setProducts(
+        products: List<Pair<String, Product>>,
+        localMap: Map<String, Boolean>
+    ): AppSearchBatchResult<String, Void> {
         awaitInitialization()
 
         val request = PutDocumentsRequest.Builder()
-            .addDocuments(products.map { SearchableProduct(it.second, it.first) }
-                .flatMap { it.information })
+            .addDocuments(products.map { SearchableProduct(it.second, it.first, localMap) })
             .build()
 
         val test = appSearchSession.putAsync(request).await()
@@ -97,8 +129,18 @@ class SearchRepository @Inject constructor(
         return searchResults
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun queryProductsFirebase(
+        query: String,
+        startAt: String?,
+        count: Int
+    ): Pair<List<SearchableProduct>, String> {
+        val localMap = getRetailers()
+        return getProductsFirebase(localMap, query, startAt, count)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun getProductsFirebase(
+        localMap: Map<String, Boolean>,
         query: String,
         startAt: String?,
         count: Int
@@ -110,7 +152,7 @@ class SearchRepository @Inject constructor(
                 continuation.resume(
                     Pair(snapshot
                         .getValue<Map<String, Product>>()
-                        ?.map { SearchableProduct(it.value, it.key) }
+                        ?.map { SearchableProduct(it.value, it.key, localMap) }
                         ?: listOf(), key),
                     null
                 )
@@ -147,7 +189,13 @@ class SearchRepository @Inject constructor(
 
         val searchResults = appSearchSession.search("", searchSpec).nextPageAsync.await()
 
-        return searchResults.isNotEmpty()
+        val result = searchResults.firstOrNull()
+        print("Test")
+        return result != null
+    }
+
+    suspend fun hasIndexed(): Boolean {
+        return context.indexSettingsDataStore.data.first().runBefore
     }
 
     suspend fun saveSearchDatabase() {
@@ -163,28 +211,34 @@ class SearchRepository @Inject constructor(
         }
     }
 
-    suspend fun indexFromFirebase(context: Context) {
+    suspend fun indexFromFirebase() {
         val lastUpdate = context.indexSettingsDataStore.data.first().lastUpdated
         val databaseLastUpdated = getLastUpdate()
 
         if (lastUpdate <= databaseLastUpdated) {
             initialise(false)
 
-            insertProducts()
+            val retailers = getRetailers()
+
+            insertProducts(retailers)
 
             finish()
+
+            context.indexSettingsDataStore.updateData {
+                it.toBuilder()
+                    .setLastUpdated(databaseLastUpdated + 1)
+                    .setRunBefore(true)
+                    .build()
+            }
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    @Suppress("UNUSED_VALUE")
-    private suspend fun insertProducts(
-        firstKey: String? = null
-    ) {
+    private suspend fun getProducts(firstKey: String? = null): Pair<List<Pair<String, Product>>, String> {
         return suspendCancellableCoroutine { continuation ->
             var query = database.reference
                 .child("products")
-                .limitToFirst(2000)
+                .limitToFirst(10000)
                 .orderByKey()
 
             if (firstKey != null) {
@@ -192,22 +246,28 @@ class SearchRepository @Inject constructor(
             }
 
             query.get().addOnSuccessListener {
-                runBlocking {
-                    var products: List<Pair<String, Product>>? =
-                        it.children.map { Pair(it.key!!, it.getValue<Product>()!!) }
+                val products: List<Pair<String, Product>>? =
+                    it.children.map { Pair(it.key!!, it.getValue<Product>()!!) }
 
-                    val newKey = products!!.last().first
+                val newKey = products!!.last().first
 
-                    setProducts(products)
-                    val size = products.size
-                    products = null
-                    System.gc()
-                    if (size == 2000) {
-                        insertProducts(newKey)
-                    }
-                }
-                continuation.resume(run {}, null)
+                continuation.resume(Pair(products, newKey), null)
             }
+        }
+    }
+
+    @Suppress("UNUSED_VALUE")
+    private suspend fun insertProducts(
+        localMap: Map<String, Boolean>
+    ) {
+        var lastSize = 10000
+        var firstKey: String? = null
+
+        while (lastSize == 10000) {
+            val result = getProducts(firstKey)
+            firstKey = result.second
+            setProducts(result.first, localMap)
+            lastSize = result.first.size
         }
     }
 }

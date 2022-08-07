@@ -12,18 +12,25 @@ import com.example.cosc345.shared.models.Store
 class YogijisFoodMartScraper : ShopifyScraper(
     "yogijis",
     Retailer(
-        "Yogiji's Food Mart",
-        true,
-        listOf(
+        name = "Yogiji's Food Mart",
+        automated = true,
+        verified = false,
+        stores = listOf(
             Store(
                 "yogijis",
-                "Yogiji's Food Mart Dunedin",
+                "Dunedin",
                 "229 Leith Street, Dunedin North, Dunedin 9016",
                 -45.8680625,
                 170.5139159,
                 true
             )
-        )
+        ),
+        colourLight = 0xFFe0e0ff,
+        onColourLight = 0xFF00036b,
+        colourDark = 0xFF2a33b6,
+        onColourDark = 0xFFe0e0ff,
+        initialism = "YO",
+        local = false
     ),
     "https://yogijis.co.nz"
 )

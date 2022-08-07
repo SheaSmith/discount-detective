@@ -77,6 +77,7 @@ class TemporaryDatabaseRepository @Inject constructor(
 
     suspend fun getRetailerProductInfo(): MutableList<RetailerProductInformation> {
         val storageInfo = retailerProductInformationDao.getRetailerProductInfo()
+        print("Test")
 
         return storageInfo.map { map ->
             map.key.toRetailerProductInformation(map.value.map { it.toStorePricingInformation() }

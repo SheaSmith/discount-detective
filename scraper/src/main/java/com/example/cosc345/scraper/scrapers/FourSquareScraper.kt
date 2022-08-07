@@ -20,6 +20,7 @@ import com.example.cosc345.shared.models.*
  */
 class FourSquareScraper : Scraper() {
     override suspend fun runScraper(): ScraperResult {
+        val retailerName = "Four Square"
         val baseUrl = "https://www.foursquare.co.nz"
         val fourSquareJsonService = generateJsonRequest(FourSquareApi::class.java, baseUrl)
         val fourSquareHtmlService = generateHtmlRequest(FourSquareApi::class.java, baseUrl)
@@ -36,7 +37,7 @@ class FourSquareScraper : Scraper() {
             if (storeWhitelist.contains(fourSquareStore.name)) {
                 val store = Store(
                     id = fourSquareStore.id,
-                    name = fourSquareStore.name,
+                    name = fourSquareStore.name.replace(retailerName, "").trim(),
                     address = fourSquareStore.address,
                     latitude = fourSquareStore.latitude,
                     longitude = fourSquareStore.longitude,
@@ -63,7 +64,9 @@ class FourSquareScraper : Scraper() {
                         id = fourSquareProduct.name.trim(),
                         saleType = if (fourSquareProduct.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
                         weight = if (fourSquareProduct.saleType == "kg") 1000 else null,
-                        image = fourSquareProduct.imageUrls.first()
+                        image = fourSquareProduct.imageUrls.first(),
+                        automated = true,
+                        verified = false
                     )
 
                     var name = fourSquareProduct.name.trim()
@@ -105,7 +108,8 @@ class FourSquareScraper : Scraper() {
                         StorePricingInformation(
                             it.id,
                             price = fourSquareProduct.price.toDouble().times(100).toInt(),
-                            verified = true
+                            automated = true,
+                            verified = false
                         )
                     }.toMutableList()
 
@@ -123,7 +127,9 @@ class FourSquareScraper : Scraper() {
                         id = fourSquareProduct.name?.trim(),
                         saleType = if (fourSquareProduct.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
                         weight = if (fourSquareProduct.saleType == "kg") 1000 else null,
-                        image = "${baseUrl}${fourSquareProduct.imagePath}"
+                        image = "${baseUrl}${fourSquareProduct.imagePath}",
+                        automated = true,
+                        verified = false
                     )
 
                     var name = fourSquareProduct.name!!.trim()
@@ -168,7 +174,8 @@ class FourSquareScraper : Scraper() {
                         StorePricingInformation(
                             it.id,
                             price = price,
-                            verified = true
+                            automated = true,
+                            verified = false
                         )
                     }.toMutableList()
 
@@ -177,7 +184,18 @@ class FourSquareScraper : Scraper() {
             }
         }
 
-        val retailer = Retailer("Four Square", true, stores)
+        val retailer = Retailer(
+            name = retailerName,
+            automated = true,
+            verified = false,
+            stores = stores,
+            colourLight = 0xFF9bf7a8,
+            onColourLight = 0xFF002109,
+            colourDark = 0xFF005322,
+            onColourDark = 0xFF9bf7a8,
+            initialism = "FS",
+            local = true
+        )
 
         return ScraperResult(retailer, products, retailerId)
     }

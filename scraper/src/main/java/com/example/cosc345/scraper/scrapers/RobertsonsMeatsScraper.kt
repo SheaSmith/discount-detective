@@ -42,7 +42,9 @@ class RobertsonsMeatsScraper : Scraper() {
                     id = robertsonsMeatsProduct.name,
                     saleType = if (robertsonsMeatsProduct.weight == null) SaleType.EACH else SaleType.WEIGHT,
                     weight = if (robertsonsMeatsProduct.weight != null) 1000 else null,
-                    image = "${baseUrl}${robertsonsMeatsProduct.imagePath}"
+                    image = "${baseUrl}${robertsonsMeatsProduct.imagePath}",
+                    automated = true,
+                    verified = false
                 )
 
                 var name = robertsonsMeatsProduct.name!!
@@ -66,7 +68,9 @@ class RobertsonsMeatsScraper : Scraper() {
                 product.pricing = mutableListOf(
                     StorePricingInformation(
                         retailerId,
-                        robertsonsMeatsProduct.price!!.times(100).toInt()
+                        robertsonsMeatsProduct.price!!.times(100).toInt(),
+                        automated = true,
+                        verified = false
                     )
                 )
 
@@ -74,7 +78,18 @@ class RobertsonsMeatsScraper : Scraper() {
             }
         }
 
-        val retailer = Retailer("Robertsons Meats", true, stores)
+        val retailer = Retailer(
+            name = "Robertsons Meats",
+            automated = true,
+            verified = false,
+            stores = stores,
+            colourLight = 0xFFd2e4ff,
+            onColourLight = 0xFF001c37,
+            colourDark = 0xFF00487f,
+            onColourDark = 0xFFd2e4ff,
+            initialism = "RM",
+            local = true
+        )
 
         return ScraperResult(retailer, products, retailerId)
     }

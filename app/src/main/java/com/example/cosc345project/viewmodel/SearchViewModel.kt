@@ -8,7 +8,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.cosc345project.models.SearchableRetailerProductInformation
+import com.example.cosc345project.models.SearchableProduct
 import com.example.cosc345project.paging.FirebaseProductsPagingSource
 import com.example.cosc345project.paging.ProductsSearchPagingSource
 import com.example.cosc345project.repository.SearchRepository
@@ -28,9 +28,13 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             searchRepository.initialise()
         }
+
+        viewModelScope.launch {
+
+        }
     }
 
-    val searchLiveData: MutableState<Flow<PagingData<SearchableRetailerProductInformation>>> =
+    val searchLiveData: MutableState<Flow<PagingData<SearchableProduct>>> =
         mutableStateOf(
             flowOf()
         )

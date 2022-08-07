@@ -17,6 +17,7 @@ data class StorageStorePricingInformation(
     val multiBuyQuantity: Int?,
     val multiBuyPrice: Int?,
     val clubOnly: Boolean?,
+    val automated: Boolean?,
     val verified: Boolean?
 ) {
     constructor(
@@ -31,6 +32,7 @@ data class StorageStorePricingInformation(
         storePricingInformation.multiBuyQuantity,
         storePricingInformation.multiBuyPrice,
         storePricingInformation.clubOnly,
+        storePricingInformation.automated,
         storePricingInformation.verified
     )
 
@@ -42,6 +44,7 @@ data class StorageStorePricingInformation(
             multiBuyQuantity,
             multiBuyPrice,
             clubOnly,
+            automated,
             verified
         )
 }

@@ -36,7 +36,12 @@ abstract class ShopifyScraper(
             val response = shopifyService.getProducts(page)
 
             response.products.forEach { shopifyProduct ->
-                val product = RetailerProductInformation(retailer = id, id = shopifyProduct.id)
+                val product = RetailerProductInformation(
+                    retailer = id,
+                    id = shopifyProduct.id,
+                    automated = true,
+                    verified = false
+                )
 
                 // Parse any weights from the product
                 Units.all.forEach {
@@ -117,7 +122,8 @@ abstract class ShopifyScraper(
                     StorePricingInformation(
                         id,
                         (firstVariant.price.toDouble() * 100).toInt(),
-                        verified = true
+                        automated = true,
+                        verified = false
                     )
                 )
 

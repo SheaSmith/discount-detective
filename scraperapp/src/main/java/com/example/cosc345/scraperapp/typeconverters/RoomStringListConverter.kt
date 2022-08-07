@@ -5,7 +5,7 @@ import androidx.room.TypeConverter
 class RoomStringListConverter {
     @TypeConverter
     fun fromStringList(value: List<String>?): String? {
-        return value?.let { value.joinToString { "," } }
+        return value?.let { value.joinToString(",") }
     }
 
     @TypeConverter

@@ -58,7 +58,7 @@ abstract class FoodStuffsScraper(
         val stores = foodStuffsStores.map {
             Store(
                 id = it.id,
-                name = it.name,
+                name = it.name.replace(retailer.name!!, "").trim(),
                 address = it.address,
                 latitude = it.latitude,
                 longitude = it.longitude,
@@ -113,7 +113,9 @@ abstract class FoodStuffsScraper(
                             foodStuffsProduct.productId.split(
                                 "-"
                             )[0]
-                        }.png"
+                        }.png",
+                        automated = true,
+                        verified = false
                     )
 
                     if (foodStuffsProduct.barcodes.isNotBlank()) {
@@ -151,7 +153,8 @@ abstract class FoodStuffsScraper(
                             StorePricingInformation(
                                 store = foodStuffsStores.first { it.idWithoutDashes == priceMap.key }.id,
                                 price = priceMap.value.toDouble().times(100).toInt(),
-                                verified = true
+                                automated = true,
+                                verified = false
                             )
                         }.toMutableList()
                     }
