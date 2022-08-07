@@ -3,6 +3,7 @@ package com.example.cosc345project
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.example.cosc345project.repository.RetailersRepository
 import com.example.cosc345project.repository.SearchRepository
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
@@ -31,9 +32,13 @@ class DiscountDetectorApp : Application(), Configuration.Provider {
 
         FirebaseApp.initializeApp(this, FirebaseOptions.fromResource(this)!!)
 
+        val database =
+            Firebase.database("https://discount-detective-default-rtdb.asia-southeast1.firebasedatabase.app/")
+
         val searchRepository = SearchRepository(
             this,
-            Firebase.database("https://discount-detective-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            database,
+            RetailersRepository(database)
         )
 
         scope.launch {

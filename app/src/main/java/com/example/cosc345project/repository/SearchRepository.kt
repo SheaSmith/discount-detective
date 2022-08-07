@@ -29,7 +29,8 @@ import javax.inject.Singleton
 @Singleton
 class SearchRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val database: FirebaseDatabase
+    private val database: FirebaseDatabase,
+    private val retailersRepository: RetailersRepository
 ) {
     private val isInitialized: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private lateinit var appSearchSession: AppSearchSession
@@ -70,35 +71,8 @@ class SearchRepository @Inject constructor(
         appSearchSession.close()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getRetailers(): Map<String, Boolean> {
-//        return suspendCancellableCoroutine { continuation ->
-//            database.reference.child("retailers").get().addOnSuccessListener {
-//                continuation.resume(it.getValue<Map<String, Retailer>>()!!.mapValues { it.value.local!! }, null)
-//            }
-//        }
-
-        return mapOf(
-            "new-world" to false,
-            "paknsave" to false,
-            "freshchoice" to false,
-            "supervalue" to true,
-            "leckies-butchery" to true,
-            "princes-street-butcher" to true,
-            "yogijis" to false,
-            "spelt-bakery" to true,
-            "couplands" to false,
-            "deep-creek-deli" to false,
-            "harbour-fish" to true,
-            "mad-butcher" to false,
-            "origin-food" to true,
-            "taste nature" to true,
-            "countdown" to false,
-            "veggie-boys" to true,
-            "four-square" to true,
-            "robertsons-meats" to true,
-            "warehouse" to false
-        )
+        return retailersRepository.getRetailers().mapValues { it.value.local!! }
     }
 
     private suspend fun setProducts(
