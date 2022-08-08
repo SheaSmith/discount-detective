@@ -45,6 +45,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.AsyncImage
 import com.example.cosc345project.R
+import com.example.cosc345project.extensions.getBestInformation
 import com.example.cosc345project.models.SearchableProduct
 import com.example.cosc345project.ui.components.StatusBarCenterAlignedTopAppBar
 import com.example.cosc345project.viewmodel.SearchViewModel
@@ -177,7 +178,7 @@ fun ProductCard(
     viewModel: SearchViewModel,
     navController: NavHostController
 ) {
-    val info = product?.information?.first()
+    val info = product?.getBestInformation()
     val localPrice = product?.let { viewModel.getLocalPrice(it) }
     val bestPrice = product?.let { viewModel.getBestPrice(it) }
 

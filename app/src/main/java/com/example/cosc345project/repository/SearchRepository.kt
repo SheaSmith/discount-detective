@@ -71,7 +71,7 @@ class SearchRepository @Inject constructor(
         appSearchSession.close()
     }
 
-    suspend fun getRetailers(): Map<String, Boolean> {
+    private suspend fun getRetailers(): Map<String, Boolean> {
         return retailersRepository.getRetailers().mapValues { it.value.local!! }
     }
 
@@ -168,10 +168,6 @@ class SearchRepository @Inject constructor(
         return result != null
     }
 
-    suspend fun hasIndexed(): Boolean {
-        return context.indexSettingsDataStore.data.first().runBefore
-    }
-
     suspend fun saveSearchDatabase() {
         appSearchSession.requestFlushAsync().await()
     }
@@ -197,13 +193,6 @@ class SearchRepository @Inject constructor(
             insertProducts(retailers)
 
             finish()
-
-            context.indexSettingsDataStore.updateData {
-                it.toBuilder()
-                    .setLastUpdated(databaseLastUpdated + 1)
-                    .setRunBefore(true)
-                    .build()
-            }
         }
     }
 
