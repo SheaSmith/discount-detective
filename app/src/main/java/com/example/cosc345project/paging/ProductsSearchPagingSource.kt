@@ -19,7 +19,7 @@ class ProductsSearchPagingSource(
     }
 
     override suspend fun load(params: LoadParams<SearchResults>): LoadResult<SearchResults, SearchableProduct> {
-        val searchResults = params.key ?: repository.queryProducts(query, params.loadSize)
+        val searchResults = params.key ?: repository.queryProductsAppSearch(query, params.loadSize)
         val response = searchResults.nextPageAsync.await()
         val res = response.map { it.getDocument(SearchableProduct::class.java) }
 

@@ -18,7 +18,6 @@ import com.example.cosc345project.repository.RetailersRepository
 import com.example.cosc345project.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,7 +37,7 @@ class SearchViewModel @Inject constructor(
 
     val searchLiveData: MutableState<Flow<PagingData<SearchableProduct>>> =
         mutableStateOf(
-            flowOf()
+            getFirebaseState()
         )
 
     val loading = mutableStateOf(false)
@@ -47,8 +46,8 @@ class SearchViewModel @Inject constructor(
     fun query(query: String = "") {
         loading.value = true
         viewModelScope.launch {
-            if (searchRepository.isAny()) {
-                searchLiveData.value = Pager(PagingConfig(pageSize = 50)) {
+            if (searchRepository.isInitialized.value && searchRepository.isAny()) {
+                searchLiveData.value = Pager(PagingConfig(pageSize = 10)) {
                     ProductsSearchPagingSource(searchRepository, query)
                 }
                     .flow
@@ -58,17 +57,21 @@ class SearchViewModel @Inject constructor(
                     }
                     .cachedIn(viewModelScope)
             } else {
-                searchLiveData.value = Pager(PagingConfig(pageSize = 50)) {
-                    FirebaseProductsPagingSource(searchRepository, query)
-                }
-                    .flow
-                    .map {
-                        loading.value = false
-                        it
-                    }
-                    .cachedIn(viewModelScope)
+                searchLiveData.value = getFirebaseState(query)
             }
         }
+    }
+
+    private fun getFirebaseState(query: String = ""): Flow<PagingData<SearchableProduct>> {
+        return Pager(PagingConfig(pageSize = 10)) {
+            FirebaseProductsPagingSource(searchRepository, query)
+        }
+            .flow
+            .map {
+                loading.value = false
+                it
+            }
+            .cachedIn(viewModelScope)
     }
 
     /**

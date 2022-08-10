@@ -65,9 +65,6 @@ fun SearchScreen(
     val loading by remember {
         viewModel.loading
     }
-    remember {
-        viewModel.query(search)
-    }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
     )
@@ -287,6 +284,12 @@ fun ProductCard(
             }
 
             Row {
+                Column {
+                    product?.information?.forEach {
+                        Text(it.retailer)
+                    }
+                }
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = { /*TODO*/ },

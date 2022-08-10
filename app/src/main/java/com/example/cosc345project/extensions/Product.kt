@@ -37,7 +37,7 @@ private fun getScoreForRetailer(retailer: String): Int {
         "freshchoice" -> 2
         "supervalue" -> 2
         "warehouse" -> 2
-        "four-square" -> -1
-        else -> 0
+        "four-square" -> 4
+        else -> 3
     }
 }
