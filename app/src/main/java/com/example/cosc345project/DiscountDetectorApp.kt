@@ -3,23 +3,18 @@ package com.example.cosc345project
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.example.cosc345project.repository.SearchRepository
-import com.google.firebase.FirebaseApp
-import com.google.firebase.FirebaseOptions
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.cosc345project.workers.IndexingWorker
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
+import java.time.Duration
 import javax.inject.Inject
 
 @HiltAndroidApp
 class DiscountDetectorApp : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
-
-    private val scope = CoroutineScope(newSingleThreadContext("name"))
 
     override fun getWorkManagerConfiguration() =
         Configuration.Builder()
@@ -29,17 +24,14 @@ class DiscountDetectorApp : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        FirebaseApp.initializeApp(this, FirebaseOptions.fromResource(this)!!)
+        WorkManager.getInstance(this).cancelAllWork()
 
-        val searchRepository = SearchRepository(
-            this,
-            Firebase.database("https://discount-detective-default-rtdb.asia-southeast1.firebasedatabase.app/")
-        )
-
-        scope.launch {
-            if (!searchRepository.hasIndexed()) {
-                searchRepository.indexFromFirebase()
-            }
-        }
+        WorkManager.getInstance(this)
+            .enqueueUniquePeriodicWork(
+                "indexer",
+                ExistingPeriodicWorkPolicy.KEEP,
+                PeriodicWorkRequestBuilder<IndexingWorker>(Duration.ofHours(1))
+                    .build()
+            )
     }
 }

@@ -37,5 +37,7 @@ object TemporaryDatabaseModule {
     @Provides
     @Singleton
     fun providesTemporaryDatabase(@ApplicationContext context: Context): TemporaryDatabase =
-        Room.databaseBuilder(context, TemporaryDatabase::class.java, "TemporaryDatabase").build()
+        Room.databaseBuilder(context, TemporaryDatabase::class.java, "TemporaryDatabase")
+            .fallbackToDestructiveMigration()
+            .build()
 }

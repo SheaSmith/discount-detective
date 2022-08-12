@@ -1,7 +1,6 @@
 package com.example.cosc345project.models
 
-import android.app.appsearch.AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_EXACT_TERMS
-import android.app.appsearch.AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES
+import android.app.appsearch.AppSearchSchema.StringPropertyConfig.*
 import androidx.appsearch.annotation.Document
 import androidx.appsearch.app.AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_NONE
 import com.example.cosc345.shared.models.RetailerProductInformation
@@ -23,7 +22,10 @@ data class SearchableRetailerProductInformation(
     @Document.Id
     val id: String,
 
-    @Document.StringProperty(indexingType = INDEXING_TYPE_EXACT_TERMS)
+    @Document.StringProperty(
+        indexingType = INDEXING_TYPE_EXACT_TERMS,
+        tokenizerType = TOKENIZER_TYPE_PLAIN
+    )
     val barcodes: String?,
 
     @Document.StringProperty(indexingType = INDEXING_TYPE_PREFIXES)
