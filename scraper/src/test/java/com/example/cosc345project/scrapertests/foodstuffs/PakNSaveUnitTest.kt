@@ -1,8 +1,8 @@
-package com.example.cosc345project.foodstuffs
+package com.example.cosc345project.scrapertests.foodstuffs
 
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.scraper.scrapers.foodstuffs.PakNSaveScraper
-import com.example.cosc345project.BaseTests
+import com.example.cosc345project.scrapertests.BaseTests
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

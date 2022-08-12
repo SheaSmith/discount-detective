@@ -1,8 +1,8 @@
-package com.example.cosc345project.wixstores
+package com.example.cosc345project.scrapertests.myfoodlink
 
 import com.example.cosc345.scraper.models.ScraperResult
-import com.example.cosc345.scraper.scrapers.wixstores.SpeltBakeryScraper
-import com.example.cosc345project.BaseTests
+import com.example.cosc345.scraper.scrapers.myfoodlink.FreshChoiceScraper
+import com.example.cosc345project.scrapertests.BaseTests
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -11,8 +11,8 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
-@DisplayName("Spelt Bakery tests")
-class SpeltBakeryUnitTest : BaseTests() {
+@DisplayName("FreshChoice tests")
+class FreshChoiceUnitTest : BaseTests() {
     companion object {
         private var response: ScraperResult? = null
     }
@@ -21,7 +21,7 @@ class SpeltBakeryUnitTest : BaseTests() {
         if (response == null) {
             runBlocking {
                 val time = measureTime {
-                    response = SpeltBakeryScraper().runScraper()
+                    response = FreshChoiceScraper().runScraper()
                 }
 
                 println("Time taken to get products: ${time.toString(DurationUnit.SECONDS, 1)}")
@@ -30,27 +30,27 @@ class SpeltBakeryUnitTest : BaseTests() {
     }
 
     @Test
-    @DisplayName("Spelt Bakery has stores")
-    fun `Spelt Bakery has stores`() =
+    @DisplayName("FreshChoice has stores")
+    fun `FreshChoice has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
-    @DisplayName("Spelt Bakery stores have required fields")
-    fun `Spelt Bakery stores have required fields`() =
+    @DisplayName("FreshChoice stores have required fields")
+    fun `FreshChoice stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
-    @DisplayName("Spelt Bakery has products")
-    fun `Spelt Bakery has products`() =
+    @DisplayName("FreshChoice has products")
+    fun `FreshChoice has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
-    @DisplayName("Spelt Bakery products have prices")
-    fun `Spelt Bakery products have prices`() =
+    @DisplayName("FreshChoice products have prices")
+    fun `FreshChoice products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
-    @DisplayName("Spelt Bakery products have required fields")
-    fun `Spelt Bakery products have required fields`() =
+    @DisplayName("FreshChoice products have required fields")
+    fun `FreshChoice products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation)
 }

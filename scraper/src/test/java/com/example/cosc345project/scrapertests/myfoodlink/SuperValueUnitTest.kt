@@ -1,8 +1,8 @@
-package com.example.cosc345project.myfoodlink
+package com.example.cosc345project.scrapertests.myfoodlink
 
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.scraper.scrapers.myfoodlink.SuperValueScraper
-import com.example.cosc345project.BaseTests
+import com.example.cosc345project.scrapertests.BaseTests
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

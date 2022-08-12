@@ -1,8 +1,8 @@
-package com.example.cosc345project.shopify
+package com.example.cosc345project.scrapertests.woocommerce
 
 import com.example.cosc345.scraper.models.ScraperResult
-import com.example.cosc345.scraper.scrapers.shopify.YogijisFoodMartScraper
-import com.example.cosc345project.BaseTests
+import com.example.cosc345.scraper.scrapers.woocommerce.DeepCreekDeliScraper
+import com.example.cosc345project.scrapertests.BaseTests
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -11,8 +11,8 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
-@DisplayName("Yogiji's Food Mart tests")
-class YogijisFoodMartUnitTest : BaseTests() {
+@DisplayName("Deep Creek Deli tests")
+class DeepCreekDeliUnitTest : BaseTests() {
     companion object {
         private var response: ScraperResult? = null
     }
@@ -21,7 +21,7 @@ class YogijisFoodMartUnitTest : BaseTests() {
         if (response == null) {
             runBlocking {
                 val time = measureTime {
-                    response = YogijisFoodMartScraper().runScraper()
+                    response = DeepCreekDeliScraper().runScraper()
                 }
 
                 println("Time taken to get products: ${time.toString(DurationUnit.SECONDS, 1)}")
@@ -30,27 +30,27 @@ class YogijisFoodMartUnitTest : BaseTests() {
     }
 
     @Test
-    @DisplayName("Yogiji's Food Mart has stores")
-    fun `Yogiji's Food Mart has stores`() =
+    @DisplayName("Deep Creek Deli has stores")
+    fun `Deep Creek Deli has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
-    @DisplayName("Yogiji's Food Mart stores have required fields")
-    fun `Yogiji's Food Mart stores have required fields`() =
+    @DisplayName("Deep Creek Deli stores have required fields")
+    fun `Deep Creek Deli stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
-    @DisplayName("Yogiji's Food Mart has products")
-    fun `Yogiji's Food Mart has products`() =
+    @DisplayName("Deep Creek Deli has products")
+    fun `Deep Creek Deli has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
-    @DisplayName("Yogiji's Food Mart products have prices")
-    fun `Yogiji's Food Mart products have prices`() =
+    @DisplayName("Deep Creek Deli products have prices")
+    fun `Deep Creek Deli products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
-    @DisplayName("Yogiji's Food Mart products have required fields")
-    fun `Yogiji's Food Mart products have required fields`() =
+    @DisplayName("Deep Creek Deli products have required fields")
+    fun `Deep Creek Deli products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation, false)
 }

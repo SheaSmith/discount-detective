@@ -1,8 +1,7 @@
-package com.example.cosc345project.woocommerce
+package com.example.cosc345project.scrapertests
 
 import com.example.cosc345.scraper.models.ScraperResult
-import com.example.cosc345.scraper.scrapers.woocommerce.HarbourFishScraper
-import com.example.cosc345project.BaseTests
+import com.example.cosc345.scraper.scrapers.FourSquareScraper
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -11,8 +10,8 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
-@DisplayName("Harbour Fish tests")
-class HarbourFishUnitTest : BaseTests() {
+@DisplayName("Four Square tests")
+class FourSquareUnitTest : BaseTests() {
     companion object {
         private var response: ScraperResult? = null
     }
@@ -21,7 +20,7 @@ class HarbourFishUnitTest : BaseTests() {
         if (response == null) {
             runBlocking {
                 val time = measureTime {
-                    response = HarbourFishScraper().runScraper()
+                    response = FourSquareScraper().runScraper()
                 }
 
                 println("Time taken to get products: ${time.toString(DurationUnit.SECONDS, 1)}")
@@ -30,27 +29,27 @@ class HarbourFishUnitTest : BaseTests() {
     }
 
     @Test
-    @DisplayName("Harbour Fish has stores")
-    fun `Harbour Fish has stores`() =
+    @DisplayName("Four Square has stores")
+    fun `Four Square has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
-    @DisplayName("Harbour Fish stores have required fields")
-    fun `Harbour Fish stores have required fields`() =
+    @DisplayName("Four Square stores have required fields")
+    fun `Four Square stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
-    @DisplayName("Harbour Fish has products")
-    fun `Harbour Fish has products`() =
+    @DisplayName("Four Square has products")
+    fun `Four Square has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
-    @DisplayName("Harbour Fish products have prices")
-    fun `Harbour Fish products have prices`() =
+    @DisplayName("Four Square products have prices")
+    fun `Four Square products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
-    @DisplayName("Harbour Fish products have required fields")
-    fun `Harbour Fish products have required fields`() =
+    @DisplayName("Four Square products have required fields")
+    fun `Four Square products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation)
 }
