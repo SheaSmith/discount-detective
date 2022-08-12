@@ -150,6 +150,7 @@ dependencies {
     implementation "androidx.paging:paging-runtime:$paging_version"
     testImplementation "androidx.paging:paging-common:$paging_version"
     implementation "androidx.paging:paging-compose:1.0.0-alpha15"
+    implementation "androidx.concurrent:concurrent-futures-ktx:1.1.0"
 
     implementation "io.coil-kt:coil-compose:2.1.0"
 

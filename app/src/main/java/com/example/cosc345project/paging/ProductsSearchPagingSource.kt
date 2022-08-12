@@ -1,9 +1,9 @@
 package com.example.cosc345project.paging
 
 import androidx.appsearch.app.SearchResults
+import androidx.concurrent.futures.await
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import androidx.work.await
 import com.example.cosc345project.models.SearchableProduct
 import com.example.cosc345project.repository.SearchRepository
 
