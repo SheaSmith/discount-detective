@@ -24,7 +24,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.*
 import com.example.cosc345.scraperapp.ui.theme.DiscountDetectiveTheme
-import com.example.cosc345.scraperapp.workers.BarcodeMergeWorker
+import com.example.cosc345.scraperapp.workers.SaveToFirebaseWorker
 import com.example.cosc345.scraperapp.workers.ScraperWorker
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import dagger.hilt.android.AndroidEntryPoint
@@ -136,7 +136,7 @@ fun MainScreen(
                 }
 
                 Button(onClick = {
-                    val workRequest = OneTimeWorkRequestBuilder<BarcodeMergeWorker>()
+                    val workRequest = OneTimeWorkRequestBuilder<SaveToFirebaseWorker>()
                         .setBackoffCriteria(
                             BackoffPolicy.LINEAR,
                             Duration.ofMinutes(30)
@@ -149,7 +149,7 @@ fun MainScreen(
 
                     WorkManager
                         .getInstance(context)
-                        .enqueueUniqueWork("barcodes", ExistingWorkPolicy.REPLACE, workRequest)
+                        .enqueueUniqueWork("firebase", ExistingWorkPolicy.REPLACE, workRequest)
                 }) {
                     Text(text = "Run value matcher")
                 }

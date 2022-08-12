@@ -53,7 +53,7 @@ class ScraperRepository @Inject constructor(
     ) {
         saveRetailers(retailers)
 
-        val deletedProducts = getKeys().toMutableList()
+        val deletedProducts = getKeys()
         deletedProducts.removeAll(products.keys)
 
         deleteProducts(deletedProducts)
@@ -91,10 +91,33 @@ class ScraperRepository @Inject constructor(
         }
     }
 
-    private suspend fun getKeys(): List<String> {
+    private suspend fun getKeys(): MutableList<String> {
+        var lastKey: String? = null
+        var lastSize = 5000
+        val keys = mutableListOf<String>()
+
+        while (lastSize == 5000) {
+            val result = getSomeKeys(lastKey)
+            keys.addAll(result)
+            lastKey = result.last()
+            lastSize = result.size
+        }
+
+        return keys
+    }
+
+    private suspend fun getSomeKeys(start: String? = null): List<String> {
+        var query = firebaseDatabase.reference.child("products")
+            .orderByKey()
+            .limitToFirst(5000)
+
+        if (start != null) {
+            query = query.startAt(start)
+        }
+
         return suspendCancellableCoroutine { continuation ->
-            firebaseDatabase.reference.child("products").get().addOnSuccessListener { products ->
-                continuation.resume(products.children.map { it.key!! }, null)
+            query.get().addOnSuccessListener { snapshot ->
+                continuation.resume(snapshot.children.map { it.key!! }, null)
             }
         }
     }
@@ -103,6 +126,7 @@ class ScraperRepository @Inject constructor(
         return suspendCancellableCoroutine { continuation ->
             firebaseDatabase.getReference("products").child(key).setValue(product)
                 .addOnSuccessListener {
+                    System.gc()
                     continuation.resume(run {}, null)
                 }
         }
