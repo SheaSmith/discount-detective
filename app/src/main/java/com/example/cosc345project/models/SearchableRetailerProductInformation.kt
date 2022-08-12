@@ -1,7 +1,7 @@
 package com.example.cosc345project.models
 
-import android.app.appsearch.AppSearchSchema
 import androidx.appsearch.annotation.Document
+import androidx.appsearch.app.AppSearchSchema
 import com.example.cosc345.shared.models.RetailerProductInformation
 
 @Document
