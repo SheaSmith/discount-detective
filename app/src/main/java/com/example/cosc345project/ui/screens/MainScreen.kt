@@ -20,10 +20,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.cosc345project.R
 import com.example.cosc345project.ui.Navigation
 import com.example.cosc345project.ui.utils.DevicePosture
@@ -138,9 +140,13 @@ fun MainContent(
                 ) {
                     composable(Navigation.SEARCH.route) {
                         val parentViewModel = hiltViewModel<SearchViewModel>()
-                        SearchScreen(parentViewModel)
+                        SearchScreen(parentViewModel, navController)
                     }
                     composable(Navigation.SHOPPING_LIST.route) { ShoppingListScreen() }
+                    composable(
+                        Navigation.PRODUCT.route,
+                        arguments = listOf(navArgument("productId") { type = NavType.StringType })
+                    ) { ProductScreen() }
 //                    composable(Navigation.SETTINGS.route) { Text(text = "Settings") }
                 }
             }
@@ -182,7 +188,7 @@ fun MainNavigationRail(
             NavigationRailItem(
                 icon = {
                     Icon(
-                        imageVector = screen.icon,
+                        imageVector = screen.icon!!,
                         contentDescription = null
                     )
                 },
@@ -223,11 +229,11 @@ fun MainBottomNavigationBar(navController: NavHostController) {
             NavigationBarItem(
                 icon = {
                     Icon(
-                        imageVector = screen.icon,
+                        imageVector = screen.icon!!,
                         contentDescription = null
                     )
                 },
-                label = { Text(stringResource(id = screen.nameResource)) },
+                label = { Text(stringResource(id = screen.nameResource!!)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = { handleClick(screen, navController) }
             )
@@ -282,13 +288,13 @@ fun NavigationDrawerContent(
             NavigationDrawerItem(
                 icon = {
                     Icon(
-                        imageVector = screen.icon,
+                        imageVector = screen.icon!!,
                         contentDescription = null
                     )
                 },
                 label = {
                     Text(
-                        text = stringResource(id = screen.nameResource),
+                        text = stringResource(id = screen.nameResource!!),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 },
