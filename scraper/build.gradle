@@ -41,7 +41,7 @@ test {
     useJUnitPlatform()
 
     filter {
-        excludeTestsMatching("com.example.cosc345project.scrapertests")
+        excludeTestsMatching("com.example.cosc345project.scrapertests.*")
     }
 }
 
