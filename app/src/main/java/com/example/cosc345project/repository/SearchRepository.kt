@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.appsearch.app.*
 import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_DOCUMENT_SCORE
 import androidx.appsearch.localstorage.LocalStorage
-import androidx.work.await
+import androidx.concurrent.futures.await
 import com.example.cosc345.shared.extensions.capitaliseNZ
 import com.example.cosc345.shared.extensions.titleCase
 import com.example.cosc345.shared.models.Product
