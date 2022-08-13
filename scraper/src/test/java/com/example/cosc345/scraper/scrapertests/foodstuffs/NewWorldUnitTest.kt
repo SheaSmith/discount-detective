@@ -1,8 +1,8 @@
-package com.example.cosc345project.scrapertests.myfoodlink
+package com.example.cosc345.scraper.scrapertests.foodstuffs
 
 import com.example.cosc345.scraper.models.ScraperResult
-import com.example.cosc345.scraper.scrapers.myfoodlink.SuperValueScraper
-import com.example.cosc345project.scrapertests.BaseTests
+import com.example.cosc345.scraper.scrapers.foodstuffs.NewWorldScraper
+import com.example.cosc345.scraper.scrapertests.BaseTests
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -11,8 +11,8 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
-@DisplayName("SuperValue tests")
-class SuperValueUnitTest : BaseTests() {
+@DisplayName("New World tests")
+class NewWorldUnitTest : BaseTests() {
     companion object {
         private var response: ScraperResult? = null
     }
@@ -21,7 +21,7 @@ class SuperValueUnitTest : BaseTests() {
         if (response == null) {
             runBlocking {
                 val time = measureTime {
-                    response = SuperValueScraper().runScraper()
+                    response = NewWorldScraper().runScraper()
                 }
 
                 println("Time taken to get products: ${time.toString(DurationUnit.SECONDS, 1)}")
@@ -30,27 +30,27 @@ class SuperValueUnitTest : BaseTests() {
     }
 
     @Test
-    @DisplayName("SuperValue has stores")
-    fun `SuperValue has stores`() =
+    @DisplayName("New World has stores")
+    fun `New World has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
-    @DisplayName("SuperValue stores have required fields")
-    fun `SuperValue stores have required fields`() =
+    @DisplayName("New World stores have required fields")
+    fun `New World stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
-    @DisplayName("SuperValue has products")
-    fun `SuperValue has products`() =
+    @DisplayName("New World has products")
+    fun `New World has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
-    @DisplayName("SuperValue products have prices")
-    fun `SuperValue products have prices`() =
+    @DisplayName("New World products have prices")
+    fun `New World products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
-    @DisplayName("SuperValue products have required fields")
-    fun `SuperValue products have required fields`() =
+    @DisplayName("New World products have required fields")
+    fun `New World products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation)
 }

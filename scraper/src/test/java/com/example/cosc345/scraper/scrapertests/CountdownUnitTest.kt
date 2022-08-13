@@ -1,7 +1,7 @@
-package com.example.cosc345project.scrapertests
+package com.example.cosc345.scraper.scrapertests
 
 import com.example.cosc345.scraper.models.ScraperResult
-import com.example.cosc345.scraper.scrapers.VeggieBoysScraper
+import com.example.cosc345.scraper.scrapers.CountdownScraper
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -10,8 +10,8 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
-@DisplayName("Veggie Boys tests")
-class VeggieBoysUnitTest : BaseTests() {
+@DisplayName("Countdown tests")
+class CountdownUnitTest : BaseTests() {
     companion object {
         private var response: ScraperResult? = null
     }
@@ -20,7 +20,7 @@ class VeggieBoysUnitTest : BaseTests() {
         if (response == null) {
             runBlocking {
                 val time = measureTime {
-                    response = VeggieBoysScraper().runScraper()
+                    response = CountdownScraper().runScraper()
                 }
 
                 println("Time taken to get products: ${time.toString(DurationUnit.SECONDS, 1)}")
@@ -29,27 +29,27 @@ class VeggieBoysUnitTest : BaseTests() {
     }
 
     @Test
-    @DisplayName("Veggie Boys has stores")
-    fun `Veggie Boys has stores`() =
+    @DisplayName("Countdown has stores")
+    fun `Countdown has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
-    @DisplayName("Veggie Boys stores have required fields")
-    fun `Veggie Boys stores have required fields`() =
+    @DisplayName("Countdown stores have required fields")
+    fun `Countdown stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
-    @DisplayName("Veggie Boys has products")
-    fun `Veggie Boys has products`() =
+    @DisplayName("Countdown has products")
+    fun `Countdown has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
-    @DisplayName("Veggie Boys products have prices")
-    fun `Veggie Boys products have prices`() =
+    @DisplayName("Countdown products have prices")
+    fun `Countdown products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
-    @DisplayName("Veggie Boys products have required fields")
-    fun `Veggie Boys products have required fields`() =
+    @DisplayName("Countdown products have required fields")
+    fun `Countdown products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation)
 }

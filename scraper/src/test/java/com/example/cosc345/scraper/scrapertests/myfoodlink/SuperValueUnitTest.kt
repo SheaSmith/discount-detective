@@ -1,7 +1,8 @@
-package com.example.cosc345project.scrapertests
+package com.example.cosc345.scraper.scrapertests.myfoodlink
 
 import com.example.cosc345.scraper.models.ScraperResult
-import com.example.cosc345.scraper.scrapers.RobertsonsMeatsScraper
+import com.example.cosc345.scraper.scrapers.myfoodlink.SuperValueScraper
+import com.example.cosc345.scraper.scrapertests.BaseTests
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -10,8 +11,8 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @OptIn(ExperimentalTime::class)
-@DisplayName("Robertsons Meats tests")
-class RobertsonsMeatsUnitTest : BaseTests() {
+@DisplayName("SuperValue tests")
+class SuperValueUnitTest : BaseTests() {
     companion object {
         private var response: ScraperResult? = null
     }
@@ -20,7 +21,7 @@ class RobertsonsMeatsUnitTest : BaseTests() {
         if (response == null) {
             runBlocking {
                 val time = measureTime {
-                    response = RobertsonsMeatsScraper().runScraper()
+                    response = SuperValueScraper().runScraper()
                 }
 
                 println("Time taken to get products: ${time.toString(DurationUnit.SECONDS, 1)}")
@@ -29,27 +30,27 @@ class RobertsonsMeatsUnitTest : BaseTests() {
     }
 
     @Test
-    @DisplayName("Robertsons Meats has stores")
-    fun `Robertsons Meats has stores`() =
+    @DisplayName("SuperValue has stores")
+    fun `SuperValue has stores`() =
         assert(!response!!.retailer.stores.isNullOrEmpty())
 
     @Test
-    @DisplayName("Robertsons Meats stores have required fields")
-    fun `Robertsons Meats stores have required fields`() =
+    @DisplayName("SuperValue stores have required fields")
+    fun `SuperValue stores have required fields`() =
         allStoresHaveRequiredFields(response!!.retailer.stores!!)
 
     @Test
-    @DisplayName("Robertsons Meats has products")
-    fun `Robertsons Meats has products`() =
+    @DisplayName("SuperValue has products")
+    fun `SuperValue has products`() =
         assert(response!!.productInformation.isNotEmpty())
 
     @Test
-    @DisplayName("Robertsons Meats products have prices")
-    fun `Robertsons Meats products have prices`() =
+    @DisplayName("SuperValue products have prices")
+    fun `SuperValue products have prices`() =
         assert(allProductsHavePrices(response!!.productInformation))
 
     @Test
-    @DisplayName("Robertsons Meats products have required fields")
-    fun `Robertsons Meats products have required fields`() =
+    @DisplayName("SuperValue products have required fields")
+    fun `SuperValue products have required fields`() =
         allProductsHaveRequiredFields(response!!.productInformation)
 }

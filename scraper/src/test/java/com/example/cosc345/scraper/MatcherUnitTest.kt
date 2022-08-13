@@ -1,4 +1,4 @@
-package com.example.cosc345project.scrapertests
+package com.example.cosc345.scraper
 
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

@@ -1,4 +1,4 @@
-package com.example.cosc345project.scrapertests
+package com.example.cosc345.scraper.scrapertests
 
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.SaleType

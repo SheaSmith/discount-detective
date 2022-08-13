@@ -1,8 +1,8 @@
-package com.example.cosc345project.scrapertests.woocommerce
+package com.example.cosc345.scraper.scrapertests.woocommerce
 
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.scraper.scrapers.woocommerce.MadButcherScraper
-import com.example.cosc345project.scrapertests.BaseTests
+import com.example.cosc345.scraper.scrapertests.BaseTests
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
