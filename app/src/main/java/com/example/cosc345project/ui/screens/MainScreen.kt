@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -64,7 +65,6 @@ fun MainScreen(
 
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NavigationWrapper(
@@ -113,7 +113,6 @@ private fun NavigationWrapper(
         }
     }
 }
-
 @Composable
 fun MainContent(
     navController: NavHostController,
@@ -162,7 +161,6 @@ fun MainContent(
         }
     }
 }
-
 @Composable
 fun MainNavigationRail(
     navController: NavHostController,
@@ -198,7 +196,6 @@ fun MainNavigationRail(
         }
     }
 }
-
 private fun handleClick(screen: Navigation, navHostController: NavHostController) {
     navHostController.navigate(screen.route) {
         // Pop up to the start destination of the graph to
