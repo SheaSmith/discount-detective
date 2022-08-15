@@ -21,15 +21,14 @@ import javax.inject.Singleton
  * Needs to hold the retailer info, type checked etc
  *
  * use
- * Retailer productinformation
+ * Retailer product information
  * *Product Id, retailer Id
  */
 @Singleton
 class ProductRepository @Inject constructor(
-    private val database: ShoppingListDatabase,
     private val productDao: ProductDao
 ){
-    //Room exectues all Queries in seperate thread
+    //Room executes all Queries in separate thread
     //Observed flow will notify observer on change
     var allProducts: Flow<List<ShoppingListRetailerProductInfo>> = productDao.getProductIDs()
 

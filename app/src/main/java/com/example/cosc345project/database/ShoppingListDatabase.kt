@@ -11,11 +11,11 @@ import kotlinx.coroutines.internal.synchronized
  * Room database
  * - Top layer of SQLite database
  */
-//Annotate class to be Room database with table (entity) of shopping list class
-@Database(entities = arrayOf(ShoppingListRetailerProductInfo::class), version=1, exportSchema=false)
+@Database(entities = [ShoppingListRetailerProductInfo::class], version=1)
 public abstract class ShoppingListDatabase : RoomDatabase() {
 
     abstract fun productDao(): ProductDao
+
 
 
 

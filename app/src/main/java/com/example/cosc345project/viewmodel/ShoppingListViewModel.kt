@@ -27,7 +27,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ShoppingListViewModel @Inject constructor(
     private val productRepository: ProductRepository
-
 ) : ViewModel() {
 
     private val allProducts: LiveData<List<ShoppingListRetailerProductInfo>> =
@@ -39,7 +38,5 @@ class ShoppingListViewModel @Inject constructor(
     fun insert(shoppingListRetailerProductInfo :ShoppingListRetailerProductInfo) = viewModelScope.launch {
         productRepository.insert(shoppingListRetailerProductInfo)
     }
-
-
 
 }

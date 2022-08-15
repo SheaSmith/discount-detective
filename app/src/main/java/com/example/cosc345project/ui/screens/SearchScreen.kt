@@ -53,6 +53,7 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun SearchScreen(
