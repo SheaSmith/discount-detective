@@ -7,7 +7,6 @@ import androidx.work.WorkerParameters
 import com.example.cosc345project.repository.SearchRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.coroutineScope
 
 @HiltWorker
 class IndexingWorker @AssistedInject constructor(
@@ -17,7 +16,6 @@ class IndexingWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        coroutineScope { }
         searchRepository.indexFromFirebase()
 
         return Result.success()

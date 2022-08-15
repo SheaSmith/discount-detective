@@ -7,12 +7,18 @@ import com.example.cosc345.shared.models.RetailerProductInformation
 @Document
 data class SearchableRetailerProductInformation(
     @Document.Namespace
+    val namespace: String = "all",
+
+    @Document.StringProperty
     val retailer: String,
 
     @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES)
     val brandName: String?,
 
-    @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES, required = true)
+    @Document.StringProperty(
+        indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES,
+        required = true
+    )
     val name: String,
 
     @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES)
@@ -52,6 +58,7 @@ data class SearchableRetailerProductInformation(
     val local: Boolean
 ) {
     constructor(info: RetailerProductInformation, productsSize: Int, local: Boolean) : this(
+        "all",
         info.retailer!!,
         info.brandName,
         info.name!!,

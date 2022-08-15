@@ -4,40 +4,48 @@ package com.example.cosc345project.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -51,7 +59,7 @@ import com.example.cosc345project.ui.components.StatusBarCenterAlignedTopAppBar
 import com.example.cosc345project.viewmodel.SearchViewModel
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.placeholder
 
 @Composable
 @Preview
@@ -59,7 +67,8 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
-    var search by viewModel.searchQuery
+    val search by viewModel.searchQuery.collectAsState()
+    val suggestions by viewModel.suggestions.collectAsState()
     val searchResults by viewModel.searchLiveData
     val productResults = searchResults.collectAsLazyPagingItems()
     val loading by remember {
@@ -69,6 +78,12 @@ fun SearchScreen(
         rememberTopAppBarState()
     )
     val focusManager = LocalFocusManager.current
+    var showSuggestions by remember {
+        mutableStateOf(false)
+    }
+    var suggestionsRowSize by remember {
+        mutableStateOf(Size.Zero)
+    }
 
     // https://stackoverflow.com/a/70460377/7692451
     val nestedScrollConnection = remember {
@@ -86,19 +101,21 @@ fun SearchScreen(
         topBar = {
             StatusBarCenterAlignedTopAppBar(
                 modifier = Modifier
-                    .statusBarsPadding()
-                    .padding(bottom = 8.dp),
+                    .statusBarsPadding(),
                 title = {
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
+                            .padding(top = 12.dp, bottom = 12.dp, start = 16.dp, end = 16.dp),
                         shape = CircleShape,
                         tonalElevation = 16.dp
                     ) {
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .onGloballyPositioned {
+                                    suggestionsRowSize = it.size.toSize()
+                                },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
@@ -111,14 +128,17 @@ fun SearchScreen(
                                 value = search,
                                 placeholder = { Text(stringResource(id = R.string.search_products)) },
                                 onValueChange = {
-                                    search = it
-                                    viewModel.query(it)
+                                    viewModel.setQuery(it)
                                 },
                                 singleLine = true,
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(0.dp),
+                                    .padding(0.dp)
+                                    .onFocusChanged {
+                                        showSuggestions = it.isFocused
+                                    },
                                 textStyle = MaterialTheme.typography.bodyMedium,
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                                 colors = TextFieldDefaults.textFieldColors(
                                     focusedIndicatorColor = Color.Transparent,
                                     unfocusedIndicatorColor = Color.Transparent,
@@ -136,6 +156,21 @@ fun SearchScreen(
                                 )
                             }
                         }
+
+                        DropdownMenu(
+                            expanded = suggestions.isNotEmpty() && showSuggestions,
+                            onDismissRequest = { },
+                            properties = PopupProperties(focusable = false),
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .width(with(LocalDensity.current) { suggestionsRowSize.width.toDp() }),
+                        ) {
+                            suggestions.forEach {
+                                DropdownMenuItem(
+                                    text = { Text(text = it) },
+                                    onClick = { viewModel.setQuery(it) })
+                            }
+                        }
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -145,7 +180,13 @@ fun SearchScreen(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = innerPadding,
-            modifier = Modifier.nestedScroll(nestedScrollConnection)
+            modifier = Modifier
+                .nestedScroll(nestedScrollConnection)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = { focusManager.clearFocus() }
+                    )
+                }
         ) {
             if (productResults.itemCount == 0) {
                 items(10) {
@@ -284,64 +325,79 @@ fun ProductCard(
             }
 
             Row {
-                Column {
-                    product?.information?.forEach {
-                        Text(it.retailer)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .height(IntrinsicSize.Min)
+                ) {
+                    CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                        val leftShape = RoundedCornerShape(
+                            topStart = 50f,
+                            topEnd = 0f,
+                            bottomStart = 50f,
+                            bottomEnd = 0f
+                        )
+                        FilledTonalIconButton(
+                            onClick = { /*TODO*/ },
+                            modifier = Modifier
+                                .placeholder(
+                                    visible = loading,
+                                    shape = leftShape,
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    highlight = PlaceholderHighlight.fade()
+                                ),
+                            shape = leftShape
+                        ) {
+                            Icon(Icons.Rounded.Add, stringResource(id = R.string.increase_quantity))
+                        }
                     }
-                }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(),
+                    Box(
                         modifier = Modifier
+                            .fillMaxHeight()
+                            .background(MaterialTheme.colorScheme.surface)
                             .placeholder(
                                 visible = loading,
-                                shape = RoundedCornerShape(4.dp),
+                                shape = RectangleShape,
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 highlight = PlaceholderHighlight.fade()
                             )
-                            .clip(IconButtonDefaults.filledShape)
                     ) {
-                        Icon(Icons.Rounded.Add, stringResource(id = R.string.increase_quantity))
-                    }
-
-                    val interactionSource = remember { MutableInteractionSource() }
-
-                    BasicTextField(
-                        value = "1",
-                        onValueChange = {},
-                        modifier = Modifier
-                            .width(IntrinsicSize.Min)
-                            .placeholder(
-                                visible = loading,
-                                shape = RoundedCornerShape(4.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                highlight = PlaceholderHighlight.fade()
-                            )
-                    ) {
-                        TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                        BasicTextField(
                             value = "1",
-                            visualTransformation = VisualTransformation.None,
-                            innerTextField = it,
+                            onValueChange = {},
+                            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
-                            enabled = true,
-                            interactionSource = interactionSource,
-                            colors = TextFieldDefaults.outlinedTextFieldColors()
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .width(IntrinsicSize.Min)
+                                .padding(vertical = 8.dp, horizontal = 16.dp)
                         )
                     }
 
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(),
-                        modifier = Modifier.placeholder(
-                            visible = loading,
-                            shape = RoundedCornerShape(4.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            highlight = PlaceholderHighlight.fade()
+                    CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                        val rightShape = RoundedCornerShape(
+                            topStart = 0f,
+                            topEnd = 50f,
+                            bottomStart = 0f,
+                            bottomEnd = 50f
                         )
-                    ) {
-                        Icon(Icons.Rounded.Remove, stringResource(id = R.string.decrease_quantity))
+                        FilledTonalIconButton(
+                            onClick = { /*TODO*/ },
+                            modifier = Modifier.placeholder(
+                                visible = loading,
+                                shape = rightShape,
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                highlight = PlaceholderHighlight.fade()
+                            ),
+                            shape = rightShape
+                        ) {
+                            Icon(
+                                Icons.Rounded.Remove,
+                                stringResource(id = R.string.decrease_quantity)
+                            )
+                        }
                     }
                 }
 
@@ -362,7 +418,7 @@ fun ProductCard(
                     },
                     modifier = Modifier.placeholder(
                         visible = loading,
-                        shape = RoundedCornerShape(4.dp),
+                        shape = FloatingActionButtonDefaults.extendedFabShape,
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         highlight = PlaceholderHighlight.fade()
                     )

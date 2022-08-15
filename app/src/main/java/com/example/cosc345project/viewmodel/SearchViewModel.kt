@@ -17,21 +17,34 @@ import com.example.cosc345project.paging.ProductsSearchPagingSource
 import com.example.cosc345project.repository.RetailersRepository
 import com.example.cosc345project.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
     private val retailersRepository: RetailersRepository
 ) : ViewModel() {
 
+    val searchQuery = MutableStateFlow("")
+    val suggestions = MutableStateFlow<List<String>>(listOf())
+
     init {
         viewModelScope.launch {
             searchRepository.initialise()
+        }
+
+        viewModelScope.launch {
+            searchQuery.debounce(2000).collect {
+                query(it)
+            }
         }
     }
 
@@ -41,12 +54,11 @@ class SearchViewModel @Inject constructor(
         )
 
     val loading = mutableStateOf(false)
-    val searchQuery = mutableStateOf("")
 
-    fun query(query: String = "") {
+    private fun query(query: String = "") {
         loading.value = true
         viewModelScope.launch {
-            if (searchRepository.isInitialized.value && searchRepository.isAny()) {
+            if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore()) {
                 searchLiveData.value = Pager(PagingConfig(pageSize = 10)) {
                     ProductsSearchPagingSource(searchRepository, query)
                 }
@@ -59,6 +71,13 @@ class SearchViewModel @Inject constructor(
             } else {
                 searchLiveData.value = getFirebaseState(query)
             }
+        }
+    }
+
+    private fun querySuggestions(query: String = "") {
+        viewModelScope.launch {
+            if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore())
+                suggestions.value = searchRepository.searchSuggestions(query)
         }
     }
 
@@ -138,5 +157,11 @@ class SearchViewModel @Inject constructor(
         }
 
         return price!!
+    }
+
+    fun setQuery(query: String) {
+        loading.value = true
+        searchQuery.value = query
+        querySuggestions(query)
     }
 }

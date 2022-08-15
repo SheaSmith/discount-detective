@@ -1,5 +1,6 @@
 package com.example.cosc345project.extensions
 
+import android.util.Log
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345project.models.SearchableProduct
@@ -14,6 +15,10 @@ fun Product.getBestInformation(): RetailerProductInformation {
 }
 
 fun SearchableProduct.getBestInformation(): SearchableRetailerProductInformation {
+    if (information == null) {
+        Log.d("HElP", this.id)
+    }
+
     return information!!.sortedWith(
         Comparator { t: SearchableRetailerProductInformation, t2: SearchableRetailerProductInformation ->
             return@Comparator t.getRetailerScore() - t2.getRetailerScore()

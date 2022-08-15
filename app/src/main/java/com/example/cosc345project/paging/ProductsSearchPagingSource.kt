@@ -30,7 +30,7 @@ class ProductsSearchPagingSource(
         return LoadResult.Page(
             data = res,
             prevKey = null,
-            nextKey = searchResults
+            nextKey = if (res.size != params.loadSize) null else searchResults
         )
     }
 }

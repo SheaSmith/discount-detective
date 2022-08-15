@@ -1,6 +1,7 @@
 package com.example.cosc345project.models
 
 import androidx.appsearch.annotation.Document
+import androidx.appsearch.app.AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES
 import com.example.cosc345.shared.models.Product
 
 @Document
@@ -13,6 +14,9 @@ data class SearchableProduct(
 
     @Document.Score
     val size: Int,
+
+    @Document.StringProperty(indexingType = INDEXING_TYPE_PREFIXES)
+    val testString: String = "THISISTEST",
 
     @Document.DocumentProperty(indexNestedProperties = true)
     val information: List<SearchableRetailerProductInformation>?

@@ -18,7 +18,7 @@ class FirebaseProductsPagingSource(
 
         return LoadResult.Page(
             data = result.first,
-            nextKey = result.second,
+            nextKey = if (result.first.size != params.loadSize) null else result.second,
             prevKey = null
         )
     }
