@@ -105,7 +105,6 @@ class SearchRepository @Inject constructor(
         localMap: Map<String, Boolean>
     ): AppSearchBatchResult<String, Void> {
         Log.d(TAG, "Adding products to AppSearch database. Awaiting initialisation.")
-        dependentOnSession = true
         awaitInitialization()
 
         Log.d(TAG, "Initialised. Start put documents request for AppSearch.")
@@ -119,7 +118,6 @@ class SearchRepository @Inject constructor(
         val result = appSearchSession.putAsync(request).await()
 
         Log.d(TAG, "Finished putting documents into the AppSearch index.")
-        dependentOnSession = false
         return result
     }
 
@@ -128,7 +126,6 @@ class SearchRepository @Inject constructor(
     }
 
     suspend fun queryProductsAppSearch(query: String, count: Int): SearchResults {
-        dependentOnSession = true
         Log.d(TAG, "Query products from AppSearch index.")
         awaitInitialization()
         Log.d(TAG, "Initialised. Starting the AppSearch query.")
@@ -143,12 +140,10 @@ class SearchRepository @Inject constructor(
         val searchResults = appSearchSession.search(query, searchSpec)
 
         Log.d(TAG, "Finished query for AppSearch, now pass to pager.")
-        dependentOnSession = false
         return searchResults
     }
 
     suspend fun searchSuggestions(query: String): List<String> {
-        dependentOnSession = true
         Log.d(TAG, "Query search suggestions from AppSearch.")
         awaitInitialization()
         Log.d(TAG, "Initialised. Starting the search suggestions query.")
@@ -161,7 +156,6 @@ class SearchRepository @Inject constructor(
         return if (query.isNotEmpty()) {
             val suggestions = appSearchSession.searchSuggestionAsync(query, suggestionsSpec).await()
             Log.d(TAG, "Finished suggestions query.")
-            dependentOnSession = false
             suggestions.map { it.suggestedResult }
         } else {
             listOf()
@@ -243,27 +237,6 @@ class SearchRepository @Inject constructor(
         if (!isInitialized.value) {
             isInitialized.first { it }
         }
-    }
-
-    suspend fun isAny(): Boolean {
-        Log.d(TAG, "Check if AppSearch index is empty.")
-        dependentOnSession = true
-        awaitInitialization()
-        Log.d(TAG, "Initialised. Building basic empty query.")
-
-        val searchSpec = SearchSpec.Builder()
-            .setSnippetCount(1)
-            .build()
-
-        Log.d(TAG, "Query first search result.")
-        val searchResults = appSearchSession.search("", searchSpec).nextPageAsync.await()
-        Log.d(TAG, "Got first search result, check if the result is empty.")
-
-        val result = searchResults.firstOrNull()
-
-        Log.d(TAG, "Finished. Return is empty result.")
-        dependentOnSession = false
-        return result != null
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -7,6 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -81,9 +83,7 @@ fun SearchScreen(
     var showSuggestions by remember {
         mutableStateOf(false)
     }
-    var suggestionsRowSize by remember {
-        mutableStateOf(Size.Zero)
-    }
+    val listState = rememberLazyListState()
 
     // https://stackoverflow.com/a/70460377/7692451
     val nestedScrollConnection = remember {
@@ -112,10 +112,7 @@ fun SearchScreen(
                     ) {
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .onGloballyPositioned {
-                                    suggestionsRowSize = it.size.toSize()
-                                },
+                                .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
@@ -156,21 +153,6 @@ fun SearchScreen(
                                 )
                             }
                         }
-
-                        DropdownMenu(
-                            expanded = suggestions.isNotEmpty() && showSuggestions,
-                            onDismissRequest = { },
-                            properties = PopupProperties(focusable = false),
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .width(with(LocalDensity.current) { suggestionsRowSize.width.toDp() }),
-                        ) {
-                            suggestions.forEach {
-                                DropdownMenuItem(
-                                    text = { Text(text = it) },
-                                    onClick = { viewModel.setQuery(it) })
-                            }
-                        }
                     }
                 },
                 scrollBehavior = scrollBehavior
@@ -186,8 +168,14 @@ fun SearchScreen(
                     detectTapGestures(
                         onPress = { focusManager.clearFocus() }
                     )
-                }
+                },
+            state = listState
         ) {
+            items(
+                items = suggestions
+            ) {
+                Text(text = it)
+            }
             if (productResults.itemCount == 0) {
                 items(10) {
                     ProductCard(
