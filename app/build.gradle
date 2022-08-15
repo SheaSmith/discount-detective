@@ -5,6 +5,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
     id 'com.google.protobuf' version '0.8.19'
+    id 'org.jetbrains.dokka'
 }
 
 android {
@@ -160,4 +161,14 @@ dependencies {
     implementation "com.google.accompanist:accompanist-placeholder-material:0.26.0-alpha"
 
     implementation project(':shared')
+}
+
+dokkaHtmlPartial {
+    moduleName.set("App")
+
+    dokkaSourceSets {
+        configureEach {
+            includes.from("README.md")
+        }
+    }
 }
