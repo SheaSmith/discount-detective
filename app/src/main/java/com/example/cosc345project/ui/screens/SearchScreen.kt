@@ -53,6 +53,15 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 
+/**
+ * Class for the Search Screen
+ *
+ * Creates the user interface search screen and links to the database so that users can search
+ * for certain foods.
+ *
+ * @param viewModel
+ * @param navController
+ */
 @Composable
 @Preview
 fun SearchScreen(
@@ -168,6 +177,18 @@ fun SearchScreen(
     }
 }
 
+/**
+ * Product card function displays each product's information
+ *
+ * Creates a section ("product card") for each product in the search screen, so that users can
+ * easily differentiate between the information of each product and click on it to open the
+ * corresponding product screen.
+ *
+ * @param product
+ * @param loading
+ * @param viewModel
+ * @param navController
+ */
 @Composable
 fun ProductCard(
     product: SearchableProduct?,
@@ -373,6 +394,16 @@ fun ProductCard(
     }
 }
 
+/**
+ * PricingBlock: finds and displays the pricing information for each product.
+ *
+ * Displays both the cheapest price and the cheapest local price so that users have the option of
+ * choosing either.
+ *
+ * @param components
+ * @param loading
+ * @param local
+ */
 @Composable
 fun PricingBlock(components: Pair<String, String>?, loading: Boolean, local: Boolean) {
     AnimatedVisibility(visible = components != null || loading) {

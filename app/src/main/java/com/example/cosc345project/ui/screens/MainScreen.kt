@@ -33,6 +33,15 @@ import com.example.cosc345project.ui.utils.NavigationType
 import com.example.cosc345project.viewmodel.SearchViewModel
 import kotlinx.coroutines.launch
 
+
+/**
+ * Class for the Main Screen
+ *
+ * Creates the base screen
+ *
+ * @param windowSize
+ * @param foldingDevicePosture
+ */
 // Based on https://github.com/googlecodelabs/android-compose-codelabs/blob/end/AdaptiveUiCodelab/app/src/main/java/com/example/reply/ui/ReplyApp.kt
 @Composable
 fun MainScreen(
@@ -64,7 +73,13 @@ fun MainScreen(
 
 }
 
-
+/**
+ * NavigationWrapper
+ *
+ *
+ *
+ * @param navigationType
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NavigationWrapper(
@@ -114,6 +129,15 @@ private fun NavigationWrapper(
     }
 }
 
+/**
+ * MainContent
+ *
+ *
+ *
+ * @param navController
+ * @param navigationType
+ * @param onDrawerClicked
+ */
 @Composable
 fun MainContent(
     navController: NavHostController,
@@ -163,6 +187,13 @@ fun MainContent(
     }
 }
 
+/**
+ * MainNavigationRail
+ *
+ *
+ * @param navController
+ * @param onDrawerClicked
+ */
 @Composable
 fun MainNavigationRail(
     navController: NavHostController,
@@ -199,6 +230,14 @@ fun MainNavigationRail(
     }
 }
 
+/**
+ * handleClick
+ *
+ * Is private because:
+ *
+ * @param screen
+ * @param navHostController
+ */
 private fun handleClick(screen: Navigation, navHostController: NavHostController) {
     navHostController.navigate(screen.route) {
         // Pop up to the start destination of the graph to
@@ -215,6 +254,12 @@ private fun handleClick(screen: Navigation, navHostController: NavHostController
     }
 }
 
+/**
+ * MainBottomNavigationBar
+ *
+ *
+ * @param navController
+ */
 @Composable
 fun MainBottomNavigationBar(navController: NavHostController) {
     NavigationBar(
@@ -242,6 +287,15 @@ fun MainBottomNavigationBar(navController: NavHostController) {
     }
 }
 
+/**
+ * NavigationDrawerContent
+ *
+ *
+ * @param navController
+ * @param modifier
+ * @param onDrawerClicked
+ * @param navigationType
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationDrawerContent(
