@@ -7,6 +7,9 @@ import com.example.cosc345project.models.RetailerProductInfo
 import com.example.cosc345project.repository.ProductRepository
 import com.example.cosc345project.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,16 +33,21 @@ class ShoppingListViewModel @Inject constructor(
     private val productRepository: ProductRepository,
 ) : ViewModel() {
 
-    //all products in the shopping list
+//    all products in the shopping list
     val allProducts: LiveData<List<RetailerProductInfo>> =
         productRepository.allProducts.asLiveData()
-
 
     /**
      * Insert data in non-blocking fashion
      */
     fun insert(shoppingListRetailerProductInfo :RetailerProductInfo) = viewModelScope.launch {
         productRepository.insert(shoppingListRetailerProductInfo)
+    }
+
+    fun getProductFromID(productID: String): Flow<Product>{
+        return flow {
+            emit(productRepository.getProductFromID(productID))
+        }
     }
 
 

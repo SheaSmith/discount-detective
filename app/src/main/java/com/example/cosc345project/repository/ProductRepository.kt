@@ -54,6 +54,7 @@ class ProductRepository @Inject constructor(
      *
      * @OptIn to allow usage of experimental coroutines API.
      */
+    @WorkerThread
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getProductFromID(productID: String): Product {
         Log.d(TAG, "Get Firebase Product from ProductID.")

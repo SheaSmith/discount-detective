@@ -31,18 +31,24 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.material3.Card
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.Observer
+import androidx.lifecycle.asFlow
+import com.example.cosc345.shared.models.Product
 import com.example.cosc345project.models.RetailerProductInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun ShoppingListScreen(
     viewModel: ShoppingListViewModel = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
 
     //productIDs in the shopping list
-    val shoppingList = arrayListOf(viewModel.allProducts)
+    val productIDs = viewModel.allProducts.observeAsState().value
 
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
@@ -98,13 +104,30 @@ fun ShoppingListScreen(
             contentPadding = innerPadding,
             modifier = Modifier.nestedScroll(nestedScrollConnection)
         ){
-
+            if (productIDs.isNullOrEmpty()){
+                items(10){
+                    ProductCard(
+                        product = null,
+                        loading = false,
+                        viewModel = viewModel,
+                        navController = navController
+                    )
+                }
+            }
+            if (productIDs != null) {
+                items(productIDs.size) { index ->
+                    ProductCard(
+                        product = productIDs[index],
+                        loading = false,
+                        viewModel = viewModel,
+                        navController = navController)
+                }
+            }
         }
 
     }
 }
 
-//need to query database for that product ID
 @Composable
 fun ProductCard(
     product: RetailerProductInfo?,
@@ -113,7 +136,12 @@ fun ProductCard(
     navController: NavHostController
 ) {
     val id = product?.productID
-//    val info = product? #something like the searchable product
+
+    val productInfo = id?.let { viewModel.getProductFromID(it).collectAsState(initial = Product())}
+
+    //need to get the name and the image (so just first index should be enough)
+    val productName = productInfo?.value?.information?.get(0)?.name
+    val productInf = productInfo?.value?.information
 
     Card(
         modifier = Modifier
@@ -126,9 +154,15 @@ fun ProductCard(
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
-            Text(
-                text = "placeholder"
-            )
+            if (productName != null) {
+                Text(
+                    text = productName
+                )
+            } else {
+                Text(
+                    text = "placeholder"
+                )
+            }
         }
     }
 }
