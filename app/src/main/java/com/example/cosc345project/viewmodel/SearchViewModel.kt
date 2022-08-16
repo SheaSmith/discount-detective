@@ -8,25 +8,22 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.SaleType
-import com.example.cosc345project.models.SearchablePricingInformation
+import com.example.cosc345project.extensions.getPrice
 import com.example.cosc345project.models.SearchableProduct
 import com.example.cosc345project.models.SearchableRetailerProductInformation
+import com.example.cosc345project.paging.AppSearchProductsPagingSource
 import com.example.cosc345project.paging.FirebaseProductsPagingSource
-import com.example.cosc345project.paging.ProductsSearchPagingSource
 import com.example.cosc345project.repository.RetailersRepository
 import com.example.cosc345project.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
-@OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
@@ -35,6 +32,8 @@ class SearchViewModel @Inject constructor(
 
     val searchQuery = MutableStateFlow("")
     val suggestions = MutableStateFlow<List<String>>(listOf())
+    val showSuggestions = mutableStateOf(false)
+    val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
 
     init {
         viewModelScope.launch {
@@ -42,9 +41,7 @@ class SearchViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            searchQuery.debounce(2000).collect {
-                query(it)
-            }
+            retailers.value = retailersRepository.getRetailers()
         }
     }
 
@@ -55,12 +52,13 @@ class SearchViewModel @Inject constructor(
 
     val loading = mutableStateOf(false)
 
-    private fun query(query: String = "") {
+    fun query() {
         loading.value = true
+        showSuggestions.value = false
         viewModelScope.launch {
             if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore()) {
                 searchLiveData.value = Pager(PagingConfig(pageSize = 10)) {
-                    ProductsSearchPagingSource(searchRepository, query)
+                    AppSearchProductsPagingSource(searchRepository, searchQuery.value)
                 }
                     .flow
                     .map {
@@ -69,15 +67,15 @@ class SearchViewModel @Inject constructor(
                     }
                     .cachedIn(viewModelScope)
             } else {
-                searchLiveData.value = getFirebaseState(query)
+                searchLiveData.value = getFirebaseState(searchQuery.value)
             }
         }
     }
 
-    private fun querySuggestions(query: String = "") {
+    private fun querySuggestions() {
         viewModelScope.launch {
             if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore())
-                suggestions.value = searchRepository.searchSuggestions(query)
+                suggestions.value = searchRepository.searchSuggestions(searchQuery.value)
         }
     }
 
@@ -115,10 +113,10 @@ class SearchViewModel @Inject constructor(
         if (products.isNotEmpty()) {
             val lowestPricePair =
                 products.flatMap { productInfo -> productInfo.pricing.map { it to productInfo } }
-                    .minBy { getPriceFromInformation(it.first, it.second) }
+                    .minBy { it.first.getPrice(it.second) }
 
             val lowestPrice =
-                getPriceFromInformation(lowestPricePair.first, lowestPricePair.second).toString()
+                lowestPricePair.first.getPrice(lowestPricePair.second).toString()
 
             val salePrefix = if (lowestPricePair.second.saleType == SaleType.WEIGHT) {
                 "kg"
@@ -141,27 +139,12 @@ class SearchViewModel @Inject constructor(
         return null
     }
 
-    private fun getPriceFromInformation(
-        info: SearchablePricingInformation,
-        productInformation: SearchableRetailerProductInformation
-    ): Int {
-        var price =
-            if (info.discountPrice == null || info.price?.let { it < info.discountPrice } == true) {
-                info.price
-            } else {
-                info.discountPrice
-            }
 
-        if (productInformation.saleType == SaleType.WEIGHT) {
-            price = (price!! / (productInformation.weight!!.toDouble() / 1000)).roundToInt()
-        }
-
-        return price!!
-    }
-
-    fun setQuery(query: String) {
-        loading.value = true
+    fun setQuery(query: String, runSearch: Boolean = false) {
         searchQuery.value = query
-        querySuggestions(query)
+        querySuggestions()
+
+        if (runSearch)
+            query()
     }
 }

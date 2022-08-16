@@ -97,11 +97,21 @@ private fun NavigationWrapper(
                     navController,
                     navigationType = navigationType
                 )
-            }, modifier = Modifier.background(MaterialTheme.colorScheme.background)
+            },
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .navigationBarsPadding()
         ) {
             MainContent(navController, navigationType)
         }
     } else {
+        // Apparently we need the explicit type so Android Studio doesn't try to say it's not needed
+        @Suppress("RedundantExplicitType") var modifier: Modifier = Modifier
+
+        if (navigationType != NavigationType.BOTTOM_NAVIGATION) {
+            modifier = modifier.navigationBarsPadding()
+        }
+
         ModalNavigationDrawer(
             drawerContent = {
                 NavigationDrawerContent(
@@ -114,7 +124,8 @@ private fun NavigationWrapper(
                     navigationType = navigationType
                 )
             },
-            drawerState = drawerState
+            drawerState = drawerState,
+            modifier = modifier
         ) {
             MainContent(
                 navController,

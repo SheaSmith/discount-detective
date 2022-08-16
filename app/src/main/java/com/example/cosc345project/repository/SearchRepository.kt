@@ -3,6 +3,7 @@ package com.example.cosc345project.repository
 import android.content.Context
 import android.util.Log
 import androidx.appsearch.app.*
+import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_DOCUMENT_SCORE
 import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_RELEVANCE_SCORE
 import androidx.appsearch.localstorage.LocalStorage
 import androidx.concurrent.futures.await
@@ -131,8 +132,8 @@ class SearchRepository @Inject constructor(
         Log.d(TAG, "Initialised. Starting the AppSearch query.")
 
         val searchSpec = SearchSpec.Builder()
-            .setRankingStrategy(RANKING_STRATEGY_RELEVANCE_SCORE)
-            .setSnippetCount(count)
+            .setRankingStrategy(if (query.isEmpty()) RANKING_STRATEGY_DOCUMENT_SCORE else RANKING_STRATEGY_RELEVANCE_SCORE)
+            .setResultCountPerPage(count)
             .build()
 
         Log.d(TAG, "Running query for AppSearch.")

@@ -7,7 +7,7 @@ import androidx.paging.PagingState
 import com.example.cosc345project.models.SearchableProduct
 import com.example.cosc345project.repository.SearchRepository
 
-class ProductsSearchPagingSource(
+class AppSearchProductsPagingSource(
     private val repository: SearchRepository,
     private val query: String
 ) : PagingSource<SearchResults, SearchableProduct>() {
@@ -22,10 +22,6 @@ class ProductsSearchPagingSource(
         val searchResults = params.key ?: repository.queryProductsAppSearch(query, params.loadSize)
         val response = searchResults.nextPageAsync.await()
         val res = response.map { it.getDocument(SearchableProduct::class.java) }
-
-        if (res.any { it.information == null }) {
-            print("Test")
-        }
 
         return LoadResult.Page(
             data = res,
