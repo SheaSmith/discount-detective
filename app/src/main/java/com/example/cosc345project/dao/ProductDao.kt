@@ -4,7 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.cosc345project.models.ShoppingListRetailerProductInfo
+import com.example.cosc345.shared.models.Retailer
+import com.example.cosc345project.models.RetailerProductInfo
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -14,12 +15,12 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface ProductDao {
-    @Query("SELECT * FROM shopping_table")
-    fun getProductIDs(): Flow<List<ShoppingListRetailerProductInfo>>
+    @Query("SELECT * FROM retailerProductInfo")
+    fun getProductIDs(): Flow<List<RetailerProductInfo>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(RetailerProductInfo: ShoppingListRetailerProductInfo)
+    suspend fun insert(RetailerProductInfo: RetailerProductInfo)
 
-    @Query("DELETE FROM shopping_table")
+    @Query("DELETE FROM retailerProductInfo")
     suspend fun deleteAll()
 }

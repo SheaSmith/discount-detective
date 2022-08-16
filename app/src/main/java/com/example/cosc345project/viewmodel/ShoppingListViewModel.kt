@@ -3,8 +3,9 @@ package com.example.cosc345project.viewmodel
 import androidx.lifecycle.*
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.RetailerProductInformation
-import com.example.cosc345project.models.ShoppingListRetailerProductInfo
+import com.example.cosc345project.models.RetailerProductInfo
 import com.example.cosc345project.repository.ProductRepository
+import com.example.cosc345project.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,17 +27,21 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class ShoppingListViewModel @Inject constructor(
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
 ) : ViewModel() {
 
-    private val allProducts: LiveData<List<ShoppingListRetailerProductInfo>> =
+    //all products in the shopping list
+    val allProducts: LiveData<List<RetailerProductInfo>> =
         productRepository.allProducts.asLiveData()
+
 
     /**
      * Insert data in non-blocking fashion
      */
-    fun insert(shoppingListRetailerProductInfo :ShoppingListRetailerProductInfo) = viewModelScope.launch {
+    fun insert(shoppingListRetailerProductInfo :RetailerProductInfo) = viewModelScope.launch {
         productRepository.insert(shoppingListRetailerProductInfo)
     }
+
+
 
 }
