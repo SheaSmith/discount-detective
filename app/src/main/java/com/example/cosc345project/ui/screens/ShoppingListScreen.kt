@@ -37,6 +37,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asFlow
 import com.example.cosc345.shared.models.Product
+import com.example.cosc345.shared.models.RetailerProductInformation
+import com.example.cosc345project.extensions.getRetailerScore
 import com.example.cosc345project.models.RetailerProductInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,13 +137,24 @@ fun ProductCard(
     viewModel: ShoppingListViewModel,
     navController: NavHostController
 ) {
-    val id = product?.productID
+    val productID = product?.productID
+    //use to index product array
+    val retailerID = product?.retailerProductInformationID
 
-    val productInfo = id?.let { viewModel.getProductFromID(it).collectAsState(initial = Product())}
+    //Returns a list of all the retailers for that product
+    val productRetailerInfoList = productID?.let { viewModel.getProductFromID(it).collectAsState(initial = null)}
 
     //need to get the name and the image (so just first index should be enough)
-    val productName = productInfo?.value?.information?.get(0)?.name
-    val productInf = productInfo?.value?.information
+    //get the retailerID to index into this list (as we have product ID, now need RetailerID)
+    val productInformation = productRetailerInfoList?.value?.information?.first().let{item ->
+        if (item?.name == retailerID) item else RetailerProductInformation()
+    }
+
+    //information to populate the card entries
+    val productName = productInformation?.name
+    val productImage = productInformation?.image
+    val productPrice = productInformation?.pricing
+    val retailer = productInformation?.retailer
 
     Card(
         modifier = Modifier
