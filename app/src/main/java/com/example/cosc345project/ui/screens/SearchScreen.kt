@@ -206,6 +206,13 @@ fun SearchScreen(
             state = listState
         ) {
             if (showSuggestions && suggestions.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.search_suggestions),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
                 items(
                     items = suggestions
                 ) {

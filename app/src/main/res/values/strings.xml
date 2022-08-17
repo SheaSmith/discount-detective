@@ -22,4 +22,5 @@
     <string name="select_shop">Select the store you would like to purchase this product at. Each item in your shopping list will be organised based on the store you select.</string>
     <string name="select_store_format">$%3$.2f - %1$s %2$s</string>
     <string name="product_added_to_list">The product has been added to your shopping list!</string>
+    <string name="search_suggestions">Search Suggestions</string>
 </resources>
