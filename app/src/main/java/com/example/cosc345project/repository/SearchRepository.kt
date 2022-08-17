@@ -167,13 +167,10 @@ class SearchRepository @Inject constructor(
         query: String,
         startAt: String?,
         count: Int
-    ): Pair<List<SearchableProduct>, String?> {
+    ): Pair<Map<String, Product>, String?> {
         Log.d(TAG, "Query products from Firebase.")
 
-        val localMap = getRetailersLocalMap()
-        Log.d(TAG, "Got local map of retailers for Firebase.")
-
-        val result = getProductsFirebase(localMap, query, startAt, count)
+        val result = getProductsFirebase(query, startAt, count)
         Log.d(TAG, "Queried Firebase, now pass results to pager.")
 
         return result
@@ -181,11 +178,10 @@ class SearchRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getProductsFirebase(
-        localMap: Map<String, Boolean>,
         query: String,
         startAt: String?,
         count: Int
-    ): Pair<List<SearchableProduct>, String?> {
+    ): Pair<Map<String, Product>, String?> {
         Log.d(TAG, "Get products from Firebase.")
 
         return suspendCancellableCoroutine { continuation ->
@@ -202,7 +198,7 @@ class SearchRepository @Inject constructor(
 
                 continuation.resume(
                     Pair(
-                        products?.map { SearchableProduct(it.value, it.key, localMap) } ?: listOf(),
+                        products ?: mapOf(),
                         key
                     ),
                     null

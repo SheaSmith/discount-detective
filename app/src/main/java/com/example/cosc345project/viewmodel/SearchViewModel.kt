@@ -8,11 +8,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
-import com.example.cosc345.shared.models.SaleType
-import com.example.cosc345project.extensions.getPrice
-import com.example.cosc345project.models.SearchableProduct
-import com.example.cosc345project.models.SearchableRetailerProductInformation
 import com.example.cosc345project.paging.AppSearchProductsPagingSource
 import com.example.cosc345project.paging.FirebaseProductsPagingSource
 import com.example.cosc345project.repository.RetailersRepository
@@ -45,7 +42,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    val searchLiveData: MutableState<Flow<PagingData<SearchableProduct>>> =
+    val searchLiveData: MutableState<Flow<PagingData<Pair<String, Product>>>> =
         mutableStateOf(
             getFirebaseState()
         )
@@ -79,7 +76,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun getFirebaseState(query: String = ""): Flow<PagingData<SearchableProduct>> {
+    private fun getFirebaseState(query: String = ""): Flow<PagingData<Pair<String, Product>>> {
         return Pager(PagingConfig(pageSize = 10)) {
             FirebaseProductsPagingSource(searchRepository, query)
         }
@@ -90,55 +87,6 @@ class SearchViewModel @Inject constructor(
             }
             .cachedIn(viewModelScope)
     }
-
-    /**
-     * Get the best local price for a particular product.
-     *
-     * @param product The product to get the price for.
-     * @return A pair, with the first item being the dollar component of the price, and the second being the cents and the sale type.
-     */
-    fun getLocalPrice(product: SearchableProduct): Pair<String, String>? {
-        val localPrices = product.information!!.filter { it.local }
-
-        return findLowestPrice(localPrices)
-    }
-
-    fun getBestPrice(product: SearchableProduct): Pair<String, String>? {
-        val nonLocalPrices = product.information!!.filter { !it.local }
-
-        return findLowestPrice(nonLocalPrices)
-    }
-
-    private fun findLowestPrice(products: List<SearchableRetailerProductInformation>): Pair<String, String>? {
-        if (products.isNotEmpty()) {
-            val lowestPricePair =
-                products.flatMap { productInfo -> productInfo.pricing.map { it to productInfo } }
-                    .minBy { it.first.getPrice(it.second) }
-
-            val lowestPrice =
-                lowestPricePair.first.getPrice(lowestPricePair.second).toString()
-
-            val salePrefix = if (lowestPricePair.second.saleType == SaleType.WEIGHT) {
-                "kg"
-            } else {
-                "ea"
-            }
-
-            val dollarComponent = "$${lowestPrice.substring(0, lowestPrice.length - 2)}"
-            val centsComponent =
-                ".${
-                    lowestPrice.substring(
-                        lowestPrice.length - 2,
-                        lowestPrice.length
-                    )
-                }/${salePrefix}"
-
-            return Pair(dollarComponent, centsComponent)
-        }
-
-        return null
-    }
-
 
     fun setQuery(query: String, runSearch: Boolean = false) {
         searchQuery.value = query

@@ -63,6 +63,17 @@ data class SearchablePricingInformation(
     @Document.BooleanProperty
     val verified: Boolean
 ) {
+    fun toStorePricingInformation() = StorePricingInformation(
+        store,
+        price,
+        discountPrice,
+        multiBuyQuantity,
+        multiBuyPrice,
+        clubOnly,
+        automated,
+        verified
+    )
+
     constructor(pricingInformation: StorePricingInformation, retailerId: String) : this(
         "all",
         retailerId,

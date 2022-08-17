@@ -1,7 +1,6 @@
 package com.example.cosc345project.models
 
 import androidx.appsearch.annotation.Document
-import androidx.appsearch.app.AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES
 import com.example.cosc345.shared.models.Product
 
 @Document
@@ -15,11 +14,8 @@ data class SearchableProduct(
     @Document.Score
     val size: Int,
 
-    @Document.StringProperty(indexingType = INDEXING_TYPE_PREFIXES)
-    val testString: String = "THISISTEST",
-
     @Document.DocumentProperty(indexNestedProperties = true)
-    val information: List<SearchableRetailerProductInformation>?
+    val information: List<SearchableRetailerProductInformation>
 ) {
     constructor(product: Product, id: String, localMap: Map<String, Boolean>) : this(
         id = id,
@@ -27,8 +23,14 @@ data class SearchableProduct(
         information = product.information!!.map {
             SearchableRetailerProductInformation(
                 it,
-                product.information!!.size,
                 localMap[it.retailer!!] ?: false
             )
         })
+
+    fun toProduct(): Pair<String, Product> {
+        return Pair(
+            id,
+            Product(information.map { it.toRetailerProductInformation() }.toMutableList())
+        )
+    }
 }

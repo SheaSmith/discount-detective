@@ -39,10 +39,6 @@ dependencies {
 
 test {
     useJUnitPlatform()
-
-    filter {
-        excludeTestsMatching("com.example.cosc345.scraper.scrapertests.*")
-    }
 }
 
 dokkaHtmlPartial {
