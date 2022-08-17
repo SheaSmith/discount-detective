@@ -25,4 +25,8 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build -x test
     - name: Run tests
-      run: ./gradlew runAffectedUnitTests
+      run: ./gradlew koverMergedReport
+    - name: Upload Test Report
+      uses: codecov/codecov-action@v2
+      with:
+        files: "build/reports/kover/merged/xml/report.xml"

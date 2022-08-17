@@ -6,6 +6,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.protobuf' version '0.8.19'
     id 'org.jetbrains.dokka'
+    id 'kover'
 }
 
 android {
@@ -176,4 +177,8 @@ dokkaHtmlPartial {
             includes.from("README.md")
         }
     }
+}
+
+koverMerged {
+    enable()
 }
