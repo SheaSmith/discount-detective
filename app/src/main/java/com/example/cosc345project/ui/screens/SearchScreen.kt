@@ -158,7 +158,15 @@ fun SearchScreen(
                             navController,
                             retailers,
                             snackbarHostState,
-                            coroutineScope
+                            coroutineScope,
+                            onAddToShoppingList = { productId, retailerProductInfoId, storeId, quantity ->
+                                viewModel.addToShoppingList(
+                                    productId,
+                                    retailerProductInfoId,
+                                    storeId,
+                                    quantity
+                                )
+                            }
                         )
                     }
                 }

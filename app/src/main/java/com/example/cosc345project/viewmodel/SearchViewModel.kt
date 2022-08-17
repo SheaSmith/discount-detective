@@ -10,10 +10,12 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
+import com.example.cosc345project.models.RetailerProductInfo
 import com.example.cosc345project.paging.AppSearchProductsPagingSource
 import com.example.cosc345project.paging.FirebaseProductsPagingSource
 import com.example.cosc345project.repository.RetailersRepository
 import com.example.cosc345project.repository.SearchRepository
+import com.example.cosc345project.repository.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
-    private val retailersRepository: RetailersRepository
+    private val retailersRepository: RetailersRepository,
+    private val productRepository: ProductRepository
 ) : ViewModel() {
 
     val searchQuery = MutableStateFlow("")
@@ -94,5 +97,11 @@ class SearchViewModel @Inject constructor(
 
         if (runSearch)
             query()
+    }
+
+    fun addToShoppingList(productId: String, retailerProductInfoId: String, storeId: String, quantity: Int) {
+        viewModelScope.launch {
+            productRepository.insert(RetailerProductInfo(productId, retailerProductInfoId, storeId, quantity))
+        }
     }
 }
