@@ -7,12 +7,18 @@ import com.example.cosc345.shared.models.RetailerProductInformation
 @Document
 data class SearchableRetailerProductInformation(
     @Document.Namespace
+    val namespace: String = "all",
+
+    @Document.StringProperty
     val retailer: String,
 
     @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES)
     val brandName: String?,
 
-    @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES, required = true)
+    @Document.StringProperty(
+        indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES,
+        required = true
+    )
     val name: String,
 
     @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES)
@@ -45,13 +51,28 @@ data class SearchableRetailerProductInformation(
     @Document.BooleanProperty
     val verified: Boolean,
 
-    @Document.LongProperty
-    val productsSize: Int,
-
     @Document.BooleanProperty
     val local: Boolean
 ) {
-    constructor(info: RetailerProductInformation, productsSize: Int, local: Boolean) : this(
+    fun toRetailerProductInformation(): RetailerProductInformation =
+        RetailerProductInformation(
+            retailer,
+            id,
+            name,
+            brandName,
+            variant,
+            saleType,
+            quantity,
+            weight,
+            barcodes?.split(" "),
+            image,
+            pricing.map { it.toStorePricingInformation() }.toMutableList(),
+            automated,
+            verified
+        )
+
+    constructor(info: RetailerProductInformation, local: Boolean) : this(
+        "all",
         info.retailer!!,
         info.brandName,
         info.name!!,
@@ -65,7 +86,6 @@ data class SearchableRetailerProductInformation(
         info.pricing!!.map { SearchablePricingInformation(it, info.retailer!!) },
         info.automated ?: true,
         info.verified ?: false,
-        productsSize,
         local
     )
 }

@@ -1,5 +1,7 @@
 package com.example.cosc345.shared.models
 
+import kotlin.math.roundToInt
+
 /**
  * Specifies the pricing for a particular product in a particular store, including discounts and multi-buy pricing.
  *
@@ -50,4 +52,19 @@ data class StorePricingInformation(
      * Whether this price is 'verified'. Essentially, this is either a price extracted via a verified retailer submitting prices.
      */
     var verified: Boolean? = null
-)
+) {
+    fun getPrice(productInformation: RetailerProductInformation): Int {
+        var price =
+            if (discountPrice == null || price?.let { it < discountPrice!! } == true) {
+                price
+            } else {
+                discountPrice
+            }
+
+        if (productInformation.saleType == SaleType.WEIGHT) {
+            price = (price!! / (productInformation.weight!!.toDouble() / 1000)).roundToInt()
+        }
+
+        return price!!
+    }
+}

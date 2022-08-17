@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.appsearch.app.*
 import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_DOCUMENT_SCORE
+import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_RELEVANCE_SCORE
 import androidx.appsearch.localstorage.LocalStorage
 import androidx.concurrent.futures.await
 import com.example.cosc345.shared.extensions.capitaliseNZ
@@ -37,6 +38,7 @@ class SearchRepository @Inject constructor(
     }
 
     val isInitialized: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private var dependentOnSession: Boolean = false
     private lateinit var appSearchSession: AppSearchSession
 
     suspend fun initialise(waitForever: Boolean = true) {
@@ -61,6 +63,7 @@ class SearchRepository @Inject constructor(
                         SearchableRetailerProductInformation::class.java,
                         SearchablePricingInformation::class.java
                     )
+                    .setForceOverride(true)
                     .build()
 
                 appSearchSession.setSchemaAsync(setSchemaRequest).await()
@@ -70,6 +73,7 @@ class SearchRepository @Inject constructor(
             isInitialized.value = true
 
             if (waitForever) {
+                dependentOnSession = true
                 Log.d(TAG, "Awaiting AppSearch cancellation.")
                 awaitCancellation()
             }
@@ -86,8 +90,9 @@ class SearchRepository @Inject constructor(
     private suspend fun finish() {
         Log.d(TAG, "Flushing AppSearch database.")
         appSearchSession.requestFlushAsync().await()
-        Log.d(TAG, "Manually closing AppSearch session.")
-        appSearchSession.close()
+        Log.d(TAG, "Manually closing AppSearch session. Dependent on session $dependentOnSession")
+        if (!dependentOnSession)
+            appSearchSession.close()
     }
 
     private suspend fun getRetailersLocalMap(): Map<String, Boolean> {
@@ -117,13 +122,17 @@ class SearchRepository @Inject constructor(
         return result
     }
 
+    suspend fun hasIndexedBefore(): Boolean {
+        return context.indexSettingsDataStore.data.first().runBefore
+    }
+
     suspend fun queryProductsAppSearch(query: String, count: Int): SearchResults {
         Log.d(TAG, "Query products from AppSearch index.")
         awaitInitialization()
         Log.d(TAG, "Initialised. Starting the AppSearch query.")
 
         val searchSpec = SearchSpec.Builder()
-            .setRankingStrategy(RANKING_STRATEGY_DOCUMENT_SCORE)
+            .setRankingStrategy(if (query.isEmpty()) RANKING_STRATEGY_DOCUMENT_SCORE else RANKING_STRATEGY_RELEVANCE_SCORE)
             .setResultCountPerPage(count)
             .build()
 
@@ -135,17 +144,33 @@ class SearchRepository @Inject constructor(
         return searchResults
     }
 
+    suspend fun searchSuggestions(query: String): List<String> {
+        Log.d(TAG, "Query search suggestions from AppSearch.")
+        awaitInitialization()
+        Log.d(TAG, "Initialised. Starting the search suggestions query.")
+
+        val suggestionsSpec = SearchSuggestionSpec.Builder(5)
+            .build()
+
+        Log.d(TAG, "Running query for suggestions.")
+
+        return if (query.isNotEmpty()) {
+            val suggestions = appSearchSession.searchSuggestionAsync(query, suggestionsSpec).await()
+            Log.d(TAG, "Finished suggestions query.")
+            suggestions.map { it.suggestedResult }
+        } else {
+            listOf()
+        }
+    }
+
     suspend fun queryProductsFirebase(
         query: String,
         startAt: String?,
         count: Int
-    ): Pair<List<SearchableProduct>, String> {
+    ): Pair<Map<String, Product>, String?> {
         Log.d(TAG, "Query products from Firebase.")
 
-        val localMap = getRetailersLocalMap()
-        Log.d(TAG, "Got local map of retailers for Firebase.")
-
-        val result = getProductsFirebase(localMap, query, startAt, count)
+        val result = getProductsFirebase(query, startAt, count)
         Log.d(TAG, "Queried Firebase, now pass results to pager.")
 
         return result
@@ -153,23 +178,29 @@ class SearchRepository @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getProductsFirebase(
-        localMap: Map<String, Boolean>,
         query: String,
         startAt: String?,
         count: Int
-    ): Pair<List<SearchableProduct>, String> {
+    ): Pair<Map<String, Product>, String?> {
         Log.d(TAG, "Get products from Firebase.")
 
         return suspendCancellableCoroutine { continuation ->
             val successListener = OnSuccessListener<DataSnapshot> { snapshot ->
                 Log.d(TAG, "Successfully retrieved products from Firebase.")
-                val key = snapshot.children.last().key!!
+                val products = snapshot.getValue<Map<String, Product>>()
+
+                val key = if (query.isEmpty()) {
+                    products?.keys?.first()
+                } else {
+                    products?.values?.last()?.information?.first()?.name
+                }
+
 
                 continuation.resume(
-                    Pair(snapshot
-                        .getValue<Map<String, Product>>()
-                        ?.map { SearchableProduct(it.value, it.key, localMap) }
-                        ?: listOf(), key),
+                    Pair(
+                        products ?: mapOf(),
+                        key
+                    ),
                     null
                 )
             }
@@ -178,20 +209,19 @@ class SearchRepository @Inject constructor(
             var firebaseQuery = if (query.isEmpty()) {
                 database.reference
                     .child("products")
+                    .orderByKey()
                     .limitToLast(count)
             } else {
                 database.reference
                     .child("products")
                     .orderByChild("information/0/name")
-                    .startAt(query.titleCase().capitaliseNZ())
+                    .startAt(startAt ?: query.titleCase().capitaliseNZ())
                     .endAt("${query.titleCase().capitaliseNZ()}~")
                     .limitToFirst(count)
             }
 
-            if (startAt != null) {
-                if (query.isEmpty()) {
-                    firebaseQuery = firebaseQuery.endBefore(startAt)
-                }
+            if (query.isEmpty() && startAt != null) {
+                firebaseQuery = firebaseQuery.endBefore(startAt)
             }
 
             Log.d(TAG, "Query Firebase.")
@@ -204,25 +234,6 @@ class SearchRepository @Inject constructor(
         if (!isInitialized.value) {
             isInitialized.first { it }
         }
-    }
-
-    suspend fun isAny(): Boolean {
-        Log.d(TAG, "Check if AppSearch index is empty.")
-        awaitInitialization()
-        Log.d(TAG, "Initialised. Building basic empty query.")
-
-        val searchSpec = SearchSpec.Builder()
-            .setSnippetCount(1)
-            .build()
-
-        Log.d(TAG, "Query first search result.")
-        val searchResults = appSearchSession.search("", searchSpec).nextPageAsync.await()
-        Log.d(TAG, "Got first search result, check if the result is empty.")
-
-        val result = searchResults.firstOrNull()
-
-        Log.d(TAG, "Finished. Return is empty result.")
-        return result != null
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -251,6 +262,14 @@ class SearchRepository @Inject constructor(
             Log.d(TAG, "We should update, initialise AppSearch.")
             initialise(false)
 
+            if (!hasIndexedBefore()) {
+                appSearchSession.setSchemaAsync(
+                    SetSchemaRequest.Builder().setForceOverride(true).build()
+                )
+
+                initialise(false)
+            }
+
             Log.d(TAG, "Initialised. Get retailers local map from Firebase.")
             val retailers = getRetailersLocalMap()
 
@@ -261,6 +280,14 @@ class SearchRepository @Inject constructor(
             finish()
 
             Log.d(TAG, "Finished closing AppSearch session.")
+
+            Log.d(TAG, "Save last updated time to settings.")
+            context.indexSettingsDataStore.updateData {
+                it.toBuilder()
+                    .setLastUpdated(System.currentTimeMillis())
+                    .setRunBefore(true)
+                    .build()
+            }
         }
     }
 
