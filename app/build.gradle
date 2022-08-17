@@ -1,11 +1,12 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-//    id 'kotlin-andriod'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
     id 'com.google.protobuf' version '0.8.19'
+    id 'org.jetbrains.dokka'
+    id 'kover'
 }
 
 android {
@@ -52,6 +53,10 @@ android {
         resources {
             excludes += ['/META-INF/{AL2.0,LGPL2.1}', 'META-INF/atomicfu.kotlin_module']
         }
+    }
+    // Allow us to use AppSearch's search suggestions API
+    lintOptions {
+        disable 'RestrictedApi'
     }
 }
 
@@ -151,13 +156,15 @@ dependencies {
     implementation "androidx.paging:paging-runtime:$paging_version"
     testImplementation "androidx.paging:paging-common:$paging_version"
     implementation "androidx.paging:paging-compose:1.0.0-alpha15"
+    implementation "androidx.concurrent:concurrent-futures-ktx:1.1.0"
 
     implementation "io.coil-kt:coil-compose:2.1.0"
 
     implementation "androidx.datastore:datastore:1.0.0"
-    implementation  "com.google.protobuf:protobuf-javalite:3.21.4"
+    implementation "com.google.protobuf:protobuf-javalite:3.21.4"
 
     implementation "com.google.accompanist:accompanist-placeholder-material:0.26.0-alpha"
+    implementation "com.google.accompanist:accompanist-flowlayout:0.26.0-alpha"
 
     implementation project(':shared')
 
@@ -169,4 +176,18 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     androidTestImplementation "androidx.room:room-testing:$room_version"
+}
+
+dokkaHtmlPartial {
+    moduleName.set("App")
+
+    dokkaSourceSets {
+        configureEach {
+            includes.from("README.md")
+        }
+    }
+}
+
+koverMerged {
+    enable()
 }

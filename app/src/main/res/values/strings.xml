@@ -8,7 +8,7 @@
     <string name="search_products">Search Products</string>
     <string name="content_description_product_image">An image of the product</string>
     <string name="placeholder">Placeholder product name</string>
-    <string name="best_price">Best Price</string>
+    <string name="best_price">Best Non-Local Price</string>
     <string name="best_local_price">Best Local Price</string>
     <string name="content_description_shopping_cart">An icon of a shopping cart</string>
     <string name="add">Add</string>
@@ -16,4 +16,11 @@
     <string name="decrease_quantity">Decrease quantity</string>
     <string name="quantity">Quantity</string>
     <string name="loading">Loading</string>
+    <string name="content_description_clear_search">Clear Search</string>
+    <string name="add_product_to_shopping_list">Add Product To Shopping List</string>
+    <string name="cancel">Cancel</string>
+    <string name="select_shop">Select the store you would like to purchase this product at. Each item in your shopping list will be organised based on the store you select.</string>
+    <string name="select_store_format">$%3$.2f - %1$s %2$s</string>
+    <string name="product_added_to_list">The product has been added to your shopping list!</string>
+    <string name="search_suggestions">Search Suggestions</string>
 </resources>

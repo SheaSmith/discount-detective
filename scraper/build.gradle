@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id("com.google.devtools.ksp").version("1.7.10-1.0.6")
     id 'org.jetbrains.dokka'
+    id 'kover'
 }
 
 java {
@@ -39,6 +40,11 @@ dependencies {
 
 test {
     useJUnitPlatform()
+
+    // Skip Four Square tests as they always fail due to CloudFlare blocking us
+    if (System.properties['test.environment'] == 'actions') {
+        exclude '**/FourSquareUnitTest.class'
+    }
 }
 
 dokkaHtmlPartial {
@@ -46,7 +52,11 @@ dokkaHtmlPartial {
 
     dokkaSourceSets {
         configureEach {
-            includes.from("Module.md")
+            includes.from("README.md")
         }
     }
+}
+
+koverMerged {
+    enable()
 }

@@ -15,7 +15,7 @@ data class SearchableProduct(
     val size: Int,
 
     @Document.DocumentProperty(indexNestedProperties = true)
-    val information: List<SearchableRetailerProductInformation>?
+    val information: List<SearchableRetailerProductInformation>
 ) {
     constructor(product: Product, id: String, localMap: Map<String, Boolean>) : this(
         id = id,
@@ -23,8 +23,14 @@ data class SearchableProduct(
         information = product.information!!.map {
             SearchableRetailerProductInformation(
                 it,
-                product.information!!.size,
                 localMap[it.retailer!!] ?: false
             )
         })
+
+    fun toProduct(): Pair<String, Product> {
+        return Pair(
+            id,
+            Product(information.map { it.toRetailerProductInformation() }.toMutableList())
+        )
+    }
 }
