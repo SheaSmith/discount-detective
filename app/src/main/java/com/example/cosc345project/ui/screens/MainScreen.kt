@@ -10,7 +10,7 @@ import com.example.cosc345project.ui.utils.NavigationType
 /**
  * Class for the Main Screen
  *
- * Creates the base screen
+ * Creates the base screen page.
  *
  * @param windowSize
  * @param foldingDevicePosture

@@ -36,8 +36,8 @@ import kotlinx.coroutines.launch
  * Creates the user interface search screen and links to the database so that users can search
  * for certain foods.
  *
- * @param viewModel
- * @param navController
+ * @param viewModel instance of the SearchViewModel class (see ../../viewmodel/SearchViewModel)
+ * @param navController instance of the NavHostController class.
  */
 @Composable
 @Preview
