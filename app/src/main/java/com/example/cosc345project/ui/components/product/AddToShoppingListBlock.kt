@@ -111,24 +111,26 @@ fun AddToShoppingListBlock(
                         }
 
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                            sortedList.forEach { info ->
-                                val sortedPricing =
-                                    info.pricing!!.sortedBy { it.getPrice(info) }
-                                sortedPricing.forEach { pricing ->
-                                    val retailer = retailers[info.retailer]!!
+                            remember {
+                                sortedList.forEach { info ->
+                                    val sortedPricing =
+                                        info.pricing!!.sortedBy { it.getPrice(info) }
+                                    sortedPricing.forEach { pricing ->
+                                        val retailer = retailers[info.retailer]!!
 
-                                    val store =
-                                        retailer.stores!!.firstOrNull { it.id == pricing.store }
+                                        val store =
+                                            retailer.stores!!.firstOrNull { it.id == pricing.store }
 
-                                    if (store != null) {
-                                        val pair = Pair(info.id!!, pricing.store!!)
+                                        if (store != null) {
+                                            val pair = Pair(info.id!!, pricing.store!!)
 
-                                        val price = pricing.getPrice(info)
+                                            val price = pricing.getPrice(info)
 
-                                        if (retailer.local == true && !lowestPriceIsLocal || (price < lowestPrice && (!lowestPriceIsLocal || retailer.local == true))) {
-                                            lowestPrice = price
-                                            selectedPricingPair = pair
-                                            lowestPriceIsLocal = retailer.local == true
+                                            if (retailer.local == true && !lowestPriceIsLocal || (price < lowestPrice && (!lowestPriceIsLocal || retailer.local == true))) {
+                                                lowestPrice = price
+                                                selectedPricingPair = pair
+                                                lowestPriceIsLocal = retailer.local == true
+                                            }
                                         }
                                     }
                                 }
