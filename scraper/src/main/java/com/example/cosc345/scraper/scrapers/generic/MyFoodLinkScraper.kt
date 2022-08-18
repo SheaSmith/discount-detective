@@ -123,16 +123,6 @@ abstract class MyFoodLinkScraper(
                                     null
                                 }
 
-                                if (product.brandName != null) {
-                                    product.name =
-                                        product.name!!.replace(product.brandName!!, "").trim()
-
-                                    if (product.name.isNullOrBlank()) {
-                                        product.name = product.brandName
-                                        product.brandName = null
-                                    }
-                                }
-
                                 var name = gtmData.name
                                 // Strip out the weight from the title if it still exists
                                 Units.all.forEach {
@@ -151,6 +141,16 @@ abstract class MyFoodLinkScraper(
                                 if (product.saleType == SaleType.WEIGHT) {
                                     product.name =
                                         product.name!!.replace(" Loose", "", ignoreCase = true)
+                                }
+
+                                if (product.brandName != null) {
+                                    product.name =
+                                        product.name!!.replace(product.brandName!!, "").trim()
+
+                                    if (product.name.isNullOrBlank()) {
+                                        product.name = product.brandName
+                                        product.brandName = null
+                                    }
                                 }
 
                                 products.add(product)
