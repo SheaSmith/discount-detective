@@ -25,7 +25,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build -x test
     - name: Run tests
-      run: ./gradlew koverMergedReport -Dtest.environment actions
+      run: ./gradlew koverMergedReport -Dtest.environment=actions
     - name: Upload Test Report
       uses: codecov/codecov-action@v2
       with:
