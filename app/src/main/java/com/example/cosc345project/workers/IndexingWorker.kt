@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.cosc345project.repository.SearchRepository
+import com.example.cosc345project.repository.SearchIndexRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -12,7 +12,7 @@ import dagger.assisted.AssistedInject
 class IndexingWorker @AssistedInject constructor(
     @Assisted val appContext: Context,
     @Assisted params: WorkerParameters,
-    private val searchRepository: SearchRepository
+    private val searchRepository: SearchIndexRepository
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
