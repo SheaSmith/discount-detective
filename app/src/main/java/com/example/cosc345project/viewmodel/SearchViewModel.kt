@@ -3,6 +3,7 @@ package com.example.cosc345project.viewmodel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -17,6 +18,7 @@ import com.example.cosc345project.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,11 +51,14 @@ class SearchViewModel @Inject constructor(
 
     val loading = mutableStateOf(false)
 
+    val hasIndexed = searchRepository.hasIndexedBefore().asLiveData()
+
     fun query() {
         loading.value = true
-        showSuggestions.value = false
         viewModelScope.launch {
-            if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore()) {
+            if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore()
+                    .first()
+            ) {
                 searchLiveData.value = Pager(PagingConfig(pageSize = 10)) {
                     AppSearchProductsPagingSource(searchRepository, searchQuery.value)
                 }
@@ -71,7 +76,7 @@ class SearchViewModel @Inject constructor(
 
     private fun querySuggestions() {
         viewModelScope.launch {
-            if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore())
+            if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore().first())
                 suggestions.value = searchRepository.searchSuggestions(searchQuery.value)
         }
     }

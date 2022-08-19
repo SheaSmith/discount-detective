@@ -2,14 +2,19 @@
 
 package com.example.cosc345project.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
@@ -63,6 +68,7 @@ fun SearchScreen(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val hasIndexed by viewModel.hasIndexed.observeAsState()
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -86,9 +92,16 @@ fun SearchScreen(
                         },
                         onSearch = {
                             viewModel.query()
+                            focusManager.clearFocus()
+                            coroutineScope.launch {
+                                listState.scrollToItem(0)
+                            }
                         },
                         onClear = {
                             viewModel.setQuery("", runSearch = true)
+                            coroutineScope.launch {
+                                listState.scrollToItem(0)
+                            }
                         }
                     )
                 },
@@ -136,6 +149,24 @@ fun SearchScreen(
                     )
                 }
             } else {
+                item {
+                    AnimatedVisibility(visible = hasIndexed != true) {
+                        Card(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            Row(
+                                modifier = Modifier.padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Info,
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                                Text(text = stringResource(R.string.still_indexing))
+                            }
+                        }
+                    }
+                }
+
                 if (productResults.itemCount == 0 || retailers.isEmpty()) {
                     items(10) {
                         SearchProductCard(
