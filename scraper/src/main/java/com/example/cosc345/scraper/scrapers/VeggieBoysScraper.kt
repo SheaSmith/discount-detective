@@ -100,7 +100,7 @@ class VeggieBoysScraper : Scraper() {
                 if (product.quantity == null) {
                     val details = veggieBoysService.getProductDetails(veggieBoysProduct.href!!)
 
-                    if (details.perKg != null) {
+                    if (details.perKg?.isNotEmpty() == true) {
                         product.saleType = SaleType.WEIGHT
                         product.weight = 1000
                     }
