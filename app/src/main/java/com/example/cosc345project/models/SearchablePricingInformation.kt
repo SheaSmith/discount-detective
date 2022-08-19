@@ -6,6 +6,9 @@ import com.example.cosc345.shared.models.StorePricingInformation
 @Document
 data class SearchablePricingInformation(
     @Document.Namespace
+    val namespace: String = "all",
+
+    @Document.StringProperty
     val retailer: String,
 
     /**
@@ -60,7 +63,19 @@ data class SearchablePricingInformation(
     @Document.BooleanProperty
     val verified: Boolean
 ) {
+    fun toStorePricingInformation() = StorePricingInformation(
+        store,
+        price,
+        discountPrice,
+        multiBuyQuantity,
+        multiBuyPrice,
+        clubOnly,
+        automated,
+        verified
+    )
+
     constructor(pricingInformation: StorePricingInformation, retailerId: String) : this(
+        "all",
         retailerId,
         pricingInformation.store!!,
         pricingInformation.price,

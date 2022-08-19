@@ -81,4 +81,17 @@ data class RetailerProductInformation(
      * Whether this product was added by the retailer themselves.
      */
     var verified: Boolean? = null
-)
+) {
+    fun getRetailerScore(): Int {
+        return when (retailer) {
+            "countdown" -> 0
+            "new-world" -> 1
+            "paknsave" -> 1
+            "freshchoice" -> 2
+            "supervalue" -> 2
+            "warehouse" -> 2
+            "four-square" -> 4
+            else -> 3
+        }
+    }
+}

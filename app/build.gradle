@@ -5,6 +5,8 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
     id 'com.google.protobuf' version '0.8.19'
+    id 'org.jetbrains.dokka'
+    id 'kover'
 }
 
 android {
@@ -51,6 +53,10 @@ android {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
+    }
+    // Allow us to use AppSearch's search suggestions API
+    lintOptions {
+        disable 'RestrictedApi'
     }
 }
 
@@ -155,9 +161,24 @@ dependencies {
     implementation "io.coil-kt:coil-compose:2.1.0"
 
     implementation "androidx.datastore:datastore:1.0.0"
-    implementation  "com.google.protobuf:protobuf-javalite:3.21.4"
+    implementation "com.google.protobuf:protobuf-javalite:3.21.4"
 
     implementation "com.google.accompanist:accompanist-placeholder-material:0.26.0-alpha"
+    implementation "com.google.accompanist:accompanist-flowlayout:0.26.0-alpha"
 
     implementation project(':shared')
+}
+
+dokkaHtmlPartial {
+    moduleName.set("App")
+
+    dokkaSourceSets {
+        configureEach {
+            includes.from("README.md")
+        }
+    }
+}
+
+koverMerged {
+    enable()
 }
