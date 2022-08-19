@@ -33,7 +33,6 @@ class ShoppingListViewModel @Inject constructor(
     private val productRepository: ProductRepository,
 ) : ViewModel() {
 
-//    all products in the shopping list
     val allProducts: LiveData<List<RetailerProductInfo>> =
         productRepository.allProducts.asLiveData()
 

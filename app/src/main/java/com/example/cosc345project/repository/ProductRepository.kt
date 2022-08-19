@@ -40,11 +40,10 @@ class ProductRepository @Inject constructor(
     var allProducts: Flow<List<RetailerProductInfo>> = productDao.getProductIDs()
 
     /**
-     * Insert a product into the shopping lsit
+     * Insert a product into the shopping list
      *
      * @WorkerThread annotated method only called by worker thread
      */
-    @WorkerThread
     suspend fun insert(shoppingListRetailerProductInfo: RetailerProductInfo) {
         productDao.insert(shoppingListRetailerProductInfo)
     }
@@ -54,7 +53,6 @@ class ProductRepository @Inject constructor(
      *
      * @OptIn to allow usage of experimental coroutines API.
      */
-    @WorkerThread
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getProductFromID(productID: String): Product {
         Log.d(TAG, "Get Firebase Product from ProductID.")
