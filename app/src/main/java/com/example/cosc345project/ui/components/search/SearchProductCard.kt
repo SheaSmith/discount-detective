@@ -61,7 +61,7 @@ fun SearchProductCard(
     Card(
         onClick = {
             if (product != null) {
-                navController.navigate("products/${productPair.second}")
+                navController.navigate("products/${productPair.first}")
             }
         },
         enabled = !loading,
