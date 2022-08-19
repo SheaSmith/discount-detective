@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
 
 @Preview(showBackground = true)
 @Composable
-fun ReplyAppPreview() {
+fun AppPreview() {
     DiscountDetectiveTheme {
         MainScreen(
             windowSize = WindowWidthSizeClass.Compact,
@@ -83,7 +83,7 @@ fun ReplyAppPreview() {
 
 @Preview(showBackground = true, widthDp = 700)
 @Composable
-fun ReplyAppPreviewTablet() {
+fun AppPreviewTablet() {
     DiscountDetectiveTheme {
         MainScreen(
             windowSize = WindowWidthSizeClass.Medium,
@@ -94,7 +94,7 @@ fun ReplyAppPreviewTablet() {
 
 @Preview(showBackground = true, widthDp = 1000)
 @Composable
-fun ReplyAppPreviewDesktop() {
+fun AppPreviewDesktop() {
     DiscountDetectiveTheme {
         MainScreen(
             windowSize = WindowWidthSizeClass.Expanded,

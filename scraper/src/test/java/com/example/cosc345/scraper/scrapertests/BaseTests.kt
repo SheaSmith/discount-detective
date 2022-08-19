@@ -6,9 +6,11 @@ import com.example.cosc345.shared.models.Store
 
 abstract class BaseTests {
     protected fun allProductsHavePrices(products: List<RetailerProductInformation>): Boolean {
-        System.out.format("+------------------+--------------------+%n")
+        val divider = "+------------------+--------------------+%n"
+
+        System.out.format(divider)
         System.out.format("| Number of prices | Number of products |%n")
-        System.out.format("+------------------+--------------------+%n")
+        System.out.format(divider)
 
         val rowFormat = "| %-16d | %-18d |%n"
 
@@ -17,7 +19,7 @@ abstract class BaseTests {
                 System.out.format(rowFormat, price, products.size)
             }
 
-        System.out.format("+------------------+--------------------+%n")
+        System.out.format(divider)
 
         assert(products.none { product -> product.pricing?.any { it.price == null && it.discountPrice == null } == true })
 
