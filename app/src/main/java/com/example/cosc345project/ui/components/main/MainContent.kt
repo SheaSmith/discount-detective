@@ -24,7 +24,7 @@ import com.example.cosc345project.ui.utils.NavigationType
 import com.example.cosc345project.viewmodel.SearchViewModel
 
 /**
- * MainContent
+ * MainContent function
  *
  *
  *

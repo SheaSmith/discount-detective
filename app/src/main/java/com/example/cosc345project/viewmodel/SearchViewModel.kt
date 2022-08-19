@@ -23,6 +23,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * SearchViewModel
+ *
+ *
+ * @param searchRepository
+ * @param retailersRepository
+ */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,

@@ -7,6 +7,14 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.cosc345project.R
 
+/**
+ * Navigation class
+ *
+ *
+ * @param route
+ * @param nameResource
+ * @param icon
+ */
 enum class Navigation(
     val route: String,
     @StringRes val nameResource: Int?,

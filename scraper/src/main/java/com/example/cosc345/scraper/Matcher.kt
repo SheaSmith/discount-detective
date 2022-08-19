@@ -18,6 +18,11 @@ import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
+/**
+ * Matcher class
+ *
+ *
+ */
 @OptIn(ExperimentalTime::class)
 class Matcher {
     suspend fun runScrapers(): Pair<Map<String, Retailer>, List<RetailerProductInformation>> {
@@ -68,6 +73,13 @@ class Matcher {
         return Pair(retailers, retailerProductInfo)
     }
 
+    /**
+     * matchBarcodes method
+     *
+     *
+     * @param retailerProductInfo
+     * @param retailers
+     */
     fun matchBarcodes(
         retailerProductInfo: MutableList<RetailerProductInformation>,
         retailers: Map<String, Retailer>
@@ -113,6 +125,13 @@ class Matcher {
         return Pair(retailers, mappedProducts)
     }
 
+    /**
+     * matchNames function
+     *
+     *
+     * @param productMap
+     * @param retailers
+     */
     fun matchNames(
         productMap: Map<String, Product>,
         retailers: Map<String, Retailer>
@@ -169,6 +188,12 @@ class Matcher {
         return Pair(retailers, mappedProducts)
     }
 
+    /**
+     * mapProducts function
+     *
+     *
+     * @param products
+     */
     private fun mapProducts(products: List<Product>): Map<String, Product> {
         return products.associateBy { product ->
             val barcodes =
@@ -185,6 +210,13 @@ class Matcher {
         }
     }
 
+    /**
+     * printStatus method
+     *
+     *
+     * @param products
+     * @param retailers
+     */
     private fun printStatus(products: List<Product>, retailers: Map<String, Retailer>) {
         println("Number of retailer items per product")
         val count = products.groupBy { it.information!!.size }

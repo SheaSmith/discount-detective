@@ -36,7 +36,7 @@ import com.example.cosc345project.viewmodel.SearchViewModel
 import kotlinx.coroutines.launch
 
 /**
- * Class for the Search Screen
+ * Search Screen function
  *
  * Creates the user interface search screen and links to the database so that users can search
  * for certain foods.

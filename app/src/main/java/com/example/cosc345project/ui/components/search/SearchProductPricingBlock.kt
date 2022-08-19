@@ -28,6 +28,7 @@ import com.google.accompanist.placeholder.placeholder
  * @param components
  * @param loading
  * @param local
+ * @param modifier
  */
 @Composable
 fun SearchProductPricingBlock(

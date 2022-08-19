@@ -33,6 +33,17 @@ import com.google.accompanist.placeholder.placeholder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * AddToShoppingListBlock
+ *
+ *
+ *
+ * @param snackbarHostState
+ * @param productPair
+ * @param retailers
+ * @param loading
+ * @param coroutineScope
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddToShoppingListBlock(

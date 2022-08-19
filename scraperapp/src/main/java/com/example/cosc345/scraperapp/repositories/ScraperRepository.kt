@@ -9,6 +9,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * ScraperRepository class
+ *
+ * @param firebaseDatabase Our database - containing retailers, products, etc.
+ * @param temporaryDatabaseRepository
+ * @param matcher Matches products across retailers/stores
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 @Singleton
 class ScraperRepository @Inject constructor(
@@ -23,6 +30,11 @@ class ScraperRepository @Inject constructor(
         temporaryDatabaseRepository.insertRetailers(result.first)
     }
 
+    /**
+     * matchBarcodes function
+     *
+     *
+     */
     suspend fun matchBarcodes() {
         val retailers = temporaryDatabaseRepository.getRetailers()
         val productInfo = temporaryDatabaseRepository.getRetailerProductInfo()
@@ -32,6 +44,11 @@ class ScraperRepository @Inject constructor(
         temporaryDatabaseRepository.insertProducts(result.second)
     }
 
+    /**
+     * matchValues function
+     *
+     *
+     */
     suspend fun matchValues() {
         val retailers = temporaryDatabaseRepository.getRetailers()
         val products = temporaryDatabaseRepository.getProducts()
@@ -41,12 +58,24 @@ class ScraperRepository @Inject constructor(
         temporaryDatabaseRepository.insertProducts(result.second)
     }
 
+    /**
+     * saveToFirebase function
+     *
+     */
     suspend fun saveToFirebase() {
         val retailers = temporaryDatabaseRepository.getRetailers()
         val products = temporaryDatabaseRepository.getProducts()
         saveScrapers(retailers, products)
     }
 
+    /**
+     * saveScrapers function
+     *
+     * Is private because:
+     *
+     * @param retailers
+     * @param products
+     */
     private suspend fun saveScrapers(
         retailers: Map<String, Retailer>,
         products: Map<String, Product>
@@ -66,6 +95,13 @@ class ScraperRepository @Inject constructor(
         setLastUpdated()
     }
 
+    /**
+     * deleteProducts function
+     *
+     * Is private because:
+     *
+     * @param keys
+     */
     private suspend fun deleteProducts(keys: List<String>) {
         return suspendCancellableCoroutine { continuation ->
             firebaseDatabase.getReference("products").updateChildren(keys.associateWith { null })
