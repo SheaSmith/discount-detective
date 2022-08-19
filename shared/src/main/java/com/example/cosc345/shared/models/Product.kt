@@ -48,25 +48,7 @@ data class Product(
                 products.flatMap { productInfo -> productInfo.pricing!!.map { it to productInfo } }
                     .minBy { it.first.getPrice(it.second) }
 
-            val lowestPrice =
-                lowestPricePair.first.getPrice(lowestPricePair.second).toString()
-
-            val salePrefix = if (lowestPricePair.second.saleType == SaleType.WEIGHT) {
-                "kg"
-            } else {
-                "ea"
-            }
-
-            val dollarComponent = "$${lowestPrice.substring(0, lowestPrice.length - 2)}"
-            val centsComponent =
-                ".${
-                    lowestPrice.substring(
-                        lowestPrice.length - 2,
-                        lowestPrice.length
-                    )
-                }/${salePrefix}"
-
-            return Pair(dollarComponent, centsComponent)
+            return lowestPricePair.first.getDisplayPrice(lowestPricePair.second)
         }
 
         return null

@@ -24,4 +24,9 @@
     <string name="product_added_to_list">The product has been added to your shopping list!</string>
     <string name="search_suggestions">Search Suggestions</string>
     <string name="still_indexing">The app is currently processing all of the product to make the search faster. Until this has finished, search results will be slower and less comprehensive. This optimisation should be done in a few minutes.</string>
+    <string name="club_only">Club price only</string>
+    <string name="local_prices">Local Prices</string>
+    <string name="retailer">Retailer</string>
+    <string name="price">Price</string>
+    <string name="discount_price">Discount Price</string>
 </resources>

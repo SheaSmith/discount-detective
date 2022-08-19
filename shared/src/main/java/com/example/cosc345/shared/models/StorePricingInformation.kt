@@ -67,4 +67,31 @@ data class StorePricingInformation(
 
         return price!!
     }
+
+    fun getDisplayPrice(productInformation: RetailerProductInformation): Pair<String, String> =
+        getDisplayPrice(productInformation, getPrice(productInformation))
+
+    fun getDisplayPrice(
+        productInformation: RetailerProductInformation,
+        price: Int
+    ): Pair<String, String> {
+        val salePrefix = if (productInformation.saleType == SaleType.WEIGHT) {
+            "kg"
+        } else {
+            "ea"
+        }
+
+        val priceString = price.toString()
+
+        val dollarComponent = "$${priceString.substring(0, priceString.length - 2)}"
+        val centsComponent =
+            ".${
+                priceString.substring(
+                    priceString.length - 2,
+                    priceString.length
+                )
+            }/${salePrefix}"
+
+        return Pair(dollarComponent, centsComponent)
+    }
 }

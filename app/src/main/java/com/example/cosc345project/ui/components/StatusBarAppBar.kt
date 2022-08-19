@@ -21,10 +21,7 @@ package com.example.cosc345project.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +44,34 @@ fun StatusBarCenterAlignedTopAppBar(
     )
     Box(modifier = Modifier.background(backgroundColor)) {
         CenterAlignedTopAppBar(
+            modifier = modifier,
+            actions = actions,
+            title = title,
+            scrollBehavior = scrollBehavior,
+            colors = foregroundColors,
+            navigationIcon = navigationIcon
+        )
+    }
+}
+
+@Composable
+fun StatusBarLargeTopAppBar(
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    title: @Composable () -> Unit,
+    actions: @Composable RowScope.() -> Unit = {},
+    navigationIcon: @Composable () -> Unit = {}
+) {
+    val backgroundColors = TopAppBarDefaults.largeTopAppBarColors()
+    val backgroundColor = backgroundColors.containerColor(
+        colorTransitionFraction = scrollBehavior?.state?.overlappedFraction ?: 0f
+    ).value
+    val foregroundColors = TopAppBarDefaults.largeTopAppBarColors(
+        containerColor = Color.Transparent,
+        scrolledContainerColor = Color.Transparent
+    )
+    Box(modifier = Modifier.background(backgroundColor)) {
+        LargeTopAppBar(
             modifier = modifier,
             actions = actions,
             title = title,

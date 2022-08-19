@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 fun AddToShoppingListBlock(
     snackbarHostState: SnackbarHostState,
     productPair: Pair<String, Product>?,
-    retailers: Map<String, Retailer>,
+    retailers: Map<String, Retailer>?,
     loading: Boolean,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) {
@@ -57,7 +57,7 @@ fun AddToShoppingListBlock(
     }
 
     Row {
-        if (showDialog) {
+        if (showDialog && retailers != null) {
             val confirmMessage = stringResource(id = R.string.product_added_to_list)
 
             AlertDialog(
