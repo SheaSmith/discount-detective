@@ -37,7 +37,7 @@ import kotlinx.coroutines.CoroutineScope
  * corresponding product screen.
  *
  * @param productPair
- * @param loading
+ * @param loading Boolean variable for whether or not the screen has finished loading.
  * @param navController
  * @param retailers
  * @param snackbarHostState

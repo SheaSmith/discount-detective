@@ -8,6 +8,11 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Retailers Repository Class.
+ *
+ * Accesses the information about retailers from where it is stored in our Firebase Database.
+ */
 @Singleton
 class RetailersRepository @Inject constructor(
     private val database: FirebaseDatabase

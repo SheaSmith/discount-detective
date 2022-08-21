@@ -29,7 +29,7 @@ import com.example.cosc345project.R
  *
  *
  * @param search
- * @param loading
+ * @param loading Boolean variable for whether or not the screens finished loading.
  * @param onValueChange
  * @param onFocusChanged
  * @param onSearch
