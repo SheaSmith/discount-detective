@@ -30,7 +30,7 @@ import com.google.accompanist.placeholder.placeholder
 import kotlinx.coroutines.CoroutineScope
 
 /**
- * Product card function displays each product's information
+ * Product card function displays each product's information.
  *
  * Creates a section ("product card") for each product in the search screen, so that users can
  * easily differentiate between the information of each product and click on it to open the

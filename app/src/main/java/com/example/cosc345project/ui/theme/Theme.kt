@@ -28,6 +28,9 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+/**
+ * Sets our own colour scheme.
+ */
 @Composable
 fun DiscountDetectiveTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

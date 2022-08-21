@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
  *
  * The search screen uses this class. It makes sure that all the items in the search screen are
  * the same size, even when some of them contain more words than others. This is visually more
- * pleasing. Note that, as state in the StackOverflow link above, Google does not recommend this
+ * pleasing. Note that, as stated in the StackOverflow link above, Google does not recommend this
  * solution, but it still works well for others and in our app.
  *
  * @param state

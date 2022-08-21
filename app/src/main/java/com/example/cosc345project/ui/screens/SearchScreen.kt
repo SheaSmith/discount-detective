@@ -36,13 +36,13 @@ import com.example.cosc345project.viewmodel.SearchViewModel
 import kotlinx.coroutines.launch
 
 /**
- * Search Screen function
+ * Function for the Search Screen
  *
- * Creates the user interface search screen and links to the database so that users can search
- * for certain foods.
+ * Creates the user interface search screen and links elements of the UI to the database so that
+ * users can search for certain foods.
  *
- * @param viewModel instance of the SearchViewModel class (see ../../viewmodel/SearchViewModel)
- * @param navController instance of the NavHostController class.
+ * @param viewModel Instance of the SearchViewModel class (see ../../viewmodel/SearchViewModel)
+ * @param navController Instance of the NavHostController class.
  */
 @Composable
 @Preview
