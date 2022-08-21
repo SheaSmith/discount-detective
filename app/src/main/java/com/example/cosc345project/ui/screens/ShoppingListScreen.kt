@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,7 +27,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -87,14 +91,27 @@ fun ShoppingListScreen(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                scrollBehavior = scrollBehavior
+                navigationIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Filled.ArrowBack, "backIcon")
+                    }
+                },
+                scrollBehavior = scrollBehavior,
+                actions = {
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "settings"
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->
         //i.e nothing in shopping list
-        if (productIDs != null) {
+        if (!productIDs.isNullOrEmpty()) {
             //TODO: Ideally should be done in viewmodel
-            val grouped = productIDs.groupBy { it.retailerProductInformationID }
+            val grouped = productIDs.groupBy { it.storePricingInformationID }
 
             productList(
                 grouped = grouped,
@@ -103,7 +120,13 @@ fun ShoppingListScreen(
                 innerPadding = innerPadding
             )
         } else {
-            Text("Empty Shopping List")
+            Text(
+                text = "Empty Shopping List",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
         }
     }
 }
@@ -116,18 +139,24 @@ fun productList(grouped: Map<String, List<RetailerProductInfo>>,
                 innerPadding: PaddingValues
 ) {
     LazyColumn (
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
         contentPadding = innerPadding,
         ){
         grouped.forEach { (store, productsForStore) ->
             stickyHeader {
-                Text(store)
+                Text(
+                    text = store,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.width(200.dp)
+                )
             }
+            //this not working (nothing but text box displayed)
             items(productsForStore) { product ->
                 ProductCard(
                     product = product,
                     viewModel = viewModel,
-                    navController = navController)
+                    navController = navController
+                )
             }
         }
     }
@@ -147,17 +176,15 @@ fun ProductCard(
     //Returns a list of all the retailers for that product
     val productRetailerInfoList = productID.let { viewModel.getProductFromID(it).collectAsState(initial = null)}
 
-    //need to get the name and the image (so just first index should be enough)
-    //get the retailerID to index into this list (as we have product ID, now need RetailerID)
+    //use the retailerID to index into this list (as we have product ID, now need RetailerID)
+    //TODO: Not getting Data (always getting null)
     val productInfo = productRetailerInfoList.value?.information?.firstOrNull {
         it.retailer == retailerID
     }
 
     //get product with retailerID, storeID
     //this seems to have broken it. I want to do it this way but maybe check nulls?
-    //yes, need to add null checks
     val pricingInfo = productInfo?.pricing?.firstOrNull {it.store == storeId}
-
 
 
     Card(
@@ -169,98 +196,76 @@ fun ProductCard(
         ),
         shape = CardDefaults.elevatedShape
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp)) {
-
-            // image loading
-            Row(
+        // master row layout
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .safeContentPadding(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Reorder, //TODO find list button
+                contentDescription ="dd",
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+            AsyncImage(
+                model = productInfo?.image,
+                contentDescription = stringResource(id = R.string.content_description_product_image),
                 modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                if (productInfo != null) {
-                    //what placeholder for null image
-                    if (productInfo.image != null){
-                        AsyncImage(
-                            model = productInfo.image,
-                            contentDescription = stringResource(id = R.string.content_description_product_image),
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .height(100.dp)
-                                .width(100.dp)
-                                .align(Alignment.Top)
-                                .placeholder(
-                                    visible = false,
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    highlight = PlaceholderHighlight.fade()
-                                )
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(Color.White)
-                        )
-                    }
-                }
-                //text product name
-                Column(
-                    modifier = Modifier.align(Alignment.Top)
-                ) {
-                    if (productInfo?.brandName != null) {
-                        Text(
-                            text = productInfo.brandName ?: "",
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
-                    if (productInfo?.name != null) {
-                        Text(
-                            text = productInfo.name ?: stringResource(id = R.string.placeholder),
-                            modifier = Modifier
-                                .placeholder(
-                                    visible = false,
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    highlight = PlaceholderHighlight.fade()
-                                ),
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleLarge
+                    .fillMaxHeight()
+                    .height(100.dp)
+                    .width(100.dp)
+                    .placeholder(
+                        visible = false,
+                        shape = RoundedCornerShape(4.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        highlight = PlaceholderHighlight.fade()
+                    )
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.White)
+                )
 
-                        )
-                    }
-                    //pricing info
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 12.dp)
-                            .fillMaxWidth(),
-                    ) {
-                        //retailer, product and store for pricing
-                        if (pricingInfo?.price != null) {
-                            Text(
-                                text = pricingInfo.price.toString(),
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .placeholder(
-                                        visible = true,
-                                        shape = RoundedCornerShape(4.dp),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        highlight = PlaceholderHighlight.fade()
-                                    )
-                                    .padding(vertical = 12.dp)
-                                    .fillMaxWidth()
-                            )
-                        }
-                    }
-                    //is selected checkbox
-                    Row {
-                        val isChecked = remember {mutableStateOf(false)}
-                        Checkbox(
-                            checked = isChecked.value,
-                            onCheckedChange = {
-                                isChecked.value = it
-                            }
-                        )
-                    }
-                }
+            //brand-name, product name and pricing info
+            Column (
+                modifier = Modifier.fillMaxWidth(),
+            ){
+                Text(
+                    text = productInfo?.name ?: stringResource(id = R.string.placeholder),
+                    modifier = Modifier
+                        .placeholder(
+                            visible = true,
+                            shape = RoundedCornerShape(1.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            highlight = PlaceholderHighlight.fade()
+                        ),
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.titleSmall
+
+                )
+                Text(
+                    text = pricingInfo?.price.toString(),
+                    modifier = Modifier
+                        .placeholder(
+                            visible = true,
+                            shape = RoundedCornerShape(1.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            highlight = PlaceholderHighlight.fade()
+                        ),
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+            Column {
+                val isChecked = remember { mutableStateOf(false) }
+                Checkbox(
+                    checked = isChecked.value,
+                    onCheckedChange = {
+                        isChecked.value = it
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     }
