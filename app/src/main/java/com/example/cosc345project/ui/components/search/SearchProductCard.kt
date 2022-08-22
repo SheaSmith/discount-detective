@@ -22,6 +22,7 @@ import com.example.cosc345project.R
 import com.example.cosc345project.ui.components.MinimumHeightState
 import com.example.cosc345project.ui.components.minimumHeightModifier
 import com.example.cosc345project.ui.components.product.AddToShoppingListBlock
+import com.example.cosc345project.ui.components.product.ProductTitle
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -62,7 +63,7 @@ fun SearchProductCard(
     Card(
         onClick = {
             if (product != null) {
-                navController.navigate("products/${productPair.second}")
+                navController.navigate("products/${productPair.first}")
             }
         },
         enabled = !loading,
@@ -107,45 +108,7 @@ fun SearchProductCard(
                 Column(
                     modifier = Modifier.align(Alignment.Top)
                 ) {
-                    if (info?.brandName != null) {
-                        Text(
-                            text = info.brandName ?: "",
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
-
-                    Text(
-                        text = info?.name ?: stringResource(id = R.string.placeholder),
-                        modifier = Modifier
-                            .placeholder(
-                                visible = loading,
-                                shape = RoundedCornerShape(4.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                highlight = PlaceholderHighlight.fade()
-                            ),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-
-                    if (info?.variant != null || info?.quantity != null) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            if (info.variant != null) {
-                                Text(
-                                    text = info.variant ?: "",
-                                    style = MaterialTheme.typography.labelLarge
-                                )
-                            }
-
-                            if (info.quantity != null) {
-                                Text(
-                                    text = info.quantity ?: "",
-                                    style = MaterialTheme.typography.labelLarge
-                                )
-                            }
-                        }
-                    }
+                    ProductTitle(info = info, loading = loading)
 
                     FlowRow(
                         modifier = Modifier

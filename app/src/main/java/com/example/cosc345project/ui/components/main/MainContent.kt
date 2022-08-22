@@ -68,7 +68,9 @@ fun MainContent(
                     composable(
                         Navigation.PRODUCT.route,
                         arguments = listOf(navArgument("productId") { type = NavType.StringType })
-                    ) { ProductScreen() }
+                    ) {
+                        ProductScreen(it.arguments!!.getString("productId")!!)
+                    }
 //                    composable(Navigation.SETTINGS.route) { Text(text = "Settings") }
                 }
             }
