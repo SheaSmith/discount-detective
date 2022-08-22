@@ -42,7 +42,6 @@ class SearchViewModel @Inject constructor(
     val suggestions = MutableStateFlow<List<String>>(listOf())
     val showSuggestions = mutableStateOf(false)
     val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
-    val noInternet = mutableStateOf(false)
 
     val searchLiveData: MutableState<Flow<PagingData<Pair<String, Product>>>> =
         mutableStateOf(
@@ -62,7 +61,6 @@ class SearchViewModel @Inject constructor(
     val hasIndexed = searchRepository.hasIndexedBefore().asLiveData()
 
     fun query() {
-        noInternet.value = false
         viewModelScope.launch {
             if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore()
                     .first()
@@ -93,7 +91,6 @@ class SearchViewModel @Inject constructor(
                 .flow
                 .cachedIn(viewModelScope)
         } catch (e: NoInternetException) {
-            noInternet.value = true
             flowOf()
         }
     }
