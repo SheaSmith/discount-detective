@@ -16,5 +16,11 @@
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Customize your theme here. -->
+
+        <item name="preferenceTheme">@style/Theme.DiscountDetective.PreferenceThemeOverlay</item>
+    </style>
+
+    <style name="Theme.DiscountDetective.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay">
+        <item name="android:layout">@layout/preferences_fragment</item>
     </style>
 </resources>
