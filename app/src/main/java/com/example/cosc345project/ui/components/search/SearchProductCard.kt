@@ -51,7 +51,8 @@ fun SearchProductCard(
     navController: NavHostController,
     retailers: Map<String, Retailer>,
     snackbarHostState: SnackbarHostState,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    onAddToShoppingList: ((String, String, String, Int) -> Unit)? = null
 ) {
     val product = productPair?.second
     val info = product?.getBestInformation()
@@ -186,6 +187,7 @@ fun SearchProductCard(
                 productPair,
                 retailers,
                 loading,
+                onAddToShoppingList,
                 coroutineScope
             )
 

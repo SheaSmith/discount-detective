@@ -40,6 +40,7 @@ fun AddToShoppingListBlock(
     productPair: Pair<String, Product>?,
     retailers: Map<String, Retailer>,
     loading: Boolean,
+    onAddToShoppingList: ((String, String, String, Int) -> Unit)?,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) {
     val product = productPair?.second
@@ -57,7 +58,7 @@ fun AddToShoppingListBlock(
     }
 
     Row {
-        if (showDialog) {
+        if (showDialog && productPair != null) {
             val confirmMessage = stringResource(id = R.string.product_added_to_list)
 
             AlertDialog(
@@ -71,6 +72,14 @@ fun AddToShoppingListBlock(
                         showDialog = false
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar(confirmMessage)
+                        }
+                        onAddToShoppingList?.let {
+                            it(
+                                productPair.first,
+                                selectedPricingPair!!.first,
+                                selectedPricingPair!!.second,
+                                quantity ?: 1
+                            )
                         }
                     }) {
                         Text(stringResource(R.string.add))
@@ -102,24 +111,26 @@ fun AddToShoppingListBlock(
                         }
 
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                            sortedList.forEach { info ->
-                                val sortedPricing =
-                                    info.pricing!!.sortedBy { it.getPrice(info) }
-                                sortedPricing.forEach { pricing ->
-                                    val retailer = retailers[info.retailer]!!
+                            remember {
+                                sortedList.forEach { info ->
+                                    val sortedPricing =
+                                        info.pricing!!.sortedBy { it.getPrice(info) }
+                                    sortedPricing.forEach { pricing ->
+                                        val retailer = retailers[info.retailer]!!
 
-                                    val store =
-                                        retailer.stores!!.firstOrNull { it.id == pricing.store }
+                                        val store =
+                                            retailer.stores!!.firstOrNull { it.id == pricing.store }
 
-                                    if (store != null) {
-                                        val pair = Pair(info.id!!, pricing.store!!)
+                                        if (store != null) {
+                                            val pair = Pair(info.id!!, pricing.store!!)
 
-                                        val price = pricing.getPrice(info)
+                                            val price = pricing.getPrice(info)
 
-                                        if (retailer.local == true && !lowestPriceIsLocal || (price < lowestPrice && (!lowestPriceIsLocal || retailer.local == true))) {
-                                            lowestPrice = price
-                                            selectedPricingPair = pair
-                                            lowestPriceIsLocal = retailer.local == true
+                                            if (retailer.local == true && !lowestPriceIsLocal || (price < lowestPrice && (!lowestPriceIsLocal || retailer.local == true))) {
+                                                lowestPrice = price
+                                                selectedPricingPair = pair
+                                                lowestPriceIsLocal = retailer.local == true
+                                            }
                                         }
                                     }
                                 }
