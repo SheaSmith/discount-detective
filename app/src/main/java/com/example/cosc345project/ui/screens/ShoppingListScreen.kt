@@ -11,11 +11,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -173,13 +170,12 @@ fun ProductCard(
     val retailerID = product.retailerProductInformationID
     val storeId = product.storePricingInformationID
 
-    //Returns a list of all the retailers for that product
-    val productRetailerInfoList = productID.let { viewModel.getProductFromID(it).collectAsState(initial = null)}
+    val productRetailerInfoList by viewModel.getProductFromID(productID).collectAsState(initial = null)
 
     //use the retailerID to index into this list (as we have product ID, now need RetailerID)
     //TODO: Not getting Data (always getting null)
-    val productInfo = productRetailerInfoList.value?.information?.firstOrNull {
-        it.retailer == retailerID
+    val productInfo = productRetailerInfoList?.information?.firstOrNull {
+        it.id == retailerID
     }
 
     //get product with retailerID, storeID
@@ -235,7 +231,7 @@ fun ProductCard(
                     text = productInfo?.name ?: stringResource(id = R.string.placeholder),
                     modifier = Modifier
                         .placeholder(
-                            visible = true,
+                            visible = productInfo == null,
                             shape = RoundedCornerShape(1.dp),
                             color = MaterialTheme.colorScheme.surfaceVariant,
                             highlight = PlaceholderHighlight.fade()
@@ -248,7 +244,7 @@ fun ProductCard(
                     text = pricingInfo?.price.toString(),
                     modifier = Modifier
                         .placeholder(
-                            visible = true,
+                            visible = productInfo == null,
                             shape = RoundedCornerShape(1.dp),
                             color = MaterialTheme.colorScheme.surfaceVariant,
                             highlight = PlaceholderHighlight.fade()
