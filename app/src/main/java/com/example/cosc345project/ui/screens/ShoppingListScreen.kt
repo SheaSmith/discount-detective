@@ -24,12 +24,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -108,6 +111,7 @@ fun ShoppingListScreen(
         //i.e nothing in shopping list
         if (!productIDs.isNullOrEmpty()) {
             //TODO: Ideally should be done in viewmodel
+            // RetailerRepository has this info
             val grouped = productIDs.groupBy { it.storePricingInformationID }
 
             productList(
@@ -170,10 +174,11 @@ fun ProductCard(
     val retailerID = product.retailerProductInformationID
     val storeId = product.storePricingInformationID
 
+
+    //collect using by since lazy loading
     val productRetailerInfoList by viewModel.getProductFromID(productID).collectAsState(initial = null)
 
     //use the retailerID to index into this list (as we have product ID, now need RetailerID)
-    //TODO: Not getting Data (always getting null)
     val productInfo = productRetailerInfoList?.information?.firstOrNull {
         it.id == retailerID
     }
@@ -181,6 +186,8 @@ fun ProductCard(
     //get product with retailerID, storeID
     //this seems to have broken it. I want to do it this way but maybe check nulls?
     val pricingInfo = productInfo?.pricing?.firstOrNull {it.store == storeId}
+
+    //use getDisplayPrice (not currently available)
 
 
     Card(
@@ -202,7 +209,7 @@ fun ProductCard(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Icon(
-                imageVector = Icons.Filled.Reorder, //TODO find list button
+                imageVector = Icons.Filled.DragHandle,
                 contentDescription ="dd",
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
@@ -211,10 +218,10 @@ fun ProductCard(
                 contentDescription = stringResource(id = R.string.content_description_product_image),
                 modifier = Modifier
                     .fillMaxHeight()
-                    .height(100.dp)
-                    .width(100.dp)
+                    .height(30.dp)
+                    .width(30.dp)
                     .placeholder(
-                        visible = false,
+                        visible = productInfo == null,
                         shape = RoundedCornerShape(4.dp),
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         highlight = PlaceholderHighlight.fade()
@@ -226,6 +233,8 @@ fun ProductCard(
             //brand-name, product name and pricing info
             Column (
                 modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
                 Text(
                     text = productInfo?.name ?: stringResource(id = R.string.placeholder),
@@ -241,6 +250,8 @@ fun ProductCard(
 
                 )
                 Text(
+                    //TODO: getPrice function
+                    // then use search product
                     text = pricingInfo?.price.toString(),
                     modifier = Modifier
                         .placeholder(
