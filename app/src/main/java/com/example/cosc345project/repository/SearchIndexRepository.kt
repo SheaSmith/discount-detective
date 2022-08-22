@@ -87,13 +87,14 @@ class SearchIndexRepository @Inject constructor(
 
             Log.d(TAG, "Finished insertion, close search session.")
             finish()
-            setHasIndexed(true)
 
             Log.d(TAG, "Finished closing AppSearch session.")
 
             Log.d(TAG, "Save last updated time to settings.")
 
         }
+
+        setHasIndexed(true)
     }
 
     /**

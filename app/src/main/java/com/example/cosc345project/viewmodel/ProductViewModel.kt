@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
+import com.example.cosc345project.repository.ProductRepository
 import com.example.cosc345project.repository.RetailersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,9 +14,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
-    retailersRepository: RetailersRepository
+    retailersRepository: RetailersRepository,
+    private val productRepository: ProductRepository
 ) : ViewModel() {
-    val product = MutableStateFlow(Pair("", Product(information = mutableListOf())))
+    val product = MutableStateFlow<Pair<String, Product>?>(null)
+    val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
 
     init {
         viewModelScope.launch {
@@ -23,8 +26,20 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
-
     val localRetailerInfo = MutableStateFlow(listOf<RetailerProductInformation>())
     val nonLocalRetailerInfo = MutableStateFlow(listOf<RetailerProductInformation>())
+
+    fun getProduct(productId: String) {
+        viewModelScope.launch {
+            product.value = Pair(productId, productRepository.getProductFromID(productId))
+            val localRetailers = retailers.value.filter { it.value.local == true }.keys
+
+            if (localRetailers.isNotEmpty()) {
+                localRetailerInfo.value =
+                    product.value!!.second.information!!.filter { localRetailers.contains(it.retailer) }
+                nonLocalRetailerInfo.value =
+                    product.value!!.second.information!!.filter { !localRetailers.contains(it.retailer) }
+            }
+        }
+    }
 }

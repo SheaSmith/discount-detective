@@ -3,48 +3,38 @@
 package com.example.cosc345project.ui.screens
 
 import android.os.Build
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.cosc345project.R
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.ui.res.painterResource
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.StorePricingInformation
+import com.example.cosc345project.R
 import com.example.cosc345project.ui.components.StatusBarLargeTopAppBar
 import com.example.cosc345project.ui.components.product.AddToShoppingListBlock
 import com.example.cosc345project.ui.components.product.ProductTitle
@@ -63,22 +53,16 @@ import com.example.cosc345project.viewmodel.ProductViewModel
 * Need to comment... yucky
 * */
 
-@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun ProductImage() {
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .height(250.dp)
-            .offset(x = 0.dp, y = 175.dp)
-
-
-    ) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(250.dp)) {
         Image(
             modifier = Modifier
                 .padding(0.dp)
-                .align(Alignment.Center)
                 .aspectRatio(1.5f)
+                .fillMaxWidth()
                 .fillMaxHeight()
                 .background(Color.White),
 
@@ -91,7 +75,6 @@ fun ProductImage() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun RetailerSlot(
     pricingInformation: StorePricingInformation,
@@ -212,7 +195,10 @@ fun ProductInformation(
             snackbarHostState = snackbarHostState,
             productPair = product,
             retailers = retailers,
-            loading = loading
+            loading = loading,
+            onAddToShoppingList = { id, id2, id3, id4 ->
+
+            }
         )
     }
 
@@ -221,11 +207,12 @@ fun ProductInformation(
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-@Preview
-fun ProductScreen(viewModel: ProductViewModel = hiltViewModel()) {
+fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel()) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
     )
+
+    viewModel.getProduct(productId)
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -242,7 +229,7 @@ fun ProductScreen(viewModel: ProductViewModel = hiltViewModel()) {
             StatusBarLargeTopAppBar(
                 title = {
                     Text(
-                        product.second.getBestInformation().name ?: "",
+                        product?.second?.getBestInformation()?.name ?: "",
                         maxLines = 2,
                         //style = MaterialTheme.typography.displaySmall,
                         overflow = TextOverflow.Ellipsis,
