@@ -4,6 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.example.cosc345.shared.models.Store
 
+/**
+ * This StorageStore class allows us to store information about particular stores. Not that there
+ * may be more than one store, in different locations, attributed to each retailer.
+ *
+ */
 @Entity(
     tableName = "Stores",
     primaryKeys = ["storeRetailer", "storeId"]
@@ -53,7 +58,8 @@ data class StorageStore(
     val longitude: Double?,
 
     /**
-     * Whether the store was automatically added by the scraper, rather than by the retailer themselves, or a user.
+     * Whether the store was automatically added by the scraper, rather than by the retailer
+     * themselves, or a user.
      *
      * Required.
      */

@@ -25,7 +25,7 @@ import com.example.cosc345project.viewmodel.SearchViewModel
 import com.example.cosc345project.viewmodel.ShoppingListViewModel
 
 /**
- * MainContent
+ * MainContent function
  *
  *
  *

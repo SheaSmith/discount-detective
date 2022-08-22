@@ -163,6 +163,13 @@ fun productList(grouped: Map<String, List<RetailerProductInfo>>,
     }
 }
 
+/**
+ * Class for the Shopping List Screen.
+ *
+ * Creates a shopping list page so the user can see and interact with the items they
+ * have added to their shopping list.
+ *
+ */
 @Composable
 fun ProductCard(
     product: RetailerProductInfo,

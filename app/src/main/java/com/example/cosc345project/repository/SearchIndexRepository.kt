@@ -20,6 +20,15 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Search Index Repository class.
+ *
+ * ???
+ *
+ * @param context
+ * @param database
+ * @param retailersRepository
+ */
 @Singleton
 class SearchIndexRepository @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -30,6 +39,11 @@ class SearchIndexRepository @Inject constructor(
         private val TAG = SearchIndexRepository::class.simpleName
     }
 
+    /**
+     * Finish function
+     *
+     * ???
+     */
     private suspend fun finish() {
         Log.d(TAG, "Flushing AppSearch database.")
         appSearchSession.requestFlushAsync().await()
@@ -38,6 +52,11 @@ class SearchIndexRepository @Inject constructor(
             appSearchSession.close()
     }
 
+    /**
+     * Index From Firebase
+     *
+     * ???
+     */
     suspend fun indexFromFirebase() {
         Log.d(
             TAG,
@@ -77,6 +96,11 @@ class SearchIndexRepository @Inject constructor(
         }
     }
 
+    /**
+     * Insert Products function.
+     *
+     * ???
+     */
     @Suppress("UNUSED_VALUE")
     private suspend fun insertProducts(
         localMap: Map<String, Boolean>
@@ -100,6 +124,11 @@ class SearchIndexRepository @Inject constructor(
         Log.d(TAG, "Finished putting products in search index.")
     }
 
+    /**
+     * Get Products function.
+     *
+     * ???
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun getProducts(firstKey: String? = null): DataSnapshot {
         Log.d(TAG, "Get all products from Firebase, from a specific key.")
@@ -123,6 +152,11 @@ class SearchIndexRepository @Inject constructor(
         }
     }
 
+    /**
+     * Get Last Update function
+     *
+     * ???
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getLastUpdate(): Long {
         Log.d(TAG, "Get Firebase last update.")
@@ -136,6 +170,11 @@ class SearchIndexRepository @Inject constructor(
         }
     }
 
+    /**
+     * Map Firebase Data Snapshot
+     *
+     * @param dataSnapshot
+     */
     private fun mapFirebaseDataSnapshot(dataSnapshot: DataSnapshot): Pair<List<Pair<String, Product>>, String> {
         Log.d(TAG, "Got products from Firebase, map them appropriately.")
         val products: List<Pair<String, Product>> =
@@ -147,6 +186,12 @@ class SearchIndexRepository @Inject constructor(
         return Pair(products, newKey)
     }
 
+    /**
+     * Set Products
+     *
+     * @param products
+     * @param localMap
+     */
     private suspend fun setProducts(
         products: List<Pair<String, Product>>,
         localMap: Map<String, Boolean>
@@ -168,12 +213,24 @@ class SearchIndexRepository @Inject constructor(
         return result
     }
 
+    /**
+     * getRetailersLocalMap function
+     *
+     * ???
+     */
     private suspend fun getRetailersLocalMap(): Map<String, Boolean> {
         val localMap = retailersRepository.getRetailers().mapValues { it.value.local!! }
         Log.d(TAG, "Getting retailers local map. Retailer length ${localMap.size}.")
         return localMap
     }
 
+    /**
+     * setHasIndexed function
+     *
+     * ???
+     *
+     * @param indexed
+     */
     private suspend fun setHasIndexed(indexed: Boolean) {
         context.indexSettingsDataStore.updateData {
             it.toBuilder()

@@ -26,6 +26,14 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * SearchViewModel
+ *
+ *todo
+ *
+ * @param searchRepository
+ * @param retailersRepository
+ */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
