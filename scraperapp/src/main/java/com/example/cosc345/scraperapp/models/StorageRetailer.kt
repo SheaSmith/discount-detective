@@ -5,6 +5,11 @@ import androidx.room.PrimaryKey
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.Store
 
+/**
+ * Instances of the StorageRetailer class allow store information about certain food retailers so
+ * that we can use this information throughout the app.
+ *
+ */
 @Entity(tableName = "Retailers")
 data class StorageRetailer(
     @PrimaryKey

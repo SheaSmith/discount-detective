@@ -4,6 +4,11 @@ import androidx.room.Entity
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.StorePricingInformation
 
+/**
+ * This StorageStorePricingInformation class allows us to store information about the prices of
+ * each individual product, as well as multiple quantities of the product.
+ *
+ */
 @Entity(
     tableName = "StorePricingInformation",
     primaryKeys = ["productInfoId", "retailerId", "storeId"]

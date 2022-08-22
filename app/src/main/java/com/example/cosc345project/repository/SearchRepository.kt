@@ -26,6 +26,14 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Search Repository class.
+ *
+ * todo
+ *
+ * @param context
+ * @param database
+ */
 @Singleton
 class SearchRepository @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -72,6 +80,11 @@ class SearchRepository @Inject constructor(
         }
     }
 
+    /**
+     * queryProductsFirebase function
+     *
+     * ???
+     */
     suspend fun queryProductsFirebase(
         query: String,
         startAt: String?,
@@ -85,6 +98,11 @@ class SearchRepository @Inject constructor(
         return result
     }
 
+    /**
+     * getProductsFirebase code
+     *
+     * ???
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getProductsFirebase(
         query: String,
@@ -140,6 +158,11 @@ class SearchRepository @Inject constructor(
         }
     }
 
+    /**
+     * hasIndexedBefore function
+     *
+     * ???
+     */
     fun hasIndexedBefore(): Flow<Boolean> {
         return context.indexSettingsDataStore.data.map { it.runBefore }.distinctUntilChanged()
     }

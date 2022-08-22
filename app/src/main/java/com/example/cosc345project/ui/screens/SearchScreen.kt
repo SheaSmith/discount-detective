@@ -40,13 +40,13 @@ import com.example.cosc345project.viewmodel.SearchViewModel
 import kotlinx.coroutines.launch
 
 /**
- * Class for the Search Screen
+ * Function for the Search Screen
  *
- * Creates the user interface search screen and links to the database so that users can search
- * for certain foods.
+ * Creates the user interface search screen and links elements of the UI to the database so that
+ * users can search for certain foods.
  *
- * @param viewModel
- * @param navController
+ * @param viewModel Instance of the SearchViewModel class (see ../../viewmodel/SearchViewModel)
+ * @param navController Instance of the NavHostController class.
  */
 @Composable
 @Preview
@@ -73,7 +73,6 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val hasIndexed by viewModel.hasIndexed.observeAsState()
-    val noInternet by viewModel.noInternet
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -132,7 +131,8 @@ fun SearchScreen(
                 },
             state = listState
         ) {
-            loading = productResults.loadState.refresh == LoadState.Loading
+            val loadState = productResults.loadState.refresh
+            loading = loadState == LoadState.Loading
 
             if (showSuggestions && suggestions.isNotEmpty()) {
                 item {
@@ -196,10 +196,18 @@ fun SearchScreen(
                             navController,
                             retailers,
                             snackbarHostState,
-                            coroutineScope
+                            coroutineScope,
+                            onAddToShoppingList = { productId, retailerProductInfoId, storeId, quantity ->
+                                viewModel.addToShoppingList(
+                                    productId,
+                                    retailerProductInfoId,
+                                    storeId,
+                                    quantity
+                                )
+                            }
                         )
                     }
-                } else if (!noInternet) {
+                } else if (loadState !is LoadState.Error) {
                     item {
                         SearchError(
                             title = R.string.no_results,

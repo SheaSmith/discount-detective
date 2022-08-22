@@ -51,7 +51,7 @@ android {
     }
     packagingOptions {
         resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += ['/META-INF/{AL2.0,LGPL2.1}', 'META-INF/atomicfu.kotlin_module']
         }
     }
     // Allow us to use AppSearch's search suggestions API
@@ -167,6 +167,15 @@ dependencies {
     implementation "com.google.accompanist:accompanist-flowlayout:0.26.0-alpha"
 
     implementation project(':shared')
+
+    // Dependencies for working with Architecture components
+    // You'll probably have to update the version numbers in build.gradle (Project)
+
+    // Room
+    def room_version = "2.4.3"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    androidTestImplementation "androidx.room:room-testing:$room_version"
 }
 
 dokkaHtmlPartial {
