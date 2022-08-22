@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -52,7 +53,7 @@ class IndexingWorker @AssistedInject constructor(
 
         val notification = NotificationCompat.Builder(applicationContext, id)
             .setSmallIcon(R.drawable.ic_stat_name)
-            .setColor(applicationContext.getColor(R.color.theme))
+            .setColor(ContextCompat.getColor(appContext, R.color.theme))
             .setContentTitle(title)
             .setContentText(applicationContext.getString(R.string.notification_content))
             .setTicker(title)
