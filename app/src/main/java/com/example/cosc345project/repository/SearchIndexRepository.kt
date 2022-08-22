@@ -7,6 +7,7 @@ import androidx.appsearch.app.PutDocumentsRequest
 import androidx.appsearch.app.SetSchemaRequest
 import androidx.concurrent.futures.await
 import com.example.cosc345.shared.models.Product
+import com.example.cosc345project.checkInternet
 import com.example.cosc345project.models.SearchableProduct
 import com.example.cosc345project.settings.indexSettingsDataStore
 import com.google.firebase.database.DataSnapshot
@@ -143,6 +144,7 @@ class SearchIndexRepository @Inject constructor(
             }
 
             Log.d(TAG, "Run query for all products.")
+            checkInternet(context)
             query.get().addOnSuccessListener { dataSnapshot ->
                 Log.d(TAG, "Return results.")
                 continuation.resume(dataSnapshot, null)
@@ -160,6 +162,7 @@ class SearchIndexRepository @Inject constructor(
         Log.d(TAG, "Get Firebase last update.")
         return suspendCancellableCoroutine { continuation ->
             Log.d(TAG, "Get value from Firebase.")
+            checkInternet(context)
             database.reference.child("lastUpdated").get().addOnSuccessListener { data ->
                 Log.d(TAG, "Got last updated from Firebase, return value.")
                 continuation.resume(data.getValue<Long>() ?: 0, null)
