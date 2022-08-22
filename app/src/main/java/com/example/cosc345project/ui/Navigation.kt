@@ -10,6 +10,7 @@ import com.example.cosc345project.R
 /**
  * Navigation class
  *
+ * todo
  *
  * @param route
  * @param nameResource

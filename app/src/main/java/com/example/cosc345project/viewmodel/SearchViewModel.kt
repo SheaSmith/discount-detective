@@ -27,6 +27,7 @@ import javax.inject.Inject
 /**
  * SearchViewModel
  *
+ *todo
  *
  * @param searchRepository
  * @param retailersRepository
