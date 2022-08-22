@@ -10,6 +10,11 @@ import com.google.protobuf.InvalidProtocolBufferException
 import java.io.InputStream
 import java.io.OutputStream
 
+/**
+ * Index Settings Serializer fix.
+ *
+ * ???
+ */
 // Suppress warnings for coroutine stuff. Bug with the interactions between protoc and the datastore library.
 @Suppress("BlockingMethodInNonBlockingContext")
 object IndexSettingsSerializer : Serializer<IndexSettings> {

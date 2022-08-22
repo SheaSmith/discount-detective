@@ -26,6 +26,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
+/**
+ * Status bar for the app.
+ *
+ * ???
+ *
+ * @param modifier
+ * @param scrollBehavior
+ * @param title
+ * @param actions
+ * @param navigationIcon
+ */
 @Composable
 fun StatusBarCenterAlignedTopAppBar(
     modifier: Modifier = Modifier,

@@ -23,6 +23,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.cosc345project.R
 
+/**
+ * SearchTopAppBar function
+ *
+ *
+ *
+ * @param search
+ * @param loading Boolean variable for whether or not the screens finished loading.
+ * @param onValueChange
+ * @param onFocusChanged
+ * @param onSearch
+ * @param onClear
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTopAppBar(

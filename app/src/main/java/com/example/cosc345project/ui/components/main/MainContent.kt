@@ -22,9 +22,10 @@ import com.example.cosc345project.ui.screens.SearchScreen
 import com.example.cosc345project.ui.screens.ShoppingListScreen
 import com.example.cosc345project.ui.utils.NavigationType
 import com.example.cosc345project.viewmodel.SearchViewModel
+import com.example.cosc345project.viewmodel.ShoppingListViewModel
 
 /**
- * MainContent
+ * MainContent function
  *
  *
  *
@@ -60,7 +61,10 @@ fun MainContent(
                         val parentViewModel = hiltViewModel<SearchViewModel>()
                         SearchScreen(parentViewModel, navController)
                     }
-                    composable(Navigation.SHOPPING_LIST.route) { ShoppingListScreen() }
+                    composable(Navigation.SHOPPING_LIST.route) {
+                        val parentViewModel = hiltViewModel<ShoppingListViewModel>()
+                        ShoppingListScreen(parentViewModel, navController)
+                    }
                     composable(
                         Navigation.PRODUCT.route,
                         arguments = listOf(navArgument("productId") { type = NavType.StringType })

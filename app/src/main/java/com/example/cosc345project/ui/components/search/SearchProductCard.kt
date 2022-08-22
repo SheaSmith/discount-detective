@@ -31,14 +31,14 @@ import com.google.accompanist.placeholder.placeholder
 import kotlinx.coroutines.CoroutineScope
 
 /**
- * Product card function displays each product's information
+ * Product card function displays each product's information.
  *
  * Creates a section ("product card") for each product in the search screen, so that users can
  * easily differentiate between the information of each product and click on it to open the
  * corresponding product screen.
  *
  * @param productPair
- * @param loading
+ * @param loading Boolean variable for whether or not the screen has finished loading.
  * @param navController
  * @param retailers
  * @param snackbarHostState
@@ -52,7 +52,8 @@ fun SearchProductCard(
     navController: NavHostController,
     retailers: Map<String, Retailer>,
     snackbarHostState: SnackbarHostState,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    onAddToShoppingList: ((String, String, String, Int) -> Unit)? = null
 ) {
     val product = productPair?.second
     val info = product?.getBestInformation()
@@ -149,6 +150,7 @@ fun SearchProductCard(
                 productPair,
                 retailers,
                 loading,
+                onAddToShoppingList,
                 coroutineScope
             )
 

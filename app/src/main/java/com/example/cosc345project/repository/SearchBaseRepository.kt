@@ -13,6 +13,13 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 
+/**
+ * Search Base Repo abstract class.
+ *
+ * Controls searching sessions, enabling users to search for products within the firebase database.
+ *
+ * @param context
+ */
 abstract class SearchBaseRepository(private val context: Context) {
     companion object {
         private val TAG = SearchBaseRepository::class.simpleName

@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material.icons.rounded.SignalWifiOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -26,23 +28,25 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.example.cosc345project.R
 import com.example.cosc345project.ui.components.StatusBarCenterAlignedTopAppBar
+import com.example.cosc345project.ui.components.search.SearchError
 import com.example.cosc345project.ui.components.search.SearchProductCard
 import com.example.cosc345project.ui.components.search.SearchTopAppBar
 import com.example.cosc345project.viewmodel.SearchViewModel
 import kotlinx.coroutines.launch
 
 /**
- * Class for the Search Screen
+ * Function for the Search Screen
  *
- * Creates the user interface search screen and links to the database so that users can search
- * for certain foods.
+ * Creates the user interface search screen and links elements of the UI to the database so that
+ * users can search for certain foods.
  *
- * @param viewModel
- * @param navController
+ * @param viewModel Instance of the SearchViewModel class (see ../../viewmodel/SearchViewModel)
+ * @param navController Instance of the NavHostController class.
  */
 @Composable
 @Preview
@@ -55,8 +59,8 @@ fun SearchScreen(
     val suggestions by viewModel.suggestions.collectAsState()
     val searchResults by viewModel.searchLiveData
     val productResults = searchResults.collectAsLazyPagingItems()
-    val loading by remember {
-        viewModel.loading
+    var loading by remember {
+        mutableStateOf(false)
     }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
@@ -127,6 +131,9 @@ fun SearchScreen(
                 },
             state = listState
         ) {
+            val loadState = productResults.loadState.refresh
+            loading = loadState == LoadState.Loading
+
             if (showSuggestions && suggestions.isNotEmpty()) {
                 item {
                     Text(
@@ -167,7 +174,7 @@ fun SearchScreen(
                     }
                 }
 
-                if (productResults.itemCount == 0 || retailers.isEmpty()) {
+                if (loading) {
                     items(10) {
                         SearchProductCard(
                             null,
@@ -178,7 +185,7 @@ fun SearchScreen(
                             coroutineScope
                         )
                     }
-                } else if (retailers.isNotEmpty()) {
+                } else if (retailers.isNotEmpty() && productResults.itemCount != 0) {
                     items(
                         items = productResults,
                         key = { product -> product.first }
@@ -189,8 +196,34 @@ fun SearchScreen(
                             navController,
                             retailers,
                             snackbarHostState,
-                            coroutineScope
+                            coroutineScope,
+                            onAddToShoppingList = { productId, retailerProductInfoId, storeId, quantity ->
+                                viewModel.addToShoppingList(
+                                    productId,
+                                    retailerProductInfoId,
+                                    storeId,
+                                    quantity
+                                )
+                            }
                         )
+                    }
+                } else if (loadState !is LoadState.Error) {
+                    item {
+                        SearchError(
+                            title = R.string.no_results,
+                            description = R.string.no_results_description,
+                            icon = Icons.Rounded.SearchOff
+                        )
+                    }
+                } else {
+                    item {
+                        SearchError(
+                            title = R.string.no_internet,
+                            description = R.string.no_internet_description,
+                            icon = Icons.Rounded.SignalWifiOff,
+                            onRetry = {
+                                viewModel.query()
+                            })
                     }
                 }
             }
