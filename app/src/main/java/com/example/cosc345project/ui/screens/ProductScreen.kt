@@ -4,6 +4,7 @@ package com.example.cosc345project.ui.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -21,15 +22,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
@@ -39,6 +43,9 @@ import com.example.cosc345project.ui.components.StatusBarLargeTopAppBar
 import com.example.cosc345project.ui.components.product.AddToShoppingListBlock
 import com.example.cosc345project.ui.components.product.ProductTitle
 import com.example.cosc345project.viewmodel.ProductViewModel
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.fade
+import com.google.accompanist.placeholder.material.placeholder
 
 /*
 * 19/08 - John
@@ -54,24 +61,21 @@ import com.example.cosc345project.viewmodel.ProductViewModel
 * */
 
 @Composable
-fun ProductImage() {
+fun ProductImage(image: String?) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .height(250.dp)) {
-        Image(
+        AsyncImage(
+            model = image,
+            contentDescription = "Image of death",
             modifier = Modifier
                 .padding(0.dp)
                 .aspectRatio(1.5f)
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .background(Color.White),
-
-
-            painter = painterResource(R.drawable.banana_single),
-            contentDescription = "background_image",
             contentScale = ContentScale.FillHeight,
-
-            )
+        )
     }
 }
 
@@ -85,6 +89,8 @@ fun RetailerSlot(
 
     Surface(
         modifier = Modifier
+            .height(70.dp)
+            .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
             .fillMaxWidth(),
 
         shape = RoundedCornerShape(8.dp),
@@ -94,16 +100,30 @@ fun RetailerSlot(
 
             Surface(
                 modifier = Modifier
-                    .width(IntrinsicSize.Min)
+                    .padding(start = 5.dp)
+                    .width(45.dp)
+                    .height(45.dp)
                     .align(Alignment.CenterVertically),
                 shape = CircleShape,
+                border = BorderStroke(
+                    width = 5.dp,
+                    color = Color.White.copy(alpha = 0.7f),
+
+
+                ),
                 color = Color(if (isSystemInDarkTheme()) retailer.colourDark!! else retailer.colourLight!!)
             ) {
-                Text(
-                    text = retailer.initialism!!,
-                    fontSize = 24.sp,
-                    color = Color(if (isSystemInDarkTheme()) retailer.onColourDark!! else retailer.onColourLight!!)
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = retailer.initialism!!,
+                        fontSize = 20.sp,
+                        color = Color(if (isSystemInDarkTheme()) retailer.onColourDark!! else retailer.onColourLight!!)
+                    )
+                }
+
 
             }
 
@@ -111,18 +131,30 @@ fun RetailerSlot(
 
             Column(
                 modifier = Modifier
-                    .weight(1.0f)
+                    .weight(0.5f)
                     .align(Alignment.CenterVertically)
             ) {
-                Text(
-                    text = store.name!!,
-                    fontSize = 16.sp
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .fillMaxHeight(),
+                //.width(intrinsicSize = IntrinsicSize.Min)
+
+                contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = store.name!!,
+                        fontSize = 14.sp,
+                        lineHeight = 16.sp,
+                        maxLines = 3,
+                    )
+                }
+
             }
 
             Column(
                 modifier = Modifier
-                    .weight(0.5f)
+                    .weight(0.4f)
                     .align(Alignment.CenterVertically)
             ) {
                 val price = pricingInformation.price?.let {
@@ -133,14 +165,14 @@ fun RetailerSlot(
                 }
 
                 Text(
-                    text = price?.let { "$${price.first}${price.second}" } ?: "",
-                    fontSize = 16.sp
+                    text = price?.let { "${price.first}${price.second}" } ?: "",
+                    fontSize = 14.sp
                 )
             }
 
             Column(
                 modifier = Modifier
-                    .weight(0.5f)
+                    .weight(0.4f)
                     .align(Alignment.CenterVertically)
             ) {
                 if (pricingInformation.discountPrice != null) {
@@ -150,7 +182,7 @@ fun RetailerSlot(
                     )
 
                     Text(
-                        text = "$${price.first}${price.second}",
+                        text = "${price.first}${price.second}",
                         fontSize = 16.sp
                     )
                 }
@@ -188,7 +220,11 @@ fun ProductInformation(
     val bestInformation = product?.second?.getBestInformation()
     val loading = false
 
-    Column {
+    Column (
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp)
+            )
+    {
         ProductTitle(info = bestInformation, loading = false)
 
         AddToShoppingListBlock(
@@ -254,7 +290,7 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
         content = { padding ->
             LazyColumn(contentPadding = padding) {
                 item {
-                    ProductImage()
+                    ProductImage(image = product?.second?.getBestInformation()?.image)
                 }
 
                 item {
@@ -267,9 +303,7 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
 
                 if (localRetailerProductInformation.isNotEmpty() && retailers.isNotEmpty()) {
                     item {
-                        Text(text = stringResource(id = R.string.local_prices))
-
-                        TableHeader()
+                        TableHeader(true)
                     }
 
                     items(localRetailerProductInformation.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
@@ -278,14 +312,14 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
                             retailer = retailers[item.second.retailer]!!,
                             productInformation = item.second
                         )
+
+//
                     }
                 }
 
                 if (nonLocalRetailerProductInformation.isNotEmpty() && retailers.isNotEmpty()) {
                     item {
-                        Text(text = stringResource(id = R.string.local_prices))
-
-                        TableHeader()
+                        TableHeader(false)
                     }
 
                     items(nonLocalRetailerProductInformation.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
@@ -296,6 +330,7 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
                         )
                     }
                 }
+
             }
         }
     )
@@ -303,8 +338,22 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
 }
 
 @Composable
-fun TableHeader() {
-    Row {
+fun TableHeader(local : Boolean) {
+    if (local) {
+        Text(
+            text = stringResource(id = R.string.local_prices),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(start = 10.dp)
+
+        )
+    }
+
+    Row (
+        modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+            )
+    {
         Text(
             text = stringResource(id = R.string.retailer),
             modifier = Modifier.weight(1.0f)
@@ -317,7 +366,7 @@ fun TableHeader() {
 
         Text(
             text = stringResource(id = R.string.discount_price),
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(1f)
         )
     }
 }
