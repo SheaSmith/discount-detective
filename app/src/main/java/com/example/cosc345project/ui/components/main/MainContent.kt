@@ -19,7 +19,6 @@ import androidx.navigation.navArgument
 import com.example.cosc345project.ui.Navigation
 import com.example.cosc345project.ui.screens.ProductScreen
 import com.example.cosc345project.ui.screens.SearchScreen
-import com.example.cosc345project.ui.screens.SettingsScreen
 import com.example.cosc345project.ui.screens.ShoppingListScreen
 import com.example.cosc345project.ui.utils.NavigationType
 import com.example.cosc345project.viewmodel.SearchViewModel
@@ -69,8 +68,10 @@ fun MainContent(
                     composable(
                         Navigation.PRODUCT.route,
                         arguments = listOf(navArgument("productId") { type = NavType.StringType })
-                    ) { ProductScreen() }
-                    composable(Navigation.SETTINGS.route) { SettingsScreen() }
+                    ) {
+                        ProductScreen(it.arguments!!.getString("productId")!!)
+                    }
+//                    composable(Navigation.SETTINGS.route) { Text(text = "Settings") }
                 }
             }
 
