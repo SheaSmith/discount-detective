@@ -73,7 +73,6 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val hasIndexed by viewModel.hasIndexed.observeAsState()
-    val noInternet by viewModel.noInternet
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -132,7 +131,8 @@ fun SearchScreen(
                 },
             state = listState
         ) {
-            loading = productResults.loadState.refresh == LoadState.Loading
+            val loadState = productResults.loadState.refresh
+            loading = loadState == LoadState.Loading
 
             if (showSuggestions && suggestions.isNotEmpty()) {
                 item {
@@ -199,7 +199,7 @@ fun SearchScreen(
                             coroutineScope
                         )
                     }
-                } else if (!noInternet) {
+                } else if (loadState !is LoadState.Error) {
                     item {
                         SearchError(
                             title = R.string.no_results,
