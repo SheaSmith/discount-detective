@@ -12,6 +12,10 @@ import javax.inject.Singleton
 class RetailersRepository @Inject constructor(
     private val database: FirebaseDatabase
 ) {
+    /**
+     * Key: retailer-id
+     * Value: Retailer object
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getRetailers(): Map<String, Retailer> {
         return suspendCancellableCoroutine { continuation ->

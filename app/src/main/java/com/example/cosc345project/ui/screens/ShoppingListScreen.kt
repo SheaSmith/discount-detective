@@ -9,7 +9,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -21,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -34,21 +35,61 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.cosc345.shared.models.RetailerProductInformation
+import com.example.cosc345.shared.models.Retailer
+import com.example.cosc345.shared.models.SaleType
 import com.example.cosc345project.R
 import com.example.cosc345project.models.RetailerProductInfo
-import com.example.cosc345project.ui.components.MinimumHeightState
 import com.example.cosc345project.ui.components.StatusBarCenterAlignedTopAppBar
-import com.example.cosc345project.ui.components.minimumHeightModifier
 import com.example.cosc345project.viewmodel.ShoppingListViewModel
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
+
+/**
+ * Determines the store/retailer grouping in the list
+ */
+data class StoreGroup(
+    val retailerProductInfoID: String,
+    val storeProductInfoID: String,
+    val productID: String
+) {
+    //TODO if one null then use other etc
+    fun getDisplayName(
+        viewModel: ShoppingListViewModel,
+        retailers: Map<String, Retailer>
+    ): String {
+        //idea if we have product ID then we can get the names
+
+        val productRetailerInfoList = viewModel.getProductFromID(productID).asLiveData()
+
+        //use the retailerID to index into this list (as we have product ID, now need RetailerID)
+        val productInfo = productRetailerInfoList.value?.information?.firstOrNull {
+            it.id == retailerProductInfoID
+        }
+
+        val namePair = viewModel.getStoreName(
+            retailerProductInfoID,
+            storeProductInfoID,
+            retailers,
+            productInfo
+        )
+
+        //will need this for value bakery
+        val displayName = buildString {
+            if (namePair.first != null)
+                append(namePair.first + ": ")
+            append(namePair.second ?: "")
+
+        }
+        return displayName
+    }
+
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,6 +99,7 @@ fun ShoppingListScreen(
     navController: NavHostController = rememberNavController()
 ) {
 
+    val retailers by viewModel.retailers.collectAsState()
     //productIDs in the shopping list
     val productIDs = viewModel.allProducts.observeAsState().value
 
@@ -75,7 +117,6 @@ fun ShoppingListScreen(
             }
         }
     }
-
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -108,17 +149,30 @@ fun ShoppingListScreen(
             )
         }
     ) { innerPadding ->
-        //i.e nothing in shopping list
+        //TODO cleanup productID names
         if (!productIDs.isNullOrEmpty()) {
-            //TODO: Ideally should be done in viewmodel
-            // RetailerRepository has this info
-            val grouped = productIDs.groupBy { it.storePricingInformationID }
+
+            //essentially I need to group these
+            // with a cleaned/representative group name
+            //i.e with below
+
+            //then edit the diplayname
+
+            fun RetailerProductInfo.getKey() = StoreGroup(
+                this.retailerProductInformationID, //for small stores this won't work
+                this.storePricingInformationID,
+                this.productID
+            ).getDisplayName(viewModel, retailers)
+
+            //combination of retailer and store
+            val grouped = productIDs.groupBy { it.getKey() }
 
             productList(
                 grouped = grouped,
                 viewModel = viewModel,
                 navController = navController,
-                innerPadding = innerPadding
+                innerPadding = innerPadding,
+                retailers = retailers
             )
         } else {
             Text(
@@ -134,29 +188,30 @@ fun ShoppingListScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun productList(grouped: Map<String, List<RetailerProductInfo>>,
-                viewModel: ShoppingListViewModel,
-                navController: NavHostController,
-                innerPadding: PaddingValues
+fun productList(
+    grouped: Map<String, List<RetailerProductInfo>>,
+    viewModel: ShoppingListViewModel,
+    navController: NavHostController,
+    innerPadding: PaddingValues,
+    retailers: Map<String, Retailer>
 ) {
-    LazyColumn (
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         contentPadding = innerPadding,
-        ){
+    ) {
         grouped.forEach { (store, productsForStore) ->
             stickyHeader {
                 Text(
+                    //TODO get displayName (can use Dataclass above?)
                     text = store,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(200.dp)
                 )
             }
-            //this not working (nothing but text box displayed)
             items(productsForStore) { product ->
                 ProductCard(
                     product = product,
-                    viewModel = viewModel,
-                    navController = navController
+                    viewModel = viewModel
                 )
             }
         }
@@ -166,8 +221,7 @@ fun productList(grouped: Map<String, List<RetailerProductInfo>>,
 @Composable
 fun ProductCard(
     product: RetailerProductInfo,
-    viewModel: ShoppingListViewModel,
-    navController: NavHostController
+    viewModel: ShoppingListViewModel
 ) {
     val productID = product.productID
     //use to index product array
@@ -175,7 +229,7 @@ fun ProductCard(
     val storeId = product.storePricingInformationID
 
 
-    //collect using by since lazy loading
+    //collect using 'by' since lazy loading
     val productRetailerInfoList by viewModel.getProductFromID(productID).collectAsState(initial = null)
 
     //use the retailerID to index into this list (as we have product ID, now need RetailerID)
@@ -185,11 +239,12 @@ fun ProductCard(
 
     //get product with retailerID, storeID
     //this seems to have broken it. I want to do it this way but maybe check nulls?
-    val pricingInfo = productInfo?.pricing?.firstOrNull {it.store == storeId}
+    val pricingInfo = productInfo?.pricing?.firstOrNull { it.store == storeId }
 
     //use getDisplayPrice (not currently available)
 
-
+    //add this in for the correct colour
+    //tonalElevation = 2.dp
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -203,7 +258,6 @@ fun ProductCard(
         Row(
             modifier = Modifier
                 .padding(8.dp)
-                .fillMaxWidth()
                 .fillMaxHeight()
                 .safeContentPadding(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -234,10 +288,17 @@ fun ProductCard(
             Column (
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.Start
             ){
                 Text(
-                    text = productInfo?.name ?: stringResource(id = R.string.placeholder),
+                    // add the variant, quantity to title
+                    // productInfo?.name ?: stringResource(id = R.string.placeholder)
+                    text = buildAnnotatedString {
+                        append(productInfo?.name ?: stringResource(id = R.string.placeholder))
+                        append(" ")
+                        append(product.quantity.toString())
+                        toAnnotatedString()
+                    },
                     modifier = Modifier
                         .placeholder(
                             visible = productInfo == null,
@@ -249,10 +310,28 @@ fun ProductCard(
                     style = MaterialTheme.typography.titleSmall
 
                 )
+
+                //TODO Test new Pricing Scheme
+                val saleType = if (productInfo?.saleType == SaleType.WEIGHT) {
+                    "kg"
+                } else {
+                    "ea"
+                }
                 Text(
-                    //TODO: getPrice function
-                    // then use search product
-                    text = pricingInfo?.price.toString(),
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = 38.sp
+                            )
+                        ) {
+                            append("$ ")
+                            append(
+                                ((pricingInfo?.getPrice(productInfo)?.toDouble()
+                                    ?: 100.0) / 100).toString()
+                            )
+                        }
+                        append(" $saleType")
+                    },
                     modifier = Modifier
                         .placeholder(
                             visible = productInfo == null,

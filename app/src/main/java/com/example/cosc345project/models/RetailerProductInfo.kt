@@ -1,10 +1,8 @@
 package com.example.cosc345project.models
 
-import androidx.room.*
-import com.example.cosc345.shared.models.RetailerProductInformation
-import com.example.cosc345.shared.models.StorePricingInformation
-import org.json.JSONObject
-import javax.xml.transform.Source
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * Entity for the shopping list App
@@ -17,10 +15,8 @@ class RetailerProductInfo(
     val productID: String,
     @ColumnInfo(name = "retailerProductInformation")
     val retailerProductInformationID: String,
-    @ColumnInfo(name = "storePricingInformation")
+    @ColumnInfo(name = "storePricingID")
     val storePricingInformationID: String,
     @ColumnInfo(name = "quantity")
     val quantity: Int
-) {
-
-}
+)
