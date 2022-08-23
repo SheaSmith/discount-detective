@@ -49,47 +49,39 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 
-/**
- * Determines the store/retailer grouping in the list
- */
-data class StoreGroup(
-    val retailerProductInfoID: String,
-    val storeProductInfoID: String,
-    val productID: String
-) {
-    //TODO if one null then use other etc
-    fun getDisplayName(
-        viewModel: ShoppingListViewModel,
-        retailers: Map<String, Retailer>
-    ): String {
-        //idea if we have product ID then we can get the names
 
-        val productRetailerInfoList = viewModel.getProductFromID(productID).asLiveData()
+@Composable
+fun getDisplayName(
+    viewModel: ShoppingListViewModel,
+    retailers: Map<String, Retailer>,
+    productID: String,
+    retailerProductInfoID: String,
+    storeProductInfoID: String
+): String {
+    //idea if we have product ID then we can get the names
+    val productRetailerInfoList = viewModel.getProductFromID(productID).asLiveData()
 
-        //use the retailerID to index into this list (as we have product ID, now need RetailerID)
-        val productInfo = productRetailerInfoList.value?.information?.firstOrNull {
-            it.id == retailerProductInfoID
-        }
-
-        val namePair = viewModel.getStoreName(
-            retailerProductInfoID,
-            storeProductInfoID,
-            retailers,
-            productInfo
-        )
-
-        //will need this for value bakery
-        val displayName = buildString {
-            if (namePair.first != null)
-                append(namePair.first + ": ")
-            append(namePair.second ?: "")
-
-        }
-        return displayName
+    //use the retailerID to index into this list (as we have product ID, now need RetailerID)
+    val productInfo = productRetailerInfoList.value?.information?.firstOrNull {
+        it.id == retailerProductInfoID
     }
 
-}
+    val namePair = viewModel.getStoreName(
+        retailerProductInfoID,
+        storeProductInfoID,
+        retailers,
+        productInfo
+    )
 
+    //will need this for value bakery
+    val displayName = buildString {
+        if (namePair.first != null)
+            append(namePair.first + ": ")
+        append(namePair.second ?: "")
+
+    }
+    return displayName
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,21 +143,16 @@ fun ShoppingListScreen(
     ) { innerPadding ->
         //TODO cleanup productID names
         if (!productIDs.isNullOrEmpty()) {
+            val grouped = productIDs.groupBy {
+                getDisplayName(
+                    viewModel = viewModel,
+                    retailers = retailers,
+                    productID = it.productID,
+                    retailerProductInfoID = it.retailerProductInformationID,
+                    storeProductInfoID = it.storePricingInformationID
+                )
+            }.mapValues { it.value }
 
-            //essentially I need to group these
-            // with a cleaned/representative group name
-            //i.e with below
-
-            //then edit the diplayname
-
-            fun RetailerProductInfo.getKey() = StoreGroup(
-                this.retailerProductInformationID, //for small stores this won't work
-                this.storePricingInformationID,
-                this.productID
-            ).getDisplayName(viewModel, retailers)
-
-            //combination of retailer and store
-            val grouped = productIDs.groupBy { it.getKey() }
 
             productList(
                 grouped = grouped,
@@ -202,7 +189,6 @@ fun productList(
         grouped.forEach { (store, productsForStore) ->
             stickyHeader {
                 Text(
-                    //TODO get displayName (can use Dataclass above?)
                     text = store,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(200.dp)
@@ -238,10 +224,8 @@ fun ProductCard(
     }
 
     //get product with retailerID, storeID
-    //this seems to have broken it. I want to do it this way but maybe check nulls?
     val pricingInfo = productInfo?.pricing?.firstOrNull { it.store == storeId }
 
-    //use getDisplayPrice (not currently available)
 
     //add this in for the correct colour
     //tonalElevation = 2.dp
@@ -252,7 +236,8 @@ fun ProductCard(
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent
         ),
-        shape = CardDefaults.elevatedShape
+        shape = CardDefaults.elevatedShape,
+        elevation = if (productInfo == null) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation()
     ) {
         // master row layout
         Row(
@@ -272,8 +257,8 @@ fun ProductCard(
                 contentDescription = stringResource(id = R.string.content_description_product_image),
                 modifier = Modifier
                     .fillMaxHeight()
-                    .height(30.dp)
-                    .width(30.dp)
+                    .height(60.dp)
+                    .width(60.dp)
                     .placeholder(
                         visible = productInfo == null,
                         shape = RoundedCornerShape(4.dp),
@@ -295,7 +280,7 @@ fun ProductCard(
                     // productInfo?.name ?: stringResource(id = R.string.placeholder)
                     text = buildAnnotatedString {
                         append(productInfo?.name ?: stringResource(id = R.string.placeholder))
-                        append(" ")
+                        append("; Quantity: ")
                         append(product.quantity.toString())
                         toAnnotatedString()
                     },
@@ -310,12 +295,10 @@ fun ProductCard(
                     style = MaterialTheme.typography.titleSmall
 
                 )
-
-                //TODO Test new Pricing Scheme
                 val saleType = if (productInfo?.saleType == SaleType.WEIGHT) {
                     "kg"
                 } else {
-                    "ea"
+                    "/ea"
                 }
                 Text(
                     text = buildAnnotatedString {
@@ -324,7 +307,7 @@ fun ProductCard(
                                 fontSize = 38.sp
                             )
                         ) {
-                            append("$ ")
+                            append("$")
                             append(
                                 ((pricingInfo?.getPrice(productInfo)?.toDouble()
                                     ?: 100.0) / 100).toString()
