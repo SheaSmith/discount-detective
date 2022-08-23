@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
  * pleasing. Note that, as stated in the StackOverflow link above, Google does not recommend this
  * solution, but it still works well for others and in our app.
  *
- * @param state
- * @param density
+ * @param state The minimum height state of the other items.
+ * @param density The current display density.
  */
 //https://stackoverflow.com/questions/71080209/jetpack-compose-row-with-all-items-same-height
 fun Modifier.minimumHeightModifier(state: MinimumHeightState, density: Density) =
@@ -34,6 +34,9 @@ fun Modifier.minimumHeightModifier(state: MinimumHeightState, density: Density) 
         }
     }.defaultMinSize(minHeight = state.minHeight ?: Dp.Unspecified)
 
+/**
+ * A state that stores the minimum height.
+ */
 class MinimumHeightState(minHeight: Dp? = null) {
     var minHeight by mutableStateOf(minHeight)
 }

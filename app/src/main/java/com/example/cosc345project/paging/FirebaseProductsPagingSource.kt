@@ -6,6 +6,13 @@ import com.example.cosc345.shared.models.Product
 import com.example.cosc345project.exceptions.NoInternetException
 import com.example.cosc345project.repository.SearchRepository
 
+/**
+ * A paging source that uses Firebase to query search results, for example, if AppSearch's index is
+ * empty.
+ *
+ * @param repository The search repository to query from.
+ * @param query The query string to use.
+ */
 class FirebaseProductsPagingSource(
     private val repository: SearchRepository,
     private val query: String

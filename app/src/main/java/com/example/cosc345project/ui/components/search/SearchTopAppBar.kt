@@ -24,16 +24,14 @@ import androidx.compose.ui.unit.dp
 import com.example.cosc345project.R
 
 /**
- * SearchTopAppBar function
+ * A modified version of the top app bar that contains a search form.
  *
- *
- *
- * @param search
+ * @param search The search query.
  * @param loading Boolean variable for whether or not the screens finished loading.
- * @param onValueChange
- * @param onFocusChanged
- * @param onSearch
- * @param onClear
+ * @param onValueChange The function called whenever the search query has changed.
+ * @param onFocusChanged The function called whenever the search field has its focus changed.
+ * @param onSearch The function called when the user selects a suggestion, or clicks the search button.
+ * @param onClear The function called when the user clears the search.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

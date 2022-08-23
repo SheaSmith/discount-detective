@@ -37,6 +37,9 @@ sealed interface DevicePosture {
     ) : DevicePosture
 }
 
+/**
+ * Is the folding device in a "book" posture.
+ */
 @OptIn(ExperimentalContracts::class)
 fun isBookPosture(foldFeature: FoldingFeature?): Boolean {
     contract { returns(true) implies (foldFeature != null) }
@@ -44,6 +47,9 @@ fun isBookPosture(foldFeature: FoldingFeature?): Boolean {
             foldFeature.orientation == FoldingFeature.Orientation.VERTICAL
 }
 
+/**
+ * If the folding device is in the process of separating.
+ */
 @OptIn(ExperimentalContracts::class)
 fun isSeparating(foldFeature: FoldingFeature?): Boolean {
     contract { returns(true) implies (foldFeature != null) }
