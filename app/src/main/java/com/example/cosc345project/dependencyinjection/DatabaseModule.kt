@@ -11,9 +11,18 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * The module which handles dependency injection for the Room database.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+    /**
+     * Provide the shopping list database for injection.
+     *
+     * @param appContext The app context to use for getting the database.
+     * @return An instance of the database.
+     */
     @Provides
     @Singleton
     fun provideShoppingListDatabase(@ApplicationContext appContext: Context):
@@ -25,6 +34,12 @@ object DatabaseModule {
         ).build()
     }
 
+    /**
+     * Get the product dao from the Room database for injection.
+     *
+     * @param db The database to use to get the dao.
+     * @return The dao.
+     */
     @Provides
     fun provideProductDao(db: ShoppingListDatabase): ProductDao {
         return db.productDao()

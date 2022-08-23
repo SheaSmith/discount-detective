@@ -17,11 +17,10 @@ import com.example.cosc345project.R
 import com.example.cosc345project.ui.Navigation
 
 /**
- * MainNavigationRail
+ * The navigation rail to use on medium sized devices (e.g. small tablets).
  *
- *
- * @param navController
- * @param onDrawerClicked
+ * @param navController The nav controller to use when navigating between pages.
+ * @param onDrawerClicked The function to be called when the open drawer button is clicked.
  */
 @Composable
 fun MainNavigationRail(
