@@ -2,16 +2,17 @@ package com.example.cosc345project.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
 /**
  * Entity for the shopping list App
  **
  * @Entity class represent a SQLite table
  */
-@Entity(tableName = "retailerProductInfo")
+@Entity(
+    primaryKeys = ["productID", "retailerProductInformation", "storePricingID"],
+    tableName = "retailerProductInfo",
+)
 class RetailerProductInfo(
-    @PrimaryKey
     val productID: String,
     @ColumnInfo(name = "retailerProductInformation")
     val retailerProductInformationID: String,

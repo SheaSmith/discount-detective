@@ -93,6 +93,7 @@ fun ShoppingListScreen(
 
     val retailers by viewModel.retailers.collectAsState()
     //productIDs in the shopping list
+    //TODO: No duplicates possible as have same productID
     val productIDs = viewModel.allProducts.observeAsState().value
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
