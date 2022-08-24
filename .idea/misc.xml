@@ -5,13 +5,12 @@
       <map>
         <entry key="../../../../layout/compose-model-1659923007922.xml" value="0.1" />
         <entry key="../../../../layout/compose-model-1659994406026.xml" value="0.25" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/layout/fragment_container_settings.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/layout/preferences_fragment.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/layout/settings_activity.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/xml/preferences.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/xml/root_preferences.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/xml/settings_screen.xml" value="0.22" />
+        <entry key="../../../../layout/compose-model-1661208223066.xml" value="0.904320987654321" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.222" />
+        <entry key="app/src/main/res/drawable/switch_thumb.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/switch_track.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/preferences_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/xml/preferences.xml" value="0.1" />
       </map>
     </option>
   </component>
