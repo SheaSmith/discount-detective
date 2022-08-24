@@ -16,6 +16,12 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.placeholder
 
+/**
+ * The shared product title for products.
+ *
+ * @param info The information to show the title for.
+ * @param loading Whether the parent screen is loading or not.
+ */
 @Composable
 fun ProductTitle(info: RetailerProductInformation?, loading: Boolean) {
     if (info?.brandName != null) {

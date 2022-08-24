@@ -1,2 +1,2 @@
 # Module App
-App documentation, change this with a better description.
+This is the module which contains the actual app, including the data display and searching logic.
