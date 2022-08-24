@@ -6,7 +6,10 @@
         <entry key="../../../../layout/compose-model-1659923007922.xml" value="0.1" />
         <entry key="../../../../layout/compose-model-1659994406026.xml" value="0.25" />
         <entry key="../../../../layout/compose-model-1661208223066.xml" value="0.904320987654321" />
+        <entry key="../../.gradle/caches/transforms-3/4fb32cd1c79230c84cda1b28202387b3/transformed/material-1.6.1/res/layout/m3_alert_dialog.xml" value="0.13323201621073963" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.222" />
+        <entry key="app/src/main/res/drawable/dialog.xml" value="0.143" />
+        <entry key="app/src/main/res/drawable/dialog_background.xml" value="0.143" />
         <entry key="app/src/main/res/drawable/switch_thumb.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/switch_track.xml" value="0.1" />
         <entry key="app/src/main/res/layout/preferences_fragment.xml" value="0.1" />

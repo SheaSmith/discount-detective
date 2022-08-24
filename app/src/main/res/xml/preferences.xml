@@ -17,4 +17,10 @@
         app:summary="Report technical issues or suggest new features"
         app:title="Send feedback" />
 
+    <ListPreference
+        app:entries="@array/test"
+        app:entryValues="@array/test"
+        app:key="list"
+        app:title="List" />
+
 </PreferenceScreen>
