@@ -5,7 +5,6 @@ package com.example.cosc345project.ui.screens
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -22,17 +21,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
@@ -43,22 +41,7 @@ import com.example.cosc345project.ui.components.StatusBarLargeTopAppBar
 import com.example.cosc345project.ui.components.product.AddToShoppingListBlock
 import com.example.cosc345project.ui.components.product.ProductTitle
 import com.example.cosc345project.viewmodel.ProductViewModel
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
 
-/*
-* 19/08 - John
-* Need to check if scrolling actually works
-* Need to make title change
-* Need to position +1 -1 buttons
-* Need to add "Add Item" button
-* I removed the title that goes below image because we have it at the top anyway
-* and if we have long named items then it will get very messy
-* Need to make image change to product image
-* Will probably need to check with Shea on getting the product info
-* Need to comment... yucky
-* */
 
 @Composable
 fun ProductImage(image: String?) {
@@ -107,10 +90,10 @@ fun RetailerSlot(
                 shape = CircleShape,
                 border = BorderStroke(
                     width = 5.dp,
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = Color.White.copy(alpha = 0.6f),
 
 
-                ),
+                    ),
                 color = Color(if (isSystemInDarkTheme()) retailer.colourDark!! else retailer.colourLight!!)
             ) {
                 Box(
@@ -119,7 +102,8 @@ fun RetailerSlot(
                 ) {
                     Text(
                         text = retailer.initialism!!,
-                        fontSize = 20.sp,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
                         color = Color(if (isSystemInDarkTheme()) retailer.onColourDark!! else retailer.onColourLight!!)
                     )
                 }
@@ -137,16 +121,18 @@ fun RetailerSlot(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(1f)
-                        .fillMaxHeight(),
-                //.width(intrinsicSize = IntrinsicSize.Min)
+                        .fillMaxHeight()
+                        .padding(end = 10.dp),
+                    //.width(intrinsicSize = IntrinsicSize.Min)
 
-                contentAlignment = Alignment.CenterStart
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
                         text = store.name!!,
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
                         maxLines = 3,
+
                     )
                 }
 
@@ -183,7 +169,7 @@ fun RetailerSlot(
 
                     Text(
                         text = "${price.first}${price.second}",
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     )
                 }
 
@@ -201,8 +187,12 @@ fun RetailerSlot(
 
                 if (pricingInformation.clubOnly == true) {
                     Text(
-                        text = stringResource(id = R.string.club_only),
-                        fontSize = 16.sp
+                        text = stringResource(
+                            id = R.string.club_only,
+                        ),
+
+                        lineHeight = 16.sp,
+                        fontSize = 14.sp
                     )
                 }
             }
@@ -223,7 +213,7 @@ fun ProductInformation(
     Column (
         modifier = Modifier
             .padding(start = 10.dp, end = 10.dp)
-            )
+    )
     {
         ProductTitle(info = bestInformation, loading = false)
 
@@ -243,7 +233,7 @@ fun ProductInformation(
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel()) {
+fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel(), nav : NavHostController) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
     )
@@ -274,7 +264,9 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* doSomething() */ }) {
+                    IconButton(onClick = {
+                        nav.navigateUp()
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Localized description"
@@ -352,7 +344,7 @@ fun TableHeader(local : Boolean) {
 
     Row (
         modifier = Modifier.padding(start = 10.dp, end = 10.dp)
-            )
+    )
     {
         Text(
             text = stringResource(id = R.string.retailer),
@@ -366,7 +358,8 @@ fun TableHeader(local : Boolean) {
 
         Text(
             text = stringResource(id = R.string.discount_price),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(0.5f),
+            lineHeight = 18.sp
         )
     }
 }
