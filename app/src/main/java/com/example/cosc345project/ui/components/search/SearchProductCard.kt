@@ -12,7 +12,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -37,12 +36,12 @@ import kotlinx.coroutines.CoroutineScope
  * easily differentiate between the information of each product and click on it to open the
  * corresponding product screen.
  *
- * @param productPair
+ * @param productPair The product to display.
  * @param loading Boolean variable for whether or not the screen has finished loading.
- * @param navController
- * @param retailers
- * @param snackbarHostState
- * @param coroutineScope
+ * @param navController The nav controller to use for navigating between views.
+ * @param retailers A map of all retailers.
+ * @param snackbarHostState The snackbar host for displaying snackbars.
+ * @param coroutineScope The scope for launching suspend functions within the view.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -20,15 +20,12 @@ import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.placeholder
 
 /**
- * PricingBlock function finds and displays the pricing information for each product.
- *
- * Displays both the cheapest price and the cheapest local price so that users have the option of
- * choosing either.
+ * PricingBlock function displays the pricing information for a specified price.
  *
  * @param components Pair of strings containing the pricing information.
  * @param loading Boolean variable for for if loading is finished or not.
- * @param local Boolean variable for if there is a local option available.
- * @param modifier ???
+ * @param local Boolean variable for if this is a pricing block for the local price.
+ * @param modifier The modifier to apply to the pricing block.
  */
 @Composable
 fun SearchProductPricingBlock(

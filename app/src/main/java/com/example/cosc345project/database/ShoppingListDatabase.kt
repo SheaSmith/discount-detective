@@ -1,10 +1,8 @@
 package com.example.cosc345project.database
-import android.content.Context
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.cosc345project.dao.ProductDao
 import com.example.cosc345project.models.RetailerProductInfo
-import kotlinx.coroutines.internal.synchronized
 
 
 /**
@@ -14,9 +12,8 @@ import kotlinx.coroutines.internal.synchronized
 @Database(entities = [RetailerProductInfo::class], version=1)
 abstract class ShoppingListDatabase : RoomDatabase() {
 
+    /**
+     * Get the dao for manipulating the shopping list.
+     */
     abstract fun productDao(): ProductDao
-
-
-
-
 }

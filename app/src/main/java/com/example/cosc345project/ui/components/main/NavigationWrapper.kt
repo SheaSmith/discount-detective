@@ -11,11 +11,9 @@ import com.example.cosc345project.ui.utils.NavigationType
 import kotlinx.coroutines.launch
 
 /**
- * NavigationWrapper
+ * The wrapper used to create the drawer navigation.
  *
- *
- *
- * @param navigationType
+ * @param navigationType The type of navigation that is being used, based on screen size.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -11,13 +11,13 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
-import com.example.cosc345project.models.RetailerProductInfo
 import com.example.cosc345project.exceptions.NoInternetException
+import com.example.cosc345project.models.RetailerProductInfo
 import com.example.cosc345project.paging.AppSearchProductsPagingSource
 import com.example.cosc345project.paging.FirebaseProductsPagingSource
+import com.example.cosc345project.repository.ProductRepository
 import com.example.cosc345project.repository.RetailersRepository
 import com.example.cosc345project.repository.SearchRepository
-import com.example.cosc345project.repository.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,12 +27,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * SearchViewModel
+ * The viewmodel used for backing the search page.
  *
- *todo
- *
- * @param searchRepository
- * @param retailersRepository
+ * @param searchRepository The search repository, which handles searching items.
+ * @param retailersRepository The retailers repository, which handles getting retailers.
+ * @param productRepository The products repository, which handles adding items to the shopping list.
  */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -41,9 +40,24 @@ class SearchViewModel @Inject constructor(
     private val productRepository: ProductRepository
 ) : ViewModel() {
 
+    /**
+     * The current search query.
+     */
     val searchQuery = MutableStateFlow("")
+
+    /**
+     * The current search suggestions for the current query.
+     */
     val suggestions = MutableStateFlow<List<String>>(listOf())
+
+    /**
+     * Whether suggestions should be shown or not.
+     */
     val showSuggestions = mutableStateOf(false)
+
+    /**
+     * The retailers currently stored in Firebase.
+     */
     val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
 
     val searchLiveData: MutableState<Flow<PagingData<Pair<String, Product>>>> =

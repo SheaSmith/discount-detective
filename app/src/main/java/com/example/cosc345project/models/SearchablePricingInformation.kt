@@ -3,11 +3,22 @@ package com.example.cosc345project.models
 import androidx.appsearch.annotation.Document
 import com.example.cosc345.shared.models.StorePricingInformation
 
+/**
+ * A version of the [com.example.cosc345.shared.models.StorePricingInformation] specifically for
+ * inserting into the AppSearch database.
+ */
 @Document
 data class SearchablePricingInformation(
+    /**
+     * The namespace for this document. We always set this to "all", as a namespace is requried, but
+     * we don't need to filter based on namespace.
+     */
     @Document.Namespace
     val namespace: String = "all",
 
+    /**
+     * The retailer for this pricing information.
+     */
     @Document.StringProperty
     val retailer: String,
 
@@ -15,6 +26,8 @@ data class SearchablePricingInformation(
      * The retailer-specified unique ID of a store. For small retailers (for example, those without multiple stores), this will be the same as the retailer ID.
      *
      * Not nullable in practice, but Firebase requires an object with no arguments for the database.
+     *
+     * This does not need to be globally unique, as AppSearch keeps IDs separate per nested document.
      */
     @Document.Id
     val store: String,
@@ -63,6 +76,9 @@ data class SearchablePricingInformation(
     @Document.BooleanProperty
     val verified: Boolean
 ) {
+    /**
+     * Convert this object back to a standard [com.example.cosc345.shared.models.StorePricingInformation].
+     */
     fun toStorePricingInformation() = StorePricingInformation(
         store,
         price,
@@ -74,6 +90,12 @@ data class SearchablePricingInformation(
         verified
     )
 
+    /**
+     * Create this searchable version based off the standard [com.example.cosc345.shared.models.StorePricingInformation].
+     *
+     * @param pricingInformation The pricing information to use to initialise this.
+     * @param retailerId The retailer ID to use.
+     */
     constructor(pricingInformation: StorePricingInformation, retailerId: String) : this(
         "all",
         retailerId,

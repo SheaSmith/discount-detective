@@ -4,14 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345project.models.RetailerProductInfo
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Get product Ids ordered by retailer
- * Insert product
- * Delete product
+ * A dao that handles data manipulation for the shopping list.
  */
 @Dao
 interface ProductDao {
