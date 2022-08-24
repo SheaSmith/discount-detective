@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_city">
+        <item>"Dunedin"</item>
+        <item>"Invercargill"</item>
+    </string-array>
+
+    <string-array name="array_city_values">
+        <item>"dunedin"</item>
+        <item>"invercargill"</item>
+    </string-array>
+
+    <string-array name="array_darkmode">
+        <item>"Light mode"</item>
+        <item>"Dark mode"</item>
+        <item>"Match system"</item>
+    </string-array>
+
+    <string-array name="array_darkmode_values">
+        <item>"light"</item>
+        <item>"dark"</item>
+        <item>"system"</item>
+    </string-array>
+
+</resources>

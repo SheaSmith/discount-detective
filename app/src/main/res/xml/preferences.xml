@@ -1,26 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-    <SwitchPreferenceCompat
-        app:key="notifications"
-        app:title="Enable message notifications" />
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="General">
 
-    <SwitchPreferenceCompat
-        app:key="Dark Mode"
-        app:title="Dark Mode" />
+        <ListPreference
+            app:defaultValue="system"
+            app:entries="@array/array_darkmode"
+            app:entryValues="@array/array_darkmode_values"
+            app:key="dark_mode"
+            app:summary="%s"
+            app:title="Dark/Light Mode" />
 
-    <SwitchPreferenceCompat
-        app:key="Te Reo"
-        app:title="Te Reo Maori" />
+    </PreferenceCategory>
 
-    <Preference
-        app:key="feedback"
-        app:summary="Report technical issues or suggest new features"
-        app:title="Send feedback" />
+    <!--    <PreferenceCategory app:title="Language">-->
 
-    <ListPreference
-        app:entries="@array/test"
-        app:entryValues="@array/test"
-        app:key="list"
-        app:title="List" />
+    <!--        <SwitchPreferenceCompat-->
+    <!--            app:key="reo"-->
+    <!--            app:title="Te Reo Māori"-->
+    <!--            app:defaultValue="false" />-->
 
-</PreferenceScreen>
+    <!--    </PreferenceCategory>-->
+
+    <PreferenceCategory app:title="Location">
+
+        <ListPreference
+            app:defaultValue="dunedin"
+            app:entries="@array/array_city"
+            app:entryValues="@array/array_city_values"
+            app:key="city"
+            app:summary="%s"
+            app:title="City/Town" />
+
+    </PreferenceCategory>
+    >
+
+    <PreferenceCategory app:title="Feedback">
+
+        <Preference
+            app:key="feedback"
+            app:summary="Report technical issues or suggest new features"
+            app:title="Send feedback" />
+
+    </PreferenceCategory>
+    >
+
+
+</androidx.preference.PreferenceScreen>

@@ -27,12 +27,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Search Repository class.
+ * The search repository which handles querying AppSearch (or Firebase, depending if AppSearch is
+ * available).
  *
- * todo
- *
- * @param context
- * @param database
+ * @param context The application context for AppSearch, supplied by Hilt.
+ * @param database The Firebase database to query off of, if necessary.
+ * @constructor Should not be used, instead inject this repository using Hilt.
  */
 @Singleton
 class SearchRepository @Inject constructor(
@@ -43,6 +43,13 @@ class SearchRepository @Inject constructor(
         private val TAG = SearchRepository::class.simpleName
     }
 
+    /**
+     * Query products from AppSearch based on the specified query.
+     *
+     * @param query The query to search based on.
+     * @param count The number of results to return.
+     * @return AppSearch search results, including a way to page and retrieve data.
+     */
     suspend fun queryProductsAppSearch(query: String, count: Int): SearchResults {
         Log.d(TAG, "Query products from AppSearch index.")
         awaitInitialization()
@@ -61,6 +68,12 @@ class SearchRepository @Inject constructor(
         return searchResults
     }
 
+    /**
+     * Get search suggestions from AppSearch, based on the current query.
+     *
+     * @param query The query to get suggestions for.
+     * @return A list of suggestions.
+     */
     suspend fun searchSuggestions(query: String): List<String> {
         Log.d(TAG, "Query search suggestions from AppSearch.")
         awaitInitialization()
@@ -81,30 +94,15 @@ class SearchRepository @Inject constructor(
     }
 
     /**
-     * queryProductsFirebase function
+     * Get products from Firebase with the specified query.
      *
-     * ???
-     */
-    suspend fun queryProductsFirebase(
-        query: String,
-        startAt: String?,
-        count: Int
-    ): Pair<Map<String, Product>, String?> {
-        Log.d(TAG, "Query products from Firebase.")
-
-        val result = getProductsFirebase(query, startAt, count)
-        Log.d(TAG, "Queried Firebase, now pass results to pager.")
-
-        return result
-    }
-
-    /**
-     * getProductsFirebase code
-     *
-     * ???
+     * @param query The query to use to search Firebase. This is only done based on the first information's name.
+     * @param startAt The key to start at for paging.
+     * @param count The number of results to return.
+     * @return A pair of the map of product IDs to products, and the ID of the last item.
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun getProductsFirebase(
+    suspend fun queryProductsFirebase(
         query: String,
         startAt: String?,
         count: Int
@@ -159,9 +157,7 @@ class SearchRepository @Inject constructor(
     }
 
     /**
-     * hasIndexedBefore function
-     *
-     * ???
+     * Get whether the index has been run or not, so we can display a warning if it hasn't yet.
      */
     fun hasIndexedBefore(): Flow<Boolean> {
         return context.indexSettingsDataStore.data.map { it.runBefore }.distinctUntilChanged()

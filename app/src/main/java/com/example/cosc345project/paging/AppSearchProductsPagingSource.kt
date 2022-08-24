@@ -8,6 +8,12 @@ import com.example.cosc345.shared.models.Product
 import com.example.cosc345project.models.SearchableProduct
 import com.example.cosc345project.repository.SearchRepository
 
+/**
+ * A paging source that uses AppSearch to query search results.
+ *
+ * @param repository The search repository to query from.
+ * @param query The query string to use.
+ */
 class AppSearchProductsPagingSource(
     private val repository: SearchRepository,
     private val query: String

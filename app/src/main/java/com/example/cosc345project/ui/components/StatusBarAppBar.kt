@@ -27,15 +27,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 /**
- * Status bar for the app.
+ * An app bar that can take into account the height of the status bar. This is for a centred, small
+ * app bar.
  *
- * ???
- *
- * @param modifier
- * @param scrollBehavior
- * @param title
- * @param actions
- * @param navigationIcon
+ * @param modifier The modifier to apply to the appbar (e.g. padding).
+ * @param scrollBehavior The scroll behavior to update the colour.
+ * @param title The title to use.
+ * @param actions The actions to have.
+ * @param navigationIcon The navigation item to use.
  */
 @Composable
 fun StatusBarCenterAlignedTopAppBar(
@@ -65,6 +64,16 @@ fun StatusBarCenterAlignedTopAppBar(
     }
 }
 
+/**
+ * An app bar that can take into account the height of the status bar. This is for a large collapsable
+ * app bar.
+ *
+ * @param modifier The modifier to apply to the appbar (e.g. padding).
+ * @param scrollBehavior The scroll behavior to update the colour.
+ * @param title The title to use.
+ * @param actions The actions to have.
+ * @param navigationIcon The navigation item to use.
+ */
 @Composable
 fun StatusBarLargeTopAppBar(
     modifier: Modifier = Modifier,

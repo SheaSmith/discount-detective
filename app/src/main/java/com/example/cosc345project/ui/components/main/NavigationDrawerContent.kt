@@ -21,13 +21,12 @@ import com.example.cosc345project.ui.Navigation
 import com.example.cosc345project.ui.utils.NavigationType
 
 /**
- * NavigationDrawerContent
+ * The content of the navigation drawer.
  *
- *
- * @param navController
- * @param modifier
- * @param onDrawerClicked
- * @param navigationType
+ * @param navController The nav controller to use when navigating between pages.
+ * @param modifier The modifier to use for the content of the navigation drawer.
+ * @param onDrawerClicked The function to be called when the open drawer button is clicked.
+ * @param navigationType The type of navigation that is being used, based on screen size.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

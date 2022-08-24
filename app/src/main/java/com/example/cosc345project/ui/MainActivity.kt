@@ -25,10 +25,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 /**
- * MainActivity class
- *
- * todo
- *
+ * The activity which calls the compose functions for our app, along with handling device size and posture (for folding devices).
  */
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
@@ -72,10 +69,12 @@ class MainActivity : FragmentActivity() {
             }
         }
 
-
     }
 }
 
+/**
+ * A phone preview.
+ */
 @Preview(showBackground = true)
 @Composable
 fun AppPreview() {
@@ -87,6 +86,9 @@ fun AppPreview() {
     }
 }
 
+/**
+ * A preview for a small tablet.
+ */
 @Preview(showBackground = true, widthDp = 700)
 @Composable
 fun AppPreviewTablet() {
@@ -98,6 +100,9 @@ fun AppPreviewTablet() {
     }
 }
 
+/**
+ * A preview for a desktop computer.
+ */
 @Preview(showBackground = true, widthDp = 1000)
 @Composable
 fun AppPreviewDesktop() {
