@@ -25,6 +25,7 @@
     <string name="search_suggestions">Search Suggestions</string>
     <string name="club_only">Club price only</string>
     <string name="local_prices">Local Prices</string>
+    <string name="non_local_prices">Non Local Prices</string>
     <string name="retailer">Retailer</string>
     <string name="price">Price</string>
     <string name="discount_price">Discount Price</string>

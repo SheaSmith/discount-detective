@@ -42,7 +42,11 @@ import com.example.cosc345project.ui.components.product.AddToShoppingListBlock
 import com.example.cosc345project.ui.components.product.ProductTitle
 import com.example.cosc345project.viewmodel.ProductViewModel
 
-
+/**
+ * Function used to create the image for the Product on the Product Screen.
+ *
+ * @param image The image from the Product information to be displayed.
+ */
 @Composable
 fun ProductImage(image: String?) {
     Row(modifier = Modifier
@@ -62,6 +66,11 @@ fun ProductImage(image: String?) {
     }
 }
 
+/**
+ * Function used to create the retailer slot which shows the prices for the products.
+ *
+ * Includes both the regular price and the discounted price.
+ */
 @Composable
 fun RetailerSlot(
     pricingInformation: StorePricingInformation,
@@ -200,6 +209,13 @@ fun RetailerSlot(
     }
 }
 
+/**
+ * Function used to handle adding the product to the shopping list.
+ *
+ * @param product The product selected to be added to the shopping list.
+ * @param snackbarHostState The passed down SnackbarHostState.
+ * @param retailers List of retailers who are selling the product.
+ */
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun ProductInformation(
@@ -231,6 +247,14 @@ fun ProductInformation(
 
 }
 
+/**
+ * Function used to layout the main content of the product screen page.
+ *
+ * @param productId A string representing the id of the product.
+ * @param viewModel Instance of the SearchViewModel class (see [com.example.cosc345project.viewmodel.SearchViewModel])
+ * @param nav Instance of the nav controller for navigation class.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel(), nav : NavHostController) {
@@ -298,23 +322,43 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
                         TableHeader(true)
                     }
 
-                    items(localRetailerProductInformation.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
+                    //var sortedInformation = localRetailerProductInformation.sortedByDescending { it.pricing }
+
+                    val sortedList = localRetailerProductInformation.sortedBy { info ->
+                        info.pricing!!.minByOrNull {
+                            it.getPrice(
+                                info
+                            )
+                        }!!
+                            .getPrice(info)
+                    }
+
+                    items(sortedList.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
                         RetailerSlot(
                             pricingInformation = item.first,
                             retailer = retailers[item.second.retailer]!!,
                             productInformation = item.second
                         )
 
-//
                     }
                 }
+
+                val sortedList = nonLocalRetailerProductInformation.sortedBy { info ->
+                    info.pricing!!.minByOrNull {
+                        it.getPrice(
+                            info
+                        )
+                    }!!
+                        .getPrice(info)
+                }
+
 
                 if (nonLocalRetailerProductInformation.isNotEmpty() && retailers.isNotEmpty()) {
                     item {
                         TableHeader(false)
                     }
 
-                    items(nonLocalRetailerProductInformation.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
+                    items(sortedList.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
                         RetailerSlot(
                             pricingInformation = item.first,
                             retailer = retailers[item.second.retailer]!!,
@@ -329,11 +373,26 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
 
 }
 
+/**
+ * Function used to create the headers (local/non-local, retailer, price, discount price) above the
+ * lists of cards with their retailer and price.
+ *
+ * @param local Whether or not the section is for local products.
+ */
 @Composable
 fun TableHeader(local : Boolean) {
     if (local) {
         Text(
             text = stringResource(id = R.string.local_prices),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(start = 10.dp)
+
+        )
+    } else {
+        Text(
+            text = stringResource(id = R.string.non_local_prices),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
