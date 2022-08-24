@@ -10,6 +10,7 @@ import com.example.cosc345project.R
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
+
     }
 
     override fun onCreateRecyclerView(
@@ -27,4 +28,5 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         return view
     }
+
 }
