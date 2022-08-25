@@ -58,7 +58,7 @@ data class SearchableRetailerProductInformation(
     /**
      * A list of barcode numbers associated with this product, joined by spaces into a single string.
      */
-    @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_EXACT_TERMS)
+    @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_PREFIXES)
     val barcodes: String?,
 
     /**
@@ -84,7 +84,7 @@ data class SearchableRetailerProductInformation(
     /**
      * An URL of the image for this product, hosted on the retailer's server.
      */
-    @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_NONE)
+    @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_EXACT_TERMS)
     val image: String?,
 
     /**
@@ -147,7 +147,7 @@ data class SearchableRetailerProductInformation(
         info.name!!,
         info.variant,
         info.id!!,
-        info.barcodes?.joinToString { " " },
+        info.barcodes?.joinToString(" "),
         info.quantity,
         info.weight,
         info.saleType!!,
