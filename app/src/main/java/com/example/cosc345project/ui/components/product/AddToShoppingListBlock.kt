@@ -120,6 +120,7 @@ fun AddToShoppingListBlock(
                         }
 
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            //noinspection RememberReturnType
                             remember {
                                 sortedList.forEach { info ->
                                     val sortedPricing =
