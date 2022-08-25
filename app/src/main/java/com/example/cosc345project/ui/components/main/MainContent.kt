@@ -1,7 +1,5 @@
 package com.example.cosc345project.ui.components.main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -33,7 +31,6 @@ import com.example.cosc345project.viewmodel.ShoppingListViewModel
  * @param navigationType The type of navigation that is being used, based on screen size.
  * @param onDrawerClicked The function to be called when the open drawer button is clicked.
  */
-@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun MainContent(
     navController: NavHostController,

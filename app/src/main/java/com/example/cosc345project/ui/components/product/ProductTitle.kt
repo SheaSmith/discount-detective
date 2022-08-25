@@ -1,8 +1,10 @@
 package com.example.cosc345project.ui.components.product
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,43 +25,49 @@ import com.google.accompanist.placeholder.placeholder
  * @param loading Whether the parent screen is loading or not.
  */
 @Composable
-fun ProductTitle(info: RetailerProductInformation?, loading: Boolean) {
-    if (info?.brandName != null) {
+fun ProductTitle(
+    info: RetailerProductInformation?,
+    loading: Boolean,
+    applyStyling: Boolean = true
+) {
+    Column {
+        if (info?.brandName != null) {
+            Text(
+                text = info.brandName ?: "",
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+
         Text(
-            text = info.brandName ?: "",
-            style = MaterialTheme.typography.labelLarge
+            text = info?.name ?: stringResource(id = R.string.placeholder),
+            modifier = Modifier
+                .placeholder(
+                    visible = loading,
+                    shape = RoundedCornerShape(4.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    highlight = PlaceholderHighlight.fade()
+                ),
+            fontWeight = if (applyStyling) FontWeight.Bold else null,
+            style = if (applyStyling) MaterialTheme.typography.titleLarge else LocalTextStyle.current
         )
-    }
 
-    Text(
-        text = info?.name ?: stringResource(id = R.string.placeholder),
-        modifier = Modifier
-            .placeholder(
-                visible = loading,
-                shape = RoundedCornerShape(4.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                highlight = PlaceholderHighlight.fade()
-            ),
-        fontWeight = FontWeight.Bold,
-        style = MaterialTheme.typography.titleLarge
-    )
+        if (info?.variant != null || info?.quantity != null) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                if (info.variant != null) {
+                    Text(
+                        text = info.variant ?: "",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
 
-    if (info?.variant != null || info?.quantity != null) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            if (info.variant != null) {
-                Text(
-                    text = info.variant ?: "",
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
-
-            if (info.quantity != null) {
-                Text(
-                    text = info.quantity ?: "",
-                    style = MaterialTheme.typography.labelLarge
-                )
+                if (info.quantity != null) {
+                    Text(
+                        text = info.quantity ?: "",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             }
         }
     }
