@@ -208,7 +208,7 @@ fun SearchScreen(
                             }
                         )
                     }
-                } else if (loadState !is LoadState.Error) {
+                } else if (loadState !is LoadState.Error && retailers.isNotEmpty()) {
                     item {
                         SearchError(
                             title = R.string.no_results,
