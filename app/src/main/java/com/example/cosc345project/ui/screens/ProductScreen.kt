@@ -2,10 +2,8 @@
 
 package com.example.cosc345project.ui.screens
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,10 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,7 +21,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,18 +43,21 @@ import com.example.cosc345project.viewmodel.ProductViewModel
  */
 @Composable
 fun ProductImage(image: String?) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(250.dp)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .padding(bottom = 10.dp)
+            .background(Color.White),
+        horizontalArrangement = Arrangement.Center
+    ) {
         AsyncImage(
             model = image,
-            contentDescription = "Image of death",
+            contentDescription = null,
             modifier = Modifier
                 .padding(0.dp)
-                .aspectRatio(1.5f)
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .background(Color.White),
+                .fillMaxHeight(),
             contentScale = ContentScale.FillHeight,
         )
     }
@@ -89,35 +86,41 @@ fun RetailerSlot(
         tonalElevation = 2.dp
     ) {
         Row {
+            var showRetailer by remember { mutableStateOf(false) }
 
             Surface(
                 modifier = Modifier
                     .padding(start = 5.dp)
                     .width(45.dp)
                     .height(45.dp)
-                    .align(Alignment.CenterVertically),
+                    .align(Alignment.CenterVertically)
+                    .clickable {
+                        showRetailer = !showRetailer
+                    },
                 shape = CircleShape,
-                border = BorderStroke(
-                    width = 5.dp,
-                    color = Color.White.copy(alpha = 0.6f),
-
-
-                    ),
                 color = Color(if (isSystemInDarkTheme()) retailer.colourDark!! else retailer.colourLight!!)
             ) {
+
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = retailer.initialism!!,
-                        fontSize = 16.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(if (isSystemInDarkTheme()) retailer.onColourDark!! else retailer.onColourLight!!)
                     )
                 }
 
-
+                DropdownMenu(expanded = showRetailer, onDismissRequest = { showRetailer = false }) {
+                    DropdownMenuItem(
+                        text = { Text(retailer.name!!) },
+                        onClick = { },
+                        colors = MenuDefaults.itemColors(disabledTextColor = MaterialTheme.colorScheme.onSurface),
+                        enabled = false
+                    )
+                }
             }
 
             Spacer(Modifier.width(10.0.dp))
@@ -142,7 +145,7 @@ fun RetailerSlot(
                         lineHeight = 16.sp,
                         maxLines = 3,
 
-                    )
+                        )
                 }
 
             }
@@ -185,12 +188,17 @@ fun RetailerSlot(
                 if (pricingInformation.multiBuyPrice != null && pricingInformation.multiBuyQuantity != null) {
                     val price = pricingInformation.getDisplayPrice(
                         productInformation,
-                        pricingInformation.discountPrice!!
+                        pricingInformation.multiBuyPrice!!
                     )
 
                     Text(
-                        text = "${pricingInformation.multiBuyQuantity} for $${price.first}${price.second}",
-                        fontSize = 16.sp
+                        text = stringResource(
+                            id = R.string.multibuy_format,
+                            pricingInformation.multiBuyQuantity!!,
+                            price.first,
+                            price.second
+                        ),
+                        fontSize = 14.sp
                     )
                 }
 
@@ -200,8 +208,8 @@ fun RetailerSlot(
                             id = R.string.club_only,
                         ),
 
-                        lineHeight = 16.sp,
-                        fontSize = 14.sp
+                        lineHeight = 14.sp,
+                        fontSize = 10.sp
                     )
                 }
             }
@@ -216,30 +224,29 @@ fun RetailerSlot(
  * @param snackbarHostState The passed down SnackbarHostState.
  * @param retailers List of retailers who are selling the product.
  */
-@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun ProductInformation(
     product: Pair<String, Product>?,
     snackbarHostState: SnackbarHostState,
-    retailers: Map<String, Retailer>?
+    retailers: Map<String, Retailer>?,
+    viewModel: ProductViewModel
 ) {
     val bestInformation = product?.second?.getBestInformation()
-    val loading = false
+    val loading = product == null
 
-    Column (
+    Column(
         modifier = Modifier
             .padding(start = 10.dp, end = 10.dp)
     )
     {
-        ProductTitle(info = bestInformation, loading = false)
 
         AddToShoppingListBlock(
             snackbarHostState = snackbarHostState,
             productPair = product,
             retailers = retailers,
             loading = loading,
-            onAddToShoppingList = { id, id2, id3, id4 ->
-
+            onAddToShoppingList = { productId, retailerProductInfoId, storeId, quantity ->
+                viewModel.addToShoppingList(productId, retailerProductInfoId, storeId, quantity)
             }
         )
     }
@@ -255,9 +262,12 @@ fun ProductInformation(
  * @param nav Instance of the nav controller for navigation class.
  */
 @OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.N)
 @Composable
-fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel(), nav : NavHostController) {
+fun ProductScreen(
+    productId: String,
+    viewModel: ProductViewModel = hiltViewModel(),
+    nav: NavHostController
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
     )
@@ -278,13 +288,10 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
         topBar = {
             StatusBarLargeTopAppBar(
                 title = {
-                    Text(
-                        product?.second?.getBestInformation()?.name ?: "",
-                        maxLines = 2,
-                        //style = MaterialTheme.typography.displaySmall,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .offset(x = 0.dp, y = 0.dp),
+                    ProductTitle(
+                        info = product?.second?.getBestInformation(),
+                        loading = product == null,
+                        applyStyling = false
                     )
                 },
                 navigationIcon = {
@@ -293,7 +300,7 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 },
@@ -313,7 +320,8 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
                     ProductInformation(
                         product = product,
                         snackbarHostState = snackbarHostState,
-                        retailers = retailers
+                        retailers = retailers,
+                        viewModel = viewModel
                     )
                 }
 
@@ -380,45 +388,38 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
  * @param local Whether or not the section is for local products.
  */
 @Composable
-fun TableHeader(local : Boolean) {
-    if (local) {
-        Text(
-            text = stringResource(id = R.string.local_prices),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(start = 10.dp)
+fun TableHeader(local: Boolean) {
+    Text(
+        text = stringResource(id = if (local) R.string.local_prices else R.string.non_local_prices),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp, top = 16.dp, bottom = 4.dp)
 
-        )
-    } else {
-        Text(
-            text = stringResource(id = R.string.non_local_prices),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .padding(start = 10.dp)
+    )
 
-        )
-    }
-
-    Row (
-        modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+    Row(
+        modifier = Modifier.padding(all = 10.dp),
+        verticalAlignment = Alignment.Bottom
     )
     {
         Text(
             text = stringResource(id = R.string.retailer),
-            modifier = Modifier.weight(1.0f)
+            modifier = Modifier.weight(1.0f),
+            fontWeight = FontWeight.Bold
         )
 
         Text(
             text = stringResource(id = R.string.price),
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.5f),
+            fontWeight = FontWeight.Bold
         )
 
         Text(
             text = stringResource(id = R.string.discount_price),
             modifier = Modifier.weight(0.5f),
-            lineHeight = 18.sp
+            lineHeight = 18.sp,
+            fontWeight = FontWeight.Bold
         )
     }
 }

@@ -87,7 +87,7 @@ abstract class SearchBaseRepository(private val context: Context) {
     /**
      * A method that will wait until the AppSearch session is initialised.
      */
-    protected suspend fun awaitInitialization() {
+    suspend fun awaitInitialization() {
         if (!isInitialized.value) {
             isInitialized.first { it }
         }

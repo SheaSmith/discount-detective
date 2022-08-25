@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
+import com.example.cosc345project.models.RetailerProductInfo
 import com.example.cosc345project.repository.ProductRepository
 import com.example.cosc345project.repository.RetailersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +41,24 @@ class ProductViewModel @Inject constructor(
                 nonLocalRetailerInfo.value =
                     product.value!!.second.information!!.filter { !localRetailers.contains(it.retailer) }
             }
+        }
+    }
+
+    fun addToShoppingList(
+        productId: String,
+        retailerProductInfoId: String,
+        storeId: String,
+        quantity: Int
+    ) {
+        viewModelScope.launch {
+            productRepository.insert(
+                RetailerProductInfo(
+                    productId,
+                    retailerProductInfoId,
+                    storeId,
+                    quantity
+                )
+            )
         }
     }
 }
