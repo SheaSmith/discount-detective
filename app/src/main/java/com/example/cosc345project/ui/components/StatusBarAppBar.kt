@@ -18,6 +18,7 @@
 
 package com.example.cosc345project.ui.components
 
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
@@ -25,6 +26,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.unit.dp
 
 /**
  * An app bar that can take into account the height of the status bar. This is for a centred, small
@@ -44,10 +47,11 @@ fun StatusBarCenterAlignedTopAppBar(
     actions: @Composable RowScope.() -> Unit = {},
     navigationIcon: @Composable () -> Unit = {}
 ) {
-    val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-    val backgroundColor = backgroundColors.containerColor(
-        colorTransitionFraction = scrollBehavior?.state?.overlappedFraction ?: 0f
-    ).value
+    val backgroundColor = lerp(
+        MaterialTheme.colorScheme.surface,
+        MaterialTheme.colorScheme.surfaceColorAtElevation(elevation = 3.dp),
+        FastOutLinearInEasing.transform(scrollBehavior?.state?.overlappedFraction ?: 0f)
+    )
     val foregroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors(
         containerColor = Color.Transparent,
         scrolledContainerColor = Color.Transparent
@@ -82,10 +86,11 @@ fun StatusBarLargeTopAppBar(
     actions: @Composable RowScope.() -> Unit = {},
     navigationIcon: @Composable () -> Unit = {}
 ) {
-    val backgroundColors = TopAppBarDefaults.largeTopAppBarColors()
-    val backgroundColor = backgroundColors.containerColor(
-        colorTransitionFraction = scrollBehavior?.state?.overlappedFraction ?: 0f
-    ).value
+    val backgroundColor = lerp(
+        MaterialTheme.colorScheme.surface,
+        MaterialTheme.colorScheme.surfaceColorAtElevation(elevation = 3.dp),
+        FastOutLinearInEasing.transform(scrollBehavior?.state?.overlappedFraction ?: 0f)
+    )
     val foregroundColors = TopAppBarDefaults.largeTopAppBarColors(
         containerColor = Color.Transparent,
         scrolledContainerColor = Color.Transparent

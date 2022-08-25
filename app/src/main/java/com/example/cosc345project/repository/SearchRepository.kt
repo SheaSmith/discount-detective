@@ -112,12 +112,14 @@ class SearchRepository @Inject constructor(
         return suspendCancellableCoroutine { continuation ->
             val successListener = OnSuccessListener<DataSnapshot> { snapshot ->
                 Log.d(TAG, "Successfully retrieved products from Firebase.")
-                val products = snapshot.getValue<Map<String, Product>>()
+                val products = snapshot.getValue<HashMap<String, Product>>()
+
+                val keys = snapshot.children.map { it.key }
 
                 val key = if (query.isEmpty()) {
-                    products?.keys?.first()
+                    keys.first()
                 } else {
-                    products?.values?.last()?.information?.first()?.name
+                    products?.get(keys.last())?.information?.first()?.name
                 }
 
 
@@ -140,9 +142,14 @@ class SearchRepository @Inject constructor(
                 database.reference
                     .child("products")
                     .orderByChild("information/0/name")
-                    .startAt(startAt ?: query.titleCase().capitaliseNZ())
                     .endAt("${query.titleCase().capitaliseNZ()}~")
                     .limitToFirst(count)
+            }
+
+            if (query.isNotEmpty() && startAt != null) {
+                firebaseQuery = firebaseQuery.startAfter(startAt)
+            } else if (query.isNotEmpty()) {
+                firebaseQuery = firebaseQuery.startAt(query.titleCase().capitaliseNZ())
             }
 
             if (query.isEmpty() && startAt != null) {

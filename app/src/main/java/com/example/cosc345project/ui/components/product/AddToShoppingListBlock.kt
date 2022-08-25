@@ -248,11 +248,7 @@ fun AddToShoppingListBlock(
                         highlight = PlaceholderHighlight.fade()
                     )
             ) {
-                val cursorColorState =
-                    TextFieldDefaults.textFieldColors().cursorColor(isError = false)
-                val cursorColor by remember {
-                    cursorColorState
-                }
+                val cursorColor = MaterialTheme.colorScheme.primary
 
                 BasicTextField(
                     value = quantity?.toString() ?: "",

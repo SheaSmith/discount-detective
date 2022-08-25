@@ -86,7 +86,8 @@ fun SearchScreen(
                         search = search,
                         loading = loading,
                         onValueChange = {
-                            viewModel.setQuery(it)
+                            val query = it.filter { letter -> letter != '\n' }
+                            viewModel.setQuery(query)
                             coroutineScope.launch {
                                 listState.scrollToItem(0)
                             }
