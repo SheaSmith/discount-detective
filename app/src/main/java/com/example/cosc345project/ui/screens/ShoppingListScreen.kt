@@ -134,7 +134,13 @@ fun ShoppingListScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    //go back to last view
+                    val previousView = navController.previousBackStackEntry?.destination?.id
+                    IconButton(onClick = {
+                        if (previousView != null) {
+                            navController.navigate(previousView)
+                        }
+                    }) {
                         Icon(Icons.Filled.ArrowBack, "backIcon")
                     }
                 },
