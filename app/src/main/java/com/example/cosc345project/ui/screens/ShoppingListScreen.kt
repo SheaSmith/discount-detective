@@ -187,7 +187,7 @@ fun productList(
     viewModel: ShoppingListViewModel,
     innerPadding: PaddingValues,
 ) {
-    val data = remember { mutableStateOf(List(100) { "Item $it" }) }
+    val data = remember { mutableStateOf(grouped.values.toList()) }
     val state = rememberReorderableLazyListState(onMove = { from, to ->
         data.value = data.value.toMutableList().apply {
             add(to.index, removeAt(from.index))
