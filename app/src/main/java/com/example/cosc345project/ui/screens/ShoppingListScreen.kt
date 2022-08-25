@@ -2,6 +2,7 @@
 
 package com.example.cosc345project.ui.screens
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,7 +18,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -32,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,6 +52,10 @@ import com.example.cosc345project.viewmodel.ShoppingListViewModel
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 
 
 @Composable
@@ -142,7 +150,6 @@ fun ShoppingListScreen(
             )
         }
     ) { innerPadding ->
-        //TODO cleanup productID names
         if (!productIDs.isNullOrEmpty()) {
             val grouped = productIDs.groupBy {
                 getDisplayName(
@@ -158,9 +165,7 @@ fun ShoppingListScreen(
             productList(
                 grouped = grouped,
                 viewModel = viewModel,
-                navController = navController,
                 innerPadding = innerPadding,
-                retailers = retailers
             )
         } else {
             Text(
@@ -168,7 +173,8 @@ fun ShoppingListScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 16.dp),
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -179,36 +185,60 @@ fun ShoppingListScreen(
 fun productList(
     grouped: Map<String, List<RetailerProductInfo>>,
     viewModel: ShoppingListViewModel,
-    navController: NavHostController,
     innerPadding: PaddingValues,
-    retailers: Map<String, Retailer>
 ) {
+    val data = remember { mutableStateOf(List(100) { "Item $it" }) }
+    val state = rememberReorderableLazyListState(onMove = { from, to ->
+        data.value = data.value.toMutableList().apply {
+            add(to.index, removeAt(from.index))
+        }
+    })
+
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         contentPadding = innerPadding,
+        state = state.listState,
+        modifier = Modifier
+            .reorderable(state)
+            .detectReorderAfterLongPress(state)
     ) {
         grouped.forEach { (store, productsForStore) ->
             stickyHeader {
                 Text(
                     text = store,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.width(200.dp)
+                    modifier = Modifier
+                        .width(200.dp)
+                        .background(Color.White)
+                        .fillMaxWidth(),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
             items(productsForStore) { product ->
-                ProductCard(
-                    product = product,
-                    viewModel = viewModel
+                ReorderableItem(
+                    reorderableState = state,
+                    key = product
                 )
+                { isDragging ->
+                    val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
+                    ProductCard(
+                        product = product,
+                        viewModel = viewModel,
+                        elevation = elevation
+                    )
+                }
             }
         }
     }
 }
 
+
 @Composable
 fun ProductCard(
     product: RetailerProductInfo,
-    viewModel: ShoppingListViewModel
+    viewModel: ShoppingListViewModel,
+    elevation: State<Dp>
 ) {
     val productID = product.productID
     //use to index product array
@@ -217,7 +247,8 @@ fun ProductCard(
 
 
     //collect using 'by' since lazy loading
-    val productRetailerInfoList by viewModel.getProductFromID(productID).collectAsState(initial = null)
+    val productRetailerInfoList by viewModel.getProductFromID(productID)
+        .collectAsState(initial = null)
 
     //use the retailerID to index into this list (as we have product ID, now need RetailerID)
     val productInfo = productRetailerInfoList?.information?.firstOrNull {
@@ -227,18 +258,22 @@ fun ProductCard(
     //get product with retailerID, storeID
     val pricingInfo = productInfo?.pricing?.firstOrNull { it.store == storeId }
 
+    //checkbox Checked
+    val isChecked = remember { mutableStateOf(false) }
+
 
     //add this in for the correct colour
     //tonalElevation = 2.dp
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .shadow(elevation.value),
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent
         ),
         shape = CardDefaults.elevatedShape,
-        elevation = if (productInfo == null) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation()
+        elevation = if (productInfo != null) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation()
     ) {
         // master row layout
         Row(
@@ -257,6 +292,7 @@ fun ProductCard(
                 model = productInfo?.image,
                 contentDescription = stringResource(id = R.string.content_description_product_image),
                 modifier = Modifier
+                    .alpha(if (isChecked.value) 1.0f else 0.5f)
                     .fillMaxHeight()
                     .height(60.dp)
                     .width(60.dp)
@@ -328,7 +364,6 @@ fun ProductCard(
                 )
             }
             Column {
-                val isChecked = remember { mutableStateOf(false) }
                 Checkbox(
                     checked = isChecked.value,
                     onCheckedChange = {
@@ -340,5 +375,3 @@ fun ProductCard(
         }
     }
 }
-
-

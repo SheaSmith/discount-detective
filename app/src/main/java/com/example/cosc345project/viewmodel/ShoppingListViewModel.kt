@@ -51,7 +51,7 @@ class ShoppingListViewModel @Inject constructor(
 
     /**
      * For a given RetailerProductInfo in dao
-     * Return the associated store name
+     * Return the associated store namze
      *
      * have retailer ID
      *
