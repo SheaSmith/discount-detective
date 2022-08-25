@@ -2,10 +2,8 @@
 
 package com.example.cosc345project.ui.screens
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,21 +13,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
@@ -40,41 +36,38 @@ import com.example.cosc345project.ui.components.product.AddToShoppingListBlock
 import com.example.cosc345project.ui.components.product.ProductTitle
 import com.example.cosc345project.viewmodel.ProductViewModel
 
-/*
-* 19/08 - John
-* Need to check if scrolling actually works
-* Need to make title change
-* Need to position +1 -1 buttons
-* Need to add "Add Item" button
-* I removed the title that goes below image because we have it at the top anyway
-* and if we have long named items then it will get very messy
-* Need to make image change to product image
-* Will probably need to check with Shea on getting the product info
-* Need to comment... yucky
-* */
-
+/**
+ * Function used to create the image for the Product on the Product Screen.
+ *
+ * @param image The image from the Product information to be displayed.
+ */
 @Composable
-fun ProductImage() {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(250.dp)) {
-        Image(
+fun ProductImage(image: String?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .padding(bottom = 10.dp)
+            .background(Color.White),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        AsyncImage(
+            model = image,
+            contentDescription = null,
             modifier = Modifier
                 .padding(0.dp)
-                .aspectRatio(1.5f)
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .background(Color.White),
-
-
-            painter = painterResource(R.drawable.banana_single),
-            contentDescription = "background_image",
+                .fillMaxHeight(),
             contentScale = ContentScale.FillHeight,
-
-            )
+        )
     }
 }
 
+/**
+ * Function used to create the retailer slot which shows the prices for the products.
+ *
+ * Includes both the regular price and the discounted price.
+ */
 @Composable
 fun RetailerSlot(
     pricingInformation: StorePricingInformation,
@@ -85,44 +78,81 @@ fun RetailerSlot(
 
     Surface(
         modifier = Modifier
+            .height(70.dp)
+            .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
             .fillMaxWidth(),
 
         shape = RoundedCornerShape(8.dp),
         tonalElevation = 2.dp
     ) {
         Row {
+            var showRetailer by remember { mutableStateOf(false) }
 
             Surface(
                 modifier = Modifier
-                    .width(IntrinsicSize.Min)
-                    .align(Alignment.CenterVertically),
+                    .padding(start = 5.dp)
+                    .width(45.dp)
+                    .height(45.dp)
+                    .align(Alignment.CenterVertically)
+                    .clickable {
+                        showRetailer = !showRetailer
+                    },
                 shape = CircleShape,
                 color = Color(if (isSystemInDarkTheme()) retailer.colourDark!! else retailer.colourLight!!)
             ) {
-                Text(
-                    text = retailer.initialism!!,
-                    fontSize = 24.sp,
-                    color = Color(if (isSystemInDarkTheme()) retailer.onColourDark!! else retailer.onColourLight!!)
-                )
 
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = retailer.initialism!!,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(if (isSystemInDarkTheme()) retailer.onColourDark!! else retailer.onColourLight!!)
+                    )
+                }
+
+                DropdownMenu(expanded = showRetailer, onDismissRequest = { showRetailer = false }) {
+                    DropdownMenuItem(
+                        text = { Text(retailer.name!!) },
+                        onClick = { },
+                        colors = MenuDefaults.itemColors(disabledTextColor = MaterialTheme.colorScheme.onSurface),
+                        enabled = false
+                    )
+                }
             }
 
             Spacer(Modifier.width(10.0.dp))
 
             Column(
                 modifier = Modifier
-                    .weight(1.0f)
+                    .weight(0.5f)
                     .align(Alignment.CenterVertically)
             ) {
-                Text(
-                    text = store.name!!,
-                    fontSize = 16.sp
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .fillMaxHeight()
+                        .padding(end = 10.dp),
+                    //.width(intrinsicSize = IntrinsicSize.Min)
+
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = store.name!!,
+                        fontSize = 14.sp,
+                        lineHeight = 16.sp,
+                        maxLines = 3,
+
+                        )
+                }
+
             }
 
             Column(
                 modifier = Modifier
-                    .weight(0.5f)
+                    .weight(0.4f)
                     .align(Alignment.CenterVertically)
             ) {
                 val price = pricingInformation.price?.let {
@@ -133,14 +163,14 @@ fun RetailerSlot(
                 }
 
                 Text(
-                    text = price?.let { "$${price.first}${price.second}" } ?: "",
-                    fontSize = 16.sp
+                    text = price?.let { "${price.first}${price.second}" } ?: "",
+                    fontSize = 14.sp
                 )
             }
 
             Column(
                 modifier = Modifier
-                    .weight(0.5f)
+                    .weight(0.4f)
                     .align(Alignment.CenterVertically)
             ) {
                 if (pricingInformation.discountPrice != null) {
@@ -150,27 +180,36 @@ fun RetailerSlot(
                     )
 
                     Text(
-                        text = "$${price.first}${price.second}",
-                        fontSize = 16.sp
+                        text = "${price.first}${price.second}",
+                        fontSize = 14.sp
                     )
                 }
 
                 if (pricingInformation.multiBuyPrice != null && pricingInformation.multiBuyQuantity != null) {
                     val price = pricingInformation.getDisplayPrice(
                         productInformation,
-                        pricingInformation.discountPrice!!
+                        pricingInformation.multiBuyPrice!!
                     )
 
                     Text(
-                        text = "${pricingInformation.multiBuyQuantity} for $${price.first}${price.second}",
-                        fontSize = 16.sp
+                        text = stringResource(
+                            id = R.string.multibuy_format,
+                            pricingInformation.multiBuyQuantity!!,
+                            price.first,
+                            price.second
+                        ),
+                        fontSize = 14.sp
                     )
                 }
 
                 if (pricingInformation.clubOnly == true) {
                     Text(
-                        text = stringResource(id = R.string.club_only),
-                        fontSize = 16.sp
+                        text = stringResource(
+                            id = R.string.club_only,
+                        ),
+
+                        lineHeight = 14.sp,
+                        fontSize = 10.sp
                     )
                 }
             }
@@ -178,26 +217,36 @@ fun RetailerSlot(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.N)
+/**
+ * Function used to handle adding the product to the shopping list.
+ *
+ * @param product The product selected to be added to the shopping list.
+ * @param snackbarHostState The passed down SnackbarHostState.
+ * @param retailers List of retailers who are selling the product.
+ */
 @Composable
 fun ProductInformation(
     product: Pair<String, Product>?,
     snackbarHostState: SnackbarHostState,
-    retailers: Map<String, Retailer>?
+    retailers: Map<String, Retailer>?,
+    viewModel: ProductViewModel
 ) {
     val bestInformation = product?.second?.getBestInformation()
-    val loading = false
+    val loading = product == null
 
-    Column {
-        ProductTitle(info = bestInformation, loading = false)
+    Column(
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp)
+    )
+    {
 
         AddToShoppingListBlock(
             snackbarHostState = snackbarHostState,
             productPair = product,
             retailers = retailers,
             loading = loading,
-            onAddToShoppingList = { id, id2, id3, id4 ->
-
+            onAddToShoppingList = { productId, retailerProductInfoId, storeId, quantity ->
+                viewModel.addToShoppingList(productId, retailerProductInfoId, storeId, quantity)
             }
         )
     }
@@ -205,9 +254,20 @@ fun ProductInformation(
 
 }
 
-@RequiresApi(Build.VERSION_CODES.N)
+/**
+ * Function used to layout the main content of the product screen page.
+ *
+ * @param productId A string representing the id of the product.
+ * @param viewModel Instance of the SearchViewModel class (see [com.example.cosc345project.viewmodel.SearchViewModel])
+ * @param nav Instance of the nav controller for navigation class.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel()) {
+fun ProductScreen(
+    productId: String,
+    viewModel: ProductViewModel = hiltViewModel(),
+    nav: NavHostController
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
     )
@@ -228,20 +288,19 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
         topBar = {
             StatusBarLargeTopAppBar(
                 title = {
-                    Text(
-                        product?.second?.getBestInformation()?.name ?: "",
-                        maxLines = 2,
-                        //style = MaterialTheme.typography.displaySmall,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .offset(x = 0.dp, y = 0.dp),
+                    ProductTitle(
+                        info = product?.second?.getBestInformation(),
+                        loading = product == null,
+                        applyStyling = false
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* doSomething() */ }) {
+                    IconButton(onClick = {
+                        nav.navigateUp()
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 },
@@ -254,41 +313,60 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
         content = { padding ->
             LazyColumn(contentPadding = padding) {
                 item {
-                    ProductImage()
+                    ProductImage(image = product?.second?.getBestInformation()?.image)
                 }
 
                 item {
                     ProductInformation(
                         product = product,
                         snackbarHostState = snackbarHostState,
-                        retailers = retailers
+                        retailers = retailers,
+                        viewModel = viewModel
                     )
                 }
 
                 if (localRetailerProductInformation.isNotEmpty() && retailers.isNotEmpty()) {
                     item {
-                        Text(text = stringResource(id = R.string.local_prices))
-
-                        TableHeader()
+                        TableHeader(true)
                     }
 
-                    items(localRetailerProductInformation.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
+                    //var sortedInformation = localRetailerProductInformation.sortedByDescending { it.pricing }
+
+                    val sortedList = localRetailerProductInformation.sortedBy { info ->
+                        info.pricing!!.minByOrNull {
+                            it.getPrice(
+                                info
+                            )
+                        }!!
+                            .getPrice(info)
+                    }
+
+                    items(sortedList.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
                         RetailerSlot(
                             pricingInformation = item.first,
                             retailer = retailers[item.second.retailer]!!,
                             productInformation = item.second
                         )
+
                     }
                 }
+
+                val sortedList = nonLocalRetailerProductInformation.sortedBy { info ->
+                    info.pricing!!.minByOrNull {
+                        it.getPrice(
+                            info
+                        )
+                    }!!
+                        .getPrice(info)
+                }
+
 
                 if (nonLocalRetailerProductInformation.isNotEmpty() && retailers.isNotEmpty()) {
                     item {
-                        Text(text = stringResource(id = R.string.local_prices))
-
-                        TableHeader()
+                        TableHeader(false)
                     }
 
-                    items(nonLocalRetailerProductInformation.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
+                    items(sortedList.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
                         RetailerSlot(
                             pricingInformation = item.first,
                             retailer = retailers[item.second.retailer]!!,
@@ -296,28 +374,52 @@ fun ProductScreen(productId: String, viewModel: ProductViewModel = hiltViewModel
                         )
                     }
                 }
+
             }
         }
     )
 
 }
 
+/**
+ * Function used to create the headers (local/non-local, retailer, price, discount price) above the
+ * lists of cards with their retailer and price.
+ *
+ * @param local Whether or not the section is for local products.
+ */
 @Composable
-fun TableHeader() {
-    Row {
+fun TableHeader(local: Boolean) {
+    Text(
+        text = stringResource(id = if (local) R.string.local_prices else R.string.non_local_prices),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp, top = 16.dp, bottom = 4.dp)
+
+    )
+
+    Row(
+        modifier = Modifier.padding(all = 10.dp),
+        verticalAlignment = Alignment.Bottom
+    )
+    {
         Text(
             text = stringResource(id = R.string.retailer),
-            modifier = Modifier.weight(1.0f)
+            modifier = Modifier.weight(1.0f),
+            fontWeight = FontWeight.Bold
         )
 
         Text(
             text = stringResource(id = R.string.price),
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.5f),
+            fontWeight = FontWeight.Bold
         )
 
         Text(
             text = stringResource(id = R.string.discount_price),
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.5f),
+            lineHeight = 18.sp,
+            fontWeight = FontWeight.Bold
         )
     }
 }
