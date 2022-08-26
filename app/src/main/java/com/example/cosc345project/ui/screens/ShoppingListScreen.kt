@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -28,68 +27,26 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.cosc345.shared.models.Retailer
-import com.example.cosc345.shared.models.SaleType
+import com.example.cosc345.shared.models.RetailerProductInformation
+import com.example.cosc345.shared.models.StorePricingInformation
 import com.example.cosc345project.R
-import com.example.cosc345project.models.RetailerProductInfo
 import com.example.cosc345project.ui.components.StatusBarCenterAlignedTopAppBar
 import com.example.cosc345project.viewmodel.ShoppingListViewModel
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
-
-
-@Composable
-fun getDisplayName(
-    viewModel: ShoppingListViewModel,
-    retailers: Map<String, Retailer>,
-    productID: String,
-    retailerProductInfoID: String,
-    storeProductInfoID: String
-): String {
-    //idea if we have product ID then we can get the names
-    val productRetailerInfoList = viewModel.getProductFromID(productID).asLiveData()
-
-    //use the retailerID to index into this list (as we have product ID, now need RetailerID)
-    val productInfo = productRetailerInfoList.value?.information?.firstOrNull {
-        it.id == retailerProductInfoID
-    }
-
-    val namePair = viewModel.getStoreName(
-        retailerProductInfoID,
-        storeProductInfoID,
-        retailers,
-        productInfo
-    )
-
-    //will need this for value bakery
-    val displayName = buildString {
-        if (namePair.first != null)
-            append(namePair.first + ": ")
-        append(namePair.second ?: "")
-
-    }
-    return displayName
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,7 +59,7 @@ fun ShoppingListScreen(
     val retailers by viewModel.retailers.collectAsState()
     //productIDs in the shopping list
     //TODO: No duplicates possible as have same productID
-    val productIDs = viewModel.allProducts.observeAsState().value
+    val products by viewModel.products.collectAsState(initial = null)
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
@@ -156,22 +113,17 @@ fun ShoppingListScreen(
             )
         }
     ) { innerPadding ->
-        if (!productIDs.isNullOrEmpty()) {
-            val grouped = productIDs.groupBy {
-                getDisplayName(
-                    viewModel = viewModel,
-                    retailers = retailers,
-                    productID = it.productID,
-                    retailerProductInfoID = it.retailerProductInformationID,
-                    storeProductInfoID = it.storePricingInformationID
-                )
+        if (products?.isNotEmpty() == true && retailers.isNotEmpty()) {
+            val grouped = products!!.groupBy {
+                Pair(it.first.retailer!!, it.second.store!!)
             }.mapValues { it.value }
 
 
-            productList(
+            ProductList(
                 grouped = grouped,
                 viewModel = viewModel,
                 innerPadding = innerPadding,
+                retailers = retailers
             )
         } else {
             Text(
@@ -188,8 +140,9 @@ fun ShoppingListScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun productList(
-    grouped: Map<String, List<RetailerProductInfo>>,
+fun ProductList(
+    grouped: Map<Pair<String, String>, List<Triple<RetailerProductInformation, StorePricingInformation, Int>>>,
+    retailers: Map<String, Retailer>,
     viewModel: ShoppingListViewModel,
     innerPadding: PaddingValues,
 ) {
@@ -209,10 +162,14 @@ fun productList(
             .reorderable(state)
             .detectReorderAfterLongPress(state)
     ) {
-        grouped.forEach { (store, productsForStore) ->
+        grouped.forEach { (retailerStore, productsForStore) ->
             stickyHeader {
                 Text(
-                    text = store,
+                    text = viewModel.getStoreName(
+                        retailerStore.first,
+                        retailerStore.second,
+                        retailers
+                    ) ?: "",
                     textAlign = TextAlign.Left,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -224,12 +181,13 @@ fun productList(
                 )
             }
             //This allows future extension if we want to reorder products
-            val dataIdList = data.value.map { it.productID }
-            val productsForStoreId = productsForStore.map { it.productID }
+            val dataIdList = data.value.map { it.first.id }
+            val productsForStoreId = productsForStore.map { it.first.id }
             val intersectIds = productsForStoreId.intersect(dataIdList.toSet())
-            val selection = mutableListOf<RetailerProductInfo>()
+            val selection =
+                mutableListOf<Triple<RetailerProductInformation, StorePricingInformation, Int>>()
             data.value.forEach {
-                if (it.productID in intersectIds) {
+                if (it.first.id in intersectIds) {
                     selection.add(it)
                 }
             }
@@ -254,28 +212,10 @@ fun productList(
 
 @Composable
 fun ProductCard(
-    product: RetailerProductInfo,
+    product: Triple<RetailerProductInformation, StorePricingInformation, Int>,
     viewModel: ShoppingListViewModel,
     elevation: State<Dp>
 ) {
-    val productID = product.productID
-    //use to index product array
-    val retailerID = product.retailerProductInformationID
-    val storeId = product.storePricingInformationID
-
-
-    //collect using 'by' since lazy loading
-    val productRetailerInfoList by viewModel.getProductFromID(productID)
-        .collectAsState(initial = null)
-
-    //use the retailerID to index into this list (as we have product ID, now need RetailerID)
-    val productInfo = productRetailerInfoList?.information?.firstOrNull {
-        it.id == retailerID
-    }
-
-    //get product with retailerID, storeID
-    val pricingInfo = productInfo?.pricing?.firstOrNull { it.store == storeId }
-
     //checkbox Checked
     val isChecked = remember { mutableStateOf(false) }
 
@@ -293,7 +233,7 @@ fun ProductCard(
             disabledContainerColor = Color.Transparent
         ),
         shape = CardDefaults.elevatedShape,
-        elevation = if (productInfo != null) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation()
+        elevation = CardDefaults.cardElevation()
     ) {
         // master row layout
         Row(
@@ -311,16 +251,10 @@ fun ProductCard(
                     .fillMaxSize(0.1f)
             )
             AsyncImage(
-                model = productInfo?.image,
+                model = product.first.image,
                 contentDescription = stringResource(id = R.string.content_description_product_image),
                 modifier = Modifier
                     .fillMaxSize(0.3f)
-                    .placeholder(
-                        visible = productInfo == null,
-                        shape = RoundedCornerShape(4.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        highlight = PlaceholderHighlight.fade()
-                    )
                     .clip(RoundedCornerShape(4.dp))
                     .background(Color.White)
             )
@@ -336,49 +270,22 @@ fun ProductCard(
                 Text(
                     // add the variant, quantity to title
                     // productInfo?.name ?: stringResource(id = R.string.placeholder)
-                    text = buildAnnotatedString {
-                        append(productInfo?.name ?: stringResource(id = R.string.placeholder))
-                        append("; Quantity: ")
-                        append(product.quantity.toString())
-                        toAnnotatedString()
-                    },
-                    modifier = Modifier
-                        .placeholder(
-                            visible = productInfo == null,
-                            shape = RoundedCornerShape(1.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            highlight = PlaceholderHighlight.fade()
-                        ),
+                    text = "${product.third}x ${
+                        arrayOf(
+                            product.first.brandName,
+                            product.first.name,
+                            product.first.variant,
+                            product.first.quantity
+                        ).filterNotNull()
+                            .joinToString(" ")
+                    }",
                     fontWeight = FontWeight.Normal,
                     style = MaterialTheme.typography.titleSmall
                 )
-                val saleType = if (productInfo?.saleType == SaleType.WEIGHT) {
-                    "kg"
-                } else {
-                    "/ea"
-                }
+
+                val price = product.second.getDisplayPrice(product.first)
                 Text(
-                    text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 38.sp
-                            )
-                        ) {
-                            append("$")
-                            append(
-                                ((pricingInfo?.getPrice(productInfo)?.toDouble()
-                                    ?: 100.0) / 100).toString()
-                            )
-                        }
-                        append(" $saleType")
-                    },
-                    modifier = Modifier
-                        .placeholder(
-                            visible = productInfo == null,
-                            shape = RoundedCornerShape(1.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            highlight = PlaceholderHighlight.fade()
-                        ),
+                    text = "${price.first}${price.second}",
                     fontWeight = FontWeight.Normal,
                     style = MaterialTheme.typography.titleSmall
                 )

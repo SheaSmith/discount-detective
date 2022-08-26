@@ -1,19 +1,16 @@
 package com.example.cosc345project.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
+import com.example.cosc345.shared.models.StorePricingInformation
 import com.example.cosc345project.models.RetailerProductInfo
 import com.example.cosc345project.repository.ProductRepository
 import com.example.cosc345project.repository.RetailersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,14 +35,38 @@ class ShoppingListViewModel @Inject constructor(
     private val retailersRepository: RetailersRepository
 ) : ViewModel() {
 
-    val allProducts: LiveData<List<RetailerProductInfo>> =
-        productRepository.allProducts.asLiveData()
+    private val allProducts: Flow<List<RetailerProductInfo>> =
+        productRepository.allProducts
+
+    val products: MutableStateFlow<List<Triple<RetailerProductInformation, StorePricingInformation, Int>>?> =
+        MutableStateFlow(null)
 
     val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
 
     init {
         viewModelScope.launch {
             retailers.value = retailersRepository.getRetailers()
+        }
+
+        viewModelScope.launch {
+            allProducts.collect { shoppingListItems ->
+                products.value = shoppingListItems.mapNotNull { shoppingListInfo ->
+                    val product = productRepository.getProductFromID(shoppingListInfo.productID)
+
+                    if (product != null) {
+                        val key =
+                            product.information!!.first { it.id == shoppingListInfo.retailerProductInformationID }
+                        val value =
+                            key.pricing!!.first { it.store == shoppingListInfo.storePricingInformationID }
+
+                        Triple(key, value, shoppingListInfo.quantity)
+                    } else {
+                        productRepository.delete(shoppingListInfo)
+
+                        null
+                    }
+                }
+            }
         }
     }
 
@@ -58,39 +79,22 @@ class ShoppingListViewModel @Inject constructor(
      * If store name and retailer name same just return store
      */
     fun getStoreName(
-        retailerProductInformationID: String,
-        storePricingInformationID: String,
-        retailers: Map<String, Retailer>,
-        productInfo: RetailerProductInformation?
-    ): Pair<String?, String?> {
-        val retailer = retailers[retailerProductInformationID]
-        val store = retailer?.stores?.firstOrNull {
-            it.id == storePricingInformationID
-        }
-        //if retailer weird string use storePicingInfo to index into retailers
-        val storeInRetailerName = retailers[storePricingInformationID]?.name
-        var storeName = store?.name
-        if (storeName == null) {
-            storeName = storeInRetailerName
+        retailerId: String,
+        storeId: String,
+        retailers: Map<String, Retailer>
+    ): String? {
+        val retailer = retailers[retailerId]
+
+        val store = retailer?.stores?.firstOrNull { it.id == storeId }
+
+        if (store?.name == retailer?.name) {
+            return retailer?.name
         }
 
-        //if both are null then search entire hashmap for that store id
-        if (storeName != null || retailer?.name != null) {
-            return Pair(retailer?.name, storeName)
-        }
-        //if both are null then search entire hashmap for that store id
-        var retailer_of_store = ""
-        val nonUniqueStore = retailers.firstNotNullOf { (retailer, Retailer) ->
-            retailer_of_store = retailer
-            Retailer.stores?.firstOrNull { store ->
-                store.id == storePricingInformationID
-            }
-        }
+        if (retailer != null && store != null)
+            return "${retailer.name} ${store.name}"
 
-        val storeNameNonUnique = nonUniqueStore.name
-        val retailerName = retailers[retailer_of_store]?.name
-
-        return Pair(retailerName, storeNameNonUnique)
+        return null
     }
 
     /**
@@ -99,13 +103,6 @@ class ShoppingListViewModel @Inject constructor(
     fun insert(shoppingListRetailerProductInfo: RetailerProductInfo) = viewModelScope.launch {
         productRepository.insert(shoppingListRetailerProductInfo)
     }
-
-    fun getProductFromID(productID: String): Flow<Product> {
-        return flow {
-            emit(productRepository.getProductFromID(productID))
-        }
-    }
-
 
 
 }
