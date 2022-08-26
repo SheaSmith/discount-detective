@@ -110,90 +110,84 @@ fun AddToShoppingListBlock(
                         var lowestPrice = Int.MAX_VALUE
                         var lowestPriceIsLocal = false
 
-                        val sortedList = product!!.information!!.sortedBy { info ->
-                            info.pricing!!.minByOrNull {
-                                it.getPrice(
-                                    info
-                                )
-                            }!!
-                                .getPrice(info)
+                        val sortedList = product!!.information!!.flatMap { info ->
+                            info.pricing!!.map { info to it }
+                        }.sortedBy {
+                            it.second.getPrice(it.first)
                         }
 
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             //noinspection RememberReturnType
                             remember {
-                                sortedList.forEach { info ->
-                                    val sortedPricing =
-                                        info.pricing!!.sortedBy { it.getPrice(info) }
-                                    sortedPricing.forEach { pricing ->
-                                        val retailer = retailers[info.retailer]!!
+                                sortedList.forEach { pair ->
+                                    val info = pair.first
+                                    val pricing = pair.second
 
-                                        val store =
-                                            retailer.stores!!.firstOrNull { it.id == pricing.store }
+                                    val retailer = retailers[info.retailer]!!
 
-                                        if (store != null) {
-                                            val pair = Pair(info.id!!, pricing.store!!)
+                                    val store =
+                                        retailer.stores!!.firstOrNull { it.id == pricing.store }
 
-                                            val price = pricing.getPrice(info)
+                                    if (store != null) {
+                                        val price = pricing.getPrice(info)
+                                        val pricingPair = Pair(pair.first.id!!, pair.second.store!!)
 
-                                            if (retailer.local == true && !lowestPriceIsLocal || (price < lowestPrice && (!lowestPriceIsLocal || retailer.local == true))) {
-                                                lowestPrice = price
-                                                selectedPricingPair = pair
-                                                lowestPriceIsLocal = retailer.local == true
-                                            }
+                                        if (retailer.local == true && !lowestPriceIsLocal || (price < lowestPrice && (!lowestPriceIsLocal || retailer.local == true))) {
+                                            lowestPrice = price
+                                            selectedPricingPair = pricingPair
+                                            lowestPriceIsLocal = retailer.local == true
                                         }
                                     }
                                 }
                             }
 
-                            sortedList.forEach { info ->
-                                val sortedPricing =
-                                    info.pricing!!.sortedBy { it.getPrice(info) }
+                            sortedList.forEach { pair ->
+                                val info = pair.first
+                                val pricing = pair.second
 
-                                sortedPricing.forEach { pricing ->
-                                    val store =
-                                        retailers[info.retailer]!!.stores!!.firstOrNull { it.id == pricing.store }
+                                val store =
+                                    retailers[info.retailer]!!.stores!!.firstOrNull { it.id == pricing.store }
 
-                                    if (store != null) {
-                                        val pair = Pair(info.id!!, pricing.store!!)
+                                if (store != null) {
+                                    val pricingPair = Pair(info.id!!, pricing.store!!)
 
-                                        if (selectedPricingPair?.first == pair.first && selectedPricingPair?.second == pair.second) {
-                                            selectedPricingPair = pair
-                                        }
-
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .selectable(
-                                                    selected = pair == selectedPricingPair,
-                                                    onClick = {
-                                                        selectedPricingPair = pair
-                                                    }
-                                                ),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            RadioButton(
-                                                selected = pair == selectedPricingPair,
-                                                onClick = {
-                                                    selectedPricingPair = pair
-                                                }
-                                            )
-
-                                            val retailerName =
-                                                retailers[info.retailer]!!.name!!
-                                            val storeName = store.name!!
-
-                                            Text(
-                                                text = stringResource(
-                                                    id = R.string.select_store_format,
-                                                    retailerName,
-                                                    if (storeName == retailerName) "" else storeName,
-                                                    (pricing.getPrice(info) * (quantity
-                                                        ?: 1)).toDouble() / 100f
-                                                )
-                                            )
-                                        }
+                                    if (selectedPricingPair?.first == pricingPair.first && selectedPricingPair?.second == pricingPair.second) {
+                                        selectedPricingPair = pricingPair
                                     }
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .selectable(
+                                                selected = pricingPair == selectedPricingPair,
+                                                onClick = {
+                                                    selectedPricingPair = pricingPair
+                                                }
+                                            ),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = pricingPair == selectedPricingPair,
+                                            onClick = {
+                                                selectedPricingPair = pricingPair
+                                            }
+                                        )
+
+                                        val retailerName =
+                                            retailers[info.retailer]!!.name!!
+                                        val storeName = store.name!!
+
+                                        Text(
+                                            text = stringResource(
+                                                id = R.string.select_store_format,
+                                                retailerName,
+                                                if (storeName == retailerName) "" else storeName,
+                                                (pricing.getPrice(info) * (quantity
+                                                    ?: 1)).toDouble() / 100f
+                                            )
+                                        )
+                                    }
+
                                 }
                             }
                         }

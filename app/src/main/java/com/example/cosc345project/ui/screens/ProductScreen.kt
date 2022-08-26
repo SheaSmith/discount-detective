@@ -332,32 +332,26 @@ fun ProductScreen(
 
                     //var sortedInformation = localRetailerProductInformation.sortedByDescending { it.pricing }
 
-                    val sortedList = localRetailerProductInformation.sortedBy { info ->
-                        info.pricing!!.minByOrNull {
-                            it.getPrice(
-                                info
-                            )
-                        }!!
-                            .getPrice(info)
+                    val sortedList = localRetailerProductInformation.flatMap { info ->
+                        info.pricing!!.map { info to it }
+                    }.sortedBy {
+                        it.second.getPrice(it.first)
                     }
 
-                    items(sortedList.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
+                    items(sortedList) { item ->
                         RetailerSlot(
-                            pricingInformation = item.first,
-                            retailer = retailers[item.second.retailer]!!,
-                            productInformation = item.second
+                            pricingInformation = item.second,
+                            retailer = retailers[item.first.retailer]!!,
+                            productInformation = item.first
                         )
 
                     }
                 }
 
-                val sortedList = nonLocalRetailerProductInformation.sortedBy { info ->
-                    info.pricing!!.minByOrNull {
-                        it.getPrice(
-                            info
-                        )
-                    }!!
-                        .getPrice(info)
+                val sortedList = nonLocalRetailerProductInformation.flatMap { info ->
+                    info.pricing!!.map { info to it }
+                }.sortedBy {
+                    it.second.getPrice(it.first)
                 }
 
 
@@ -366,11 +360,11 @@ fun ProductScreen(
                         TableHeader(false)
                     }
 
-                    items(sortedList.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
+                    items(sortedList) { item ->
                         RetailerSlot(
-                            pricingInformation = item.first,
-                            retailer = retailers[item.second.retailer]!!,
-                            productInformation = item.second
+                            pricingInformation = item.second,
+                            retailer = retailers[item.first.retailer]!!,
+                            productInformation = item.first
                         )
                     }
                 }
