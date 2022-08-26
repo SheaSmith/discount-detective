@@ -86,7 +86,8 @@ fun SearchScreen(
                         search = search,
                         loading = loading,
                         onValueChange = {
-                            viewModel.setQuery(it)
+                            val query = it.filter { letter -> letter != '\n' }
+                            viewModel.setQuery(query)
                             coroutineScope.launch {
                                 listState.scrollToItem(0)
                             }
@@ -207,7 +208,7 @@ fun SearchScreen(
                             }
                         )
                     }
-                } else if (loadState !is LoadState.Error) {
+                } else if (loadState !is LoadState.Error && retailers.isNotEmpty()) {
                     item {
                         SearchError(
                             title = R.string.no_results,
