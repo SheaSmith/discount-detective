@@ -223,7 +223,7 @@ fun productList(
                     style = MaterialTheme.typography.titleMedium
                 )
             }
-            //select items for reordering
+            //This allows future extension if we want to reorder products
             val dataIdList = data.value.map { it.productID }
             val productsForStoreId = productsForStore.map { it.productID }
             val intersectIds = productsForStoreId.intersect(dataIdList.toSet())
@@ -233,7 +233,7 @@ fun productList(
                     selection.add(it)
                 }
             }
-            items(selection) { product ->
+            items(productsForStore) { product ->
                 ReorderableItem(
                     reorderableState = state,
                     key = product
