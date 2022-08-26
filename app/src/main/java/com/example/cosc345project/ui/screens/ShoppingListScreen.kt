@@ -238,8 +238,7 @@ fun ProductCard(
         Row(
             modifier = Modifier
                 .padding(8.dp)
-                .fillMaxHeight()
-                .safeContentPadding(),
+                .fillMaxHeight(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
