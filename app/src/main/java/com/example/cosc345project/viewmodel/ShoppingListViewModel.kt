@@ -1,15 +1,16 @@
 package com.example.cosc345project.viewmodel
 
-import androidx.lifecycle.*
-import com.example.cosc345.shared.models.Product
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
+import com.example.cosc345.shared.models.StorePricingInformation
 import com.example.cosc345project.models.RetailerProductInfo
 import com.example.cosc345project.repository.ProductRepository
-import com.example.cosc345project.repository.SearchRepository
+import com.example.cosc345project.repository.RetailersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,24 +32,77 @@ import javax.inject.Inject
 @HiltViewModel
 class ShoppingListViewModel @Inject constructor(
     private val productRepository: ProductRepository,
+    private val retailersRepository: RetailersRepository
 ) : ViewModel() {
 
-    val allProducts: LiveData<List<RetailerProductInfo>> =
-        productRepository.allProducts.asLiveData()
+    private val allProducts: Flow<List<RetailerProductInfo>> =
+        productRepository.allProducts
+
+    val products: MutableStateFlow<List<Triple<RetailerProductInformation, StorePricingInformation, Int>>?> =
+        MutableStateFlow(null)
+
+    val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
+
+    init {
+        viewModelScope.launch {
+            retailers.value = retailersRepository.getRetailers()
+        }
+
+        viewModelScope.launch {
+            allProducts.collect { shoppingListItems ->
+                products.value = shoppingListItems.mapNotNull { shoppingListInfo ->
+                    val product = productRepository.getProductFromID(shoppingListInfo.productID)
+
+                    if (product != null) {
+                        val key =
+                            product.information!!.first { it.id == shoppingListInfo.retailerProductInformationID }
+                        val value =
+                            key.pricing!!.first { it.store == shoppingListInfo.storePricingInformationID }
+
+                        Triple(key, value, shoppingListInfo.quantity)
+                    } else {
+                        productRepository.delete(shoppingListInfo)
+
+                        null
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * For a given RetailerProductInfo in dao
+     * Return the associated store namze
+     *
+     * have retailer ID
+     *
+     * If store name and retailer name same just return store
+     */
+    fun getStoreName(
+        retailerId: String,
+        storeId: String,
+        retailers: Map<String, Retailer>
+    ): String? {
+        val retailer = retailers[retailerId]
+
+        val store = retailer?.stores?.firstOrNull { it.id == storeId }
+
+        if (store?.name == retailer?.name) {
+            return retailer?.name
+        }
+
+        if (retailer != null && store != null)
+            return "${retailer.name} ${store.name}"
+
+        return null
+    }
 
     /**
      * Insert data in non-blocking fashion
      */
-    fun insert(shoppingListRetailerProductInfo :RetailerProductInfo) = viewModelScope.launch {
+    fun insert(shoppingListRetailerProductInfo: RetailerProductInfo) = viewModelScope.launch {
         productRepository.insert(shoppingListRetailerProductInfo)
     }
-
-    fun getProductFromID(productID: String): Flow<Product>{
-        return flow {
-            emit(productRepository.getProductFromID(productID))
-        }
-    }
-
 
 
 }

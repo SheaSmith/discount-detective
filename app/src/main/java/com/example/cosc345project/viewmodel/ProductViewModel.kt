@@ -32,15 +32,19 @@ class ProductViewModel @Inject constructor(
 
     fun getProduct(productId: String) {
         viewModelScope.launch {
-            product.value = Pair(productId, productRepository.getProductFromID(productId))
-            val localRetailers = retailers.value.filter { it.value.local == true }.keys
+            val productInfo = productRepository.getProductFromID(productId)
+            if (productInfo != null) {
+                product.value = Pair(productId, productInfo)
+                val localRetailers = retailers.value.filter { it.value.local == true }.keys
 
-            if (localRetailers.isNotEmpty()) {
-                localRetailerInfo.value =
-                    product.value!!.second.information!!.filter { localRetailers.contains(it.retailer) }
-                nonLocalRetailerInfo.value =
-                    product.value!!.second.information!!.filter { !localRetailers.contains(it.retailer) }
+                if (localRetailers.isNotEmpty()) {
+                    localRetailerInfo.value =
+                        product.value!!.second.information!!.filter { localRetailers.contains(it.retailer) }
+                    nonLocalRetailerInfo.value =
+                        product.value!!.second.information!!.filter { !localRetailers.contains(it.retailer) }
+                }
             }
+            // TODO: do something here
         }
     }
 

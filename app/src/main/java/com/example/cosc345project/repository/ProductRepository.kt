@@ -49,19 +49,28 @@ class ProductRepository @Inject constructor(
     }
 
     /**
+     * Delete a product from the shopping list.
+     *
+     * @param shoppingListRetailerProductInfo The product to delete.
+     */
+    suspend fun delete(shoppingListRetailerProductInfo: RetailerProductInfo) {
+        productDao.delete(shoppingListRetailerProductInfo)
+    }
+
+    /**
      * Get a product from Firebase corresponding to its given ID
      *
      * @param productID The product ID to query.
      * @return The product that matches this ID.
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun getProductFromID(productID: String): Product {
+    suspend fun getProductFromID(productID: String): Product? {
         Log.d(TAG, "Get Firebase Product from ProductID.")
         return suspendCancellableCoroutine { continuation ->
             Log.d(TAG, "Get product from Firebase")
             database.reference.child("products").child(productID).get()
                 .addOnSuccessListener { data ->
-                    continuation.resume(data.getValue<Product>()!!, null)
+                    continuation.resume(data.getValue<Product>(), null)
                 }
         }
     }

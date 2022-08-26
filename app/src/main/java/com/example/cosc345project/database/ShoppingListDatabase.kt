@@ -9,7 +9,7 @@ import com.example.cosc345project.models.RetailerProductInfo
  * Room database
  * - Top layer of SQLite database
  */
-@Database(entities = [RetailerProductInfo::class], version=1)
+@Database(entities = [RetailerProductInfo::class], version = 2)
 abstract class ShoppingListDatabase : RoomDatabase() {
 
     /**
