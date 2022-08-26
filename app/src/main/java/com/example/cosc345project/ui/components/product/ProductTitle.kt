@@ -1,8 +1,6 @@
 package com.example.cosc345project.ui.components.product
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345project.R
+import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.placeholder
@@ -52,8 +51,8 @@ fun ProductTitle(
         )
 
         if (info?.variant != null || info?.quantity != null) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            FlowRow(
+                mainAxisSpacing = 4.dp
             ) {
                 if (info.variant != null) {
                     Text(
