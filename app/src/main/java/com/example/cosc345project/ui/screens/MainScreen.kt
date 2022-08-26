@@ -6,14 +6,15 @@ import com.example.cosc345project.ui.components.main.NavigationWrapper
 import com.example.cosc345project.ui.utils.DevicePosture
 import com.example.cosc345project.ui.utils.NavigationType
 
-
 /**
- * Class for the Main Screen
+ * Function for the Main Screen
  *
- * Creates the base screen
+ * Creates the main screen as a composable function, changing the navigation options on
+ * the app depending on the window size on the phone and the device posture. This allows
+ * us to cater our UI to a wide variety of phones and window sizes.
  *
- * @param windowSize
- * @param foldingDevicePosture
+ * @param windowSize Size of the window our app is in.
+ * @param foldingDevicePosture Status of the folding device - to make our app fold aware.
  */
 // Based on https://github.com/googlecodelabs/android-compose-codelabs/blob/end/AdaptiveUiCodelab/app/src/main/java/com/example/reply/ui/ReplyApp.kt
 @Composable

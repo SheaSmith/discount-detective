@@ -12,9 +12,8 @@ import com.example.cosc345project.models.RetailerProductInfo
 @Database(entities = [RetailerProductInfo::class], version = 2)
 abstract class ShoppingListDatabase : RoomDatabase() {
 
+    /**
+     * Get the dao for manipulating the shopping list.
+     */
     abstract fun productDao(): ProductDao
-
-
-
-
 }

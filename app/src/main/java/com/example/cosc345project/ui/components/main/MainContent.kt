@@ -25,13 +25,11 @@ import com.example.cosc345project.viewmodel.SearchViewModel
 import com.example.cosc345project.viewmodel.ShoppingListViewModel
 
 /**
- * MainContent
+ * The main content of the page, including the screens themselves.
  *
- *
- *
- * @param navController
- * @param navigationType
- * @param onDrawerClicked
+ * @param navController The nav controller to use when navigating between pages.
+ * @param navigationType The type of navigation that is being used, based on screen size.
+ * @param onDrawerClicked The function to be called when the open drawer button is clicked.
  */
 @Composable
 fun MainContent(
@@ -68,7 +66,9 @@ fun MainContent(
                     composable(
                         Navigation.PRODUCT.route,
                         arguments = listOf(navArgument("productId") { type = NavType.StringType })
-                    ) { ProductScreen() }
+                    ) {
+                        ProductScreen(it.arguments!!.getString("productId")!!, nav = navController)
+                    }
 //                    composable(Navigation.SETTINGS.route) { Text(text = "Settings") }
                 }
             }

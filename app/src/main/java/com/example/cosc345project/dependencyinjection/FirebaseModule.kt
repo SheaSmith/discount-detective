@@ -1,6 +1,5 @@
 package com.example.cosc345project.dependencyinjection
 
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -11,15 +10,15 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 // https://stackoverflow.com/questions/67542337/android-inject-firebase-firestore-with-hilt-in-repository-pattern
+/**
+ * Provide relevant Firebase objects for injection.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
-    @Provides
-    @Singleton
-    fun provideFirebaseAuthentication(): FirebaseAuth {
-        return FirebaseAuth.getInstance()
-    }
-
+    /**
+     * Get an instance of our Firebase database.
+     */
     @Provides
     @Singleton
     fun provideFirebaseDatabase(): FirebaseDatabase {

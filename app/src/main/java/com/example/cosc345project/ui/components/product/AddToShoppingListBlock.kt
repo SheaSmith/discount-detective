@@ -33,12 +33,21 @@ import com.google.accompanist.placeholder.placeholder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * A block that contains the buttons to add a specified product to the shopping list.
+ *
+ * @param snackbarHostState The snackbar host to allow the dialog to send snackbar messages.
+ * @param productPair The pair of product to use, with the key being the ID and the value being the product.
+ * @param retailers A map of all retailers, with the retailer ID as the key and the retailer as the value.
+ * @param loading Whether the parent view is loading or not.
+ * @param coroutineScope The coroutine scope for running suspend functions.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddToShoppingListBlock(
     snackbarHostState: SnackbarHostState,
     productPair: Pair<String, Product>?,
-    retailers: Map<String, Retailer>,
+    retailers: Map<String, Retailer>?,
     loading: Boolean,
     onAddToShoppingList: ((String, String, String, Int) -> Unit)?,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -58,7 +67,7 @@ fun AddToShoppingListBlock(
     }
 
     Row {
-        if (showDialog && productPair != null) {
+        if (showDialog && retailers != null && productPair != null) {
             val confirmMessage = stringResource(id = R.string.product_added_to_list)
 
             AlertDialog(
@@ -111,6 +120,7 @@ fun AddToShoppingListBlock(
                         }
 
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            //noinspection RememberReturnType
                             remember {
                                 sortedList.forEach { info ->
                                     val sortedPricing =

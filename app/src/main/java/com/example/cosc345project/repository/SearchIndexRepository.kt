@@ -20,6 +20,14 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * The repository that handles indexing the product data from Firebase into our AppSearch index.
+ *
+ * @param context An instance of application context, required by AppSearch, and injected by Hilt.
+ * @param database The Firebase Database reference we should use, again injected by Hilt.
+ * @param retailersRepository The retailers repository, for getting information about the retailer.
+ * @constructor This should not be used, instead inject the repository via Hilt.
+ */
 @Singleton
 class SearchIndexRepository @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -30,6 +38,9 @@ class SearchIndexRepository @Inject constructor(
         private val TAG = SearchIndexRepository::class.simpleName
     }
 
+    /**
+     * Finish inserting products into AppSearch, so flush the database and close the session.
+     */
     private suspend fun finish() {
         Log.d(TAG, "Flushing AppSearch database.")
         appSearchSession.requestFlushAsync().await()
@@ -38,6 +49,9 @@ class SearchIndexRepository @Inject constructor(
             appSearchSession.close()
     }
 
+    /**
+     * Run the index from Firebase, including checking whether we need to do a sync at all.
+     */
     suspend fun indexFromFirebase() {
         Log.d(
             TAG,
@@ -68,15 +82,21 @@ class SearchIndexRepository @Inject constructor(
 
             Log.d(TAG, "Finished insertion, close search session.")
             finish()
-            setHasIndexed(true)
 
             Log.d(TAG, "Finished closing AppSearch session.")
 
             Log.d(TAG, "Save last updated time to settings.")
 
         }
+
+        setHasIndexed(true)
     }
 
+    /**
+     * Chunk the products (to save memory), pull them from Firebase and insert them into AppSearch.
+     *
+     * @param localMap A map of retailer IDs to whether they are considered local or not.
+     */
     @Suppress("UNUSED_VALUE")
     private suspend fun insertProducts(
         localMap: Map<String, Boolean>
@@ -100,6 +120,12 @@ class SearchIndexRepository @Inject constructor(
         Log.d(TAG, "Finished putting products in search index.")
     }
 
+    /**
+     * Get the first 10,000 products from Firebase, starting after the specified key.
+     *
+     * @param firstKey The key to start the query at, for paging.
+     * @return A data snapshot from Firebase, containing the products.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun getProducts(firstKey: String? = null): DataSnapshot {
         Log.d(TAG, "Get all products from Firebase, from a specific key.")
@@ -123,6 +149,11 @@ class SearchIndexRepository @Inject constructor(
         }
     }
 
+    /**
+     * Get the time of the last update, as a Unix timestamp, but in milliseconds.
+     *
+     * @return The Unix timestamp of the last update, except in milliseconds.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getLastUpdate(): Long {
         Log.d(TAG, "Get Firebase last update.")
@@ -136,6 +167,12 @@ class SearchIndexRepository @Inject constructor(
         }
     }
 
+    /**
+     * Map the data snapshot from Firebase into the correct product models we use.
+     *
+     * @param dataSnapshot The data snapshot to map.
+     * @return A pair of the product ID, product map, and the last key in the list.
+     */
     private fun mapFirebaseDataSnapshot(dataSnapshot: DataSnapshot): Pair<List<Pair<String, Product>>, String> {
         Log.d(TAG, "Got products from Firebase, map them appropriately.")
         val products: List<Pair<String, Product>> =
@@ -147,6 +184,14 @@ class SearchIndexRepository @Inject constructor(
         return Pair(products, newKey)
     }
 
+    /**
+     * Insert the products into the AppSearch index.
+     *
+     * @param products The map of products to insert.
+     * @param localMap A map with the retailer ID as the key, and the value being whether they are
+     * considered local or not.
+     * @return The result from AppSearch for whether this insert was successful.
+     */
     private suspend fun setProducts(
         products: List<Pair<String, Product>>,
         localMap: Map<String, Boolean>
@@ -168,18 +213,33 @@ class SearchIndexRepository @Inject constructor(
         return result
     }
 
+    /**
+     * Get a map with the retailer ID as the key and whether the retailer is local or not from
+     * Firebase.
+     *
+     * @return The map.
+     */
     private suspend fun getRetailersLocalMap(): Map<String, Boolean> {
         val localMap = retailersRepository.getRetailers().mapValues { it.value.local!! }
         Log.d(TAG, "Getting retailers local map. Retailer length ${localMap.size}.")
         return localMap
     }
 
+    /**
+     * Update the settings to specify whether the indexing has completed, and if so, update the last updated time.
+     *
+     * @param indexed Whether the indexing has completed or not.
+     */
     private suspend fun setHasIndexed(indexed: Boolean) {
         context.indexSettingsDataStore.updateData {
-            it.toBuilder()
-                .setLastUpdated(System.currentTimeMillis())
+            var builder = it.toBuilder()
                 .setRunBefore(indexed)
-                .build()
+
+            if (indexed) {
+                builder = builder.setLastUpdated(System.currentTimeMillis())
+            }
+
+            builder.build()
         }
     }
 }

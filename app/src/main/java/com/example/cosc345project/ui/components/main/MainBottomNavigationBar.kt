@@ -17,10 +17,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.cosc345project.ui.Navigation
 
 /**
- * MainBottomNavigationBar
+ * The bottom navigation bar used on phones.
  *
- *
- * @param navController
+ * @param navController The nav controller to use when navigating between pages.
  */
 @Composable
 fun MainBottomNavigationBar(navController: NavHostController) {

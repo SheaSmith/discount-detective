@@ -5,12 +5,10 @@ import androidx.navigation.NavHostController
 import com.example.cosc345project.ui.Navigation
 
 /**
- * handleClick
+ * Handle navigation click, essentially move to the new page.
  *
- * Is private because:
- *
- * @param screen
- * @param navHostController
+ * @param screen The screen to move to.
+ * @param navHostController The nav host controller to navigate to the new page with.
  */
 internal fun handleNavigationClick(screen: Navigation, navHostController: NavHostController) {
     navHostController.navigate(screen.route) {
@@ -24,6 +22,6 @@ internal fun handleNavigationClick(screen: Navigation, navHostController: NavHos
         // reselecting the same item
         launchSingleTop = true
         // Restore state when reselecting a previously selected item
-        restoreState = true
+        restoreState = false
     }
 }

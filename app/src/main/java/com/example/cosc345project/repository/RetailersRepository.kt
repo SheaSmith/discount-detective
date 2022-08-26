@@ -8,13 +8,17 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * A repository to access the information about retailers from where it is stored in our Firebase Database.
+ */
 @Singleton
 class RetailersRepository @Inject constructor(
     private val database: FirebaseDatabase
 ) {
     /**
-     * Key: retailer-id
-     * Value: Retailer object
+     * Get all of the retailers from Firebase.
+     *
+     * @return A map of retailer IDs associated with the retailer.
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getRetailers(): Map<String, Retailer> {

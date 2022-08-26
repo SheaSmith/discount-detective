@@ -11,6 +11,11 @@ import dagger.hilt.android.HiltAndroidApp
 import java.time.Duration
 import javax.inject.Inject
 
+/**
+ * DiscountDetectorApp class
+ *
+ *
+ */
 @HiltAndroidApp
 class DiscountDetectorApp : Application(), Configuration.Provider {
     @Inject

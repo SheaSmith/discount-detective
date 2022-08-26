@@ -34,6 +34,12 @@ data class Product(
         return findLowestPrice(localPrices)
     }
 
+    /**
+     * Get the best non-local price for a particular product.
+     *
+     * @param retailers The map of retailers to determine whether a price is local or not.
+     * @return A pair, with the first item being the dollar component of the price, and the second being the cents and the sale type.
+     */
     fun getBestNonLocalPrice(retailers: Map<String, Retailer>): Pair<String, String>? {
         val localRetailers = retailers.filter { it.value.local != true }.keys
 
@@ -42,31 +48,20 @@ data class Product(
         return findLowestPrice(nonLocalPrices)
     }
 
+    /**
+     * Find the lowest prices based on a filtered subset of the products for this product.
+     *
+     * @param products The products to find the lowest price of.
+     * @return A pair, with the dollars component (e.g. "$10" for $10.00/kg) as the first value, and
+     * the cents component (for example, ".00/kg" for "$10.00/kg) as the second value.
+     */
     private fun findLowestPrice(products: List<RetailerProductInformation>): Pair<String, String>? {
         if (products.isNotEmpty()) {
             val lowestPricePair =
                 products.flatMap { productInfo -> productInfo.pricing!!.map { it to productInfo } }
                     .minBy { it.first.getPrice(it.second) }
 
-            val lowestPrice =
-                lowestPricePair.first.getPrice(lowestPricePair.second).toString()
-
-            val salePrefix = if (lowestPricePair.second.saleType == SaleType.WEIGHT) {
-                "kg"
-            } else {
-                "ea"
-            }
-
-            val dollarComponent = "$${lowestPrice.substring(0, lowestPrice.length - 2)}"
-            val centsComponent =
-                ".${
-                    lowestPrice.substring(
-                        lowestPrice.length - 2,
-                        lowestPrice.length
-                    )
-                }/${salePrefix}"
-
-            return Pair(dollarComponent, centsComponent)
+            return lowestPricePair.first.getDisplayPrice(lowestPricePair.second)
         }
 
         return null

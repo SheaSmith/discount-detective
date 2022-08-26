@@ -21,14 +21,21 @@ package com.example.cosc345project.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
+/**
+ * An app bar that can take into account the height of the status bar. This is for a centred, small
+ * app bar.
+ *
+ * @param modifier The modifier to apply to the appbar (e.g. padding).
+ * @param scrollBehavior The scroll behavior to update the colour.
+ * @param title The title to use.
+ * @param actions The actions to have.
+ * @param navigationIcon The navigation item to use.
+ */
 @Composable
 fun StatusBarCenterAlignedTopAppBar(
     modifier: Modifier = Modifier,
@@ -47,6 +54,44 @@ fun StatusBarCenterAlignedTopAppBar(
     )
     Box(modifier = Modifier.background(backgroundColor)) {
         CenterAlignedTopAppBar(
+            modifier = modifier,
+            actions = actions,
+            title = title,
+            scrollBehavior = scrollBehavior,
+            colors = foregroundColors,
+            navigationIcon = navigationIcon
+        )
+    }
+}
+
+/**
+ * An app bar that can take into account the height of the status bar. This is for a large collapsable
+ * app bar.
+ *
+ * @param modifier The modifier to apply to the appbar (e.g. padding).
+ * @param scrollBehavior The scroll behavior to update the colour.
+ * @param title The title to use.
+ * @param actions The actions to have.
+ * @param navigationIcon The navigation item to use.
+ */
+@Composable
+fun StatusBarLargeTopAppBar(
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    title: @Composable () -> Unit,
+    actions: @Composable RowScope.() -> Unit = {},
+    navigationIcon: @Composable () -> Unit = {}
+) {
+    val backgroundColors = TopAppBarDefaults.largeTopAppBarColors()
+    val backgroundColor = backgroundColors.containerColor(
+        colorTransitionFraction = scrollBehavior?.state?.overlappedFraction ?: 0f
+    ).value
+    val foregroundColors = TopAppBarDefaults.largeTopAppBarColors(
+        containerColor = Color.Transparent,
+        scrolledContainerColor = Color.Transparent
+    )
+    Box(modifier = Modifier.background(backgroundColor)) {
+        LargeTopAppBar(
             modifier = modifier,
             actions = actions,
             title = title,

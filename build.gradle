@@ -25,6 +25,10 @@ plugins {
     id 'org.jetbrains.kotlinx.kover' version '0.6.0-Beta' apply true
 }
 
+dependencies {
+    dokkaPlugin "com.glureau:html-mermaid-dokka-plugin:0.3.2"
+}
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir

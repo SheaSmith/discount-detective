@@ -62,8 +62,6 @@ data class RetailerProductInformation(
 
     /**
      * An URL of the image for this product, hosted on the retailer's server.
-     *
-     * Required in practice, however Firebase requires nullable values.
      */
     var image: String? = null,
 
@@ -82,6 +80,9 @@ data class RetailerProductInformation(
      */
     var verified: Boolean? = null
 ) {
+    /**
+     * Get a score for each retailer, for sorting purposes.
+     */
     fun getRetailerScore(): Int {
         return when (retailer) {
             "countdown" -> 0

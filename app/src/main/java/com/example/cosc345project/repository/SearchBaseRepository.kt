@@ -13,16 +13,31 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 
+/**
+ * This repository contains common methods for AppSearch session management that are used by both
+ * the [SearchRepository] and the [SearchIndexRepository].
+ *
+ * @param context The context to use to create the AppSearch session.
+ */
 abstract class SearchBaseRepository(private val context: Context) {
     companion object {
         private val TAG = SearchBaseRepository::class.simpleName
     }
 
+    /**
+     * A flow, specifying whether the AppSearch session for this repository has been started yet.
+     */
     val isInitialized: MutableStateFlow<Boolean> = MutableStateFlow(false)
     protected var dependentOnSession: Boolean = false
 
     protected lateinit var appSearchSession: AppSearchSession
 
+    /**
+     * Initialise the AppSearch session to allow for insertion or querying.
+     *
+     * @param waitForever Whether this should wait forever (and therefore be terminated whenever
+     * the viewmodel is destroyed), or whether a manual call to close the session is required.
+     */
     suspend fun initialise(waitForever: Boolean = true) {
         Log.d(TAG, "Initialising AppSearch index.")
         Log.d(TAG, "Creating search session.")
@@ -69,7 +84,10 @@ abstract class SearchBaseRepository(private val context: Context) {
         }
     }
 
-    protected suspend fun awaitInitialization() {
+    /**
+     * A method that will wait until the AppSearch session is initialised.
+     */
+    suspend fun awaitInitialization() {
         if (!isInitialized.value) {
             isInitialized.first { it }
         }

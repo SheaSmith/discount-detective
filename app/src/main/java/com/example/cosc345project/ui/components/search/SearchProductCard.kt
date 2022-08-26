@@ -12,7 +12,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -22,6 +21,7 @@ import com.example.cosc345project.R
 import com.example.cosc345project.ui.components.MinimumHeightState
 import com.example.cosc345project.ui.components.minimumHeightModifier
 import com.example.cosc345project.ui.components.product.AddToShoppingListBlock
+import com.example.cosc345project.ui.components.product.ProductTitle
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -30,18 +30,18 @@ import com.google.accompanist.placeholder.placeholder
 import kotlinx.coroutines.CoroutineScope
 
 /**
- * Product card function displays each product's information
+ * Product card function displays each product's information.
  *
  * Creates a section ("product card") for each product in the search screen, so that users can
  * easily differentiate between the information of each product and click on it to open the
  * corresponding product screen.
  *
- * @param productPair
- * @param loading
- * @param navController
- * @param retailers
- * @param snackbarHostState
- * @param coroutineScope
+ * @param productPair The product to display.
+ * @param loading Boolean variable for whether or not the screen has finished loading.
+ * @param navController The nav controller to use for navigating between views.
+ * @param retailers A map of all retailers.
+ * @param snackbarHostState The snackbar host for displaying snackbars.
+ * @param coroutineScope The scope for launching suspend functions within the view.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +62,7 @@ fun SearchProductCard(
     Card(
         onClick = {
             if (product != null) {
-                navController.navigate("products/${productPair.second}")
+                navController.navigate("products/${productPair.first}")
             }
         },
         enabled = !loading,
@@ -107,45 +107,7 @@ fun SearchProductCard(
                 Column(
                     modifier = Modifier.align(Alignment.Top)
                 ) {
-                    if (info?.brandName != null) {
-                        Text(
-                            text = info.brandName ?: "",
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
-
-                    Text(
-                        text = info?.name ?: stringResource(id = R.string.placeholder),
-                        modifier = Modifier
-                            .placeholder(
-                                visible = loading,
-                                shape = RoundedCornerShape(4.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                highlight = PlaceholderHighlight.fade()
-                            ),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-
-                    if (info?.variant != null || info?.quantity != null) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            if (info.variant != null) {
-                                Text(
-                                    text = info.variant ?: "",
-                                    style = MaterialTheme.typography.labelLarge
-                                )
-                            }
-
-                            if (info.quantity != null) {
-                                Text(
-                                    text = info.quantity ?: "",
-                                    style = MaterialTheme.typography.labelLarge
-                                )
-                            }
-                        }
-                    }
+                    ProductTitle(info = info, loading = loading)
 
                     FlowRow(
                         modifier = Modifier

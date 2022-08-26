@@ -2,426 +2,424 @@
 
 package com.example.cosc345project.ui.screens
 
-import android.icu.text.NumberFormat
-import android.os.Build
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.cosc345.shared.models.Product
+import com.example.cosc345.shared.models.Retailer
+import com.example.cosc345.shared.models.RetailerProductInformation
+import com.example.cosc345.shared.models.StorePricingInformation
 import com.example.cosc345project.R
-import com.example.cosc345project.models.SearchableProduct
-import com.example.cosc345project.settings.indexSettingsDataStore
-import com.example.cosc345project.ui.components.StatusBarCenterAlignedTopAppBar
-import com.example.cosc345project.viewmodel.SearchViewModel
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
-import kotlinx.coroutines.flow.map
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.border
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import com.example.cosc345project.ui.theme.DiscountDetectiveTheme
-import androidx.compose.material.*
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.PlusOne
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.style.TextAlign
+import com.example.cosc345project.ui.components.StatusBarLargeTopAppBar
+import com.example.cosc345project.ui.components.product.AddToShoppingListBlock
+import com.example.cosc345project.ui.components.product.ProductTitle
+import com.example.cosc345project.viewmodel.ProductViewModel
 
-/*
-* 19/08 - John
-* Need to check if scrolling actually works
-* Need to make title change
-* Need to position +1 -1 buttons
-* Need to add "Add Item" button
-* I removed the title that goes below image because we have it at the top anyway
-* and if we have long named items then it will get very messy
-* Need to make image change to product image
-* Will probably need to check with Shea on getting the product info
-* Need to comment... yucky
-* */
-
-// this is just for testing, should probably change it from using Product //
-data class Product(val name : String, val retailerName: String, val productPrice : Number, val productSalePrice : Number, val unit : String)
-var exampleProduct = Product("Rump Steak", "Leckies Bakery", 40000, 40000, "kg")
-var exampleProducts = listOf(exampleProduct)
-
+/**
+ * Function used to create the image for the Product on the Product Screen.
+ *
+ * @param image The image from the Product information to be displayed.
+ */
 @Composable
-fun LargeTopAppBar(
-    title: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
-    navigationIcon: @Composable () -> Unit = {},
-    actions: @Composable @ExtensionFunctionType RowScope.() -> Unit = {},
-    colors: TopAppBarColors = TopAppBarDefaults.largeTopAppBarColors(),
-    scrollBehavior: TopAppBarScrollBehavior? = null
-): Unit {
-}
-
-@RequiresApi(Build.VERSION_CODES.N)
-@Composable
-fun ProductImage(padding: PaddingValues) {
-    Box(Modifier.fillMaxSize()) {
-        Box(
-            Modifier
-                .align(Alignment.TopCenter)
+fun ProductImage(image: String?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .padding(bottom = 10.dp)
+            .background(Color.White),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        AsyncImage(
+            model = image,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(0.dp)
                 .fillMaxWidth()
-                .height(250.dp)
-                .offset(x = 0.dp, y = 175.dp)
-
-
-        ) {
-            Image(
-                modifier = Modifier
-                    .padding(0.dp)
-                    .align(Alignment.Center)
-                    .aspectRatio(1.5f)
-                    .fillMaxHeight()
-                    .background(Color.White),
-
-
-                painter = painterResource(R.drawable.banana_single),
-                contentDescription = "background_image",
-                contentScale = ContentScale.FillHeight,
-
-            )
-        }
-
-        Box(
-            Modifier
-                .align(Alignment.TopCenter)
-                .height(250.dp)
-                .offset(x = 0.dp, y = 450.dp)
-                .padding(start = 20.dp, end = 20.dp)
-                .fillMaxWidth()
-
-
-        ) {
-            RetailerPrices(padding, exampleProducts)
-        }
-
-
+                .fillMaxHeight(),
+            contentScale = ContentScale.FillHeight,
+        )
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.N)
+/**
+ * Function used to create the retailer slot which shows the prices for the products.
+ *
+ * Includes both the regular price and the discounted price.
+ */
 @Composable
-fun RetailerSlot(padding: PaddingValues, product: Product) {
+fun RetailerSlot(
+    pricingInformation: StorePricingInformation,
+    retailer: Retailer,
+    productInformation: RetailerProductInformation
+) {
+    val store = retailer.stores!!.first { it.id == pricingInformation.store }
+
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(padding),
+            .height(70.dp)
+            .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
+            .fillMaxWidth(),
 
         shape = RoundedCornerShape(8.dp),
         tonalElevation = 2.dp
     ) {
-        Row () {
+        Row {
+            var showRetailer by remember { mutableStateOf(false) }
 
             Surface(
                 modifier = Modifier
-                    .width(60.dp)
-                    .height(60.dp)
-                    .padding(padding),
-
+                    .padding(start = 5.dp)
+                    .width(45.dp)
+                    .height(45.dp)
+                    .align(Alignment.CenterVertically)
+                    .clickable {
+                        showRetailer = !showRetailer
+                    },
                 shape = CircleShape,
-
-                tonalElevation = 16.dp
+                color = Color(if (isSystemInDarkTheme()) retailer.colourDark!! else retailer.colourLight!!)
             ) {
+
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "LB",
-                        fontSize = 24.sp
+                        text = retailer.initialism!!,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(if (isSystemInDarkTheme()) retailer.onColourDark!! else retailer.onColourLight!!)
                     )
-
                 }
 
+                DropdownMenu(expanded = showRetailer, onDismissRequest = { showRetailer = false }) {
+                    DropdownMenuItem(
+                        text = { Text(retailer.name!!) },
+                        onClick = { },
+                        colors = MenuDefaults.itemColors(disabledTextColor = MaterialTheme.colorScheme.onSurface),
+                        enabled = false
+                    )
+                }
             }
 
             Spacer(Modifier.width(10.0.dp))
 
-            Box(
+            Column(
                 modifier = Modifier
-                    .width(70.dp)
-                    .height(60.dp),
-                contentAlignment = Alignment.Center
+                    .weight(0.5f)
+                    .align(Alignment.CenterVertically)
             ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .fillMaxHeight()
+                        .padding(end = 10.dp),
+                    //.width(intrinsicSize = IntrinsicSize.Min)
+
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = store.name!!,
+                        fontSize = 14.sp,
+                        lineHeight = 16.sp,
+                        maxLines = 3,
+
+                        )
+                }
+
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .align(Alignment.CenterVertically)
+            ) {
+                val price = pricingInformation.price?.let {
+                    pricingInformation.getDisplayPrice(
+                        productInformation,
+                        it
+                    )
+                }
+
                 Text(
-                    text = "Leckies Butchery",
-                    fontSize = 16.sp
+                    text = price?.let { "${price.first}${price.second}" } ?: "",
+                    fontSize = 14.sp
                 )
             }
 
-            Spacer(Modifier.width(15.0.dp))
-
-            Box(
+            Column(
                 modifier = Modifier
-                    .width(70.dp)
-                    .height(60.dp),
-                contentAlignment = Alignment.Center
+                    .weight(0.4f)
+                    .align(Alignment.CenterVertically)
             ) {
-                Text(
-                    text = "$" + product.productPrice.toString(),
-                    fontSize = 16.sp
-                )
-            }
+                if (pricingInformation.discountPrice != null) {
+                    val price = pricingInformation.getDisplayPrice(
+                        productInformation,
+                        pricingInformation.discountPrice!!
+                    )
 
-            Spacer(Modifier.width(50.0.dp))
+                    Text(
+                        text = "${price.first}${price.second}",
+                        fontSize = 14.sp
+                    )
+                }
 
-            Box(
-                modifier = Modifier
-                    .width(70.dp)
-                    .height(60.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "$" + product.productPrice.toString(),
-                    fontSize = 16.sp
-                )
+                if (pricingInformation.multiBuyPrice != null && pricingInformation.multiBuyQuantity != null) {
+                    val price = pricingInformation.getDisplayPrice(
+                        productInformation,
+                        pricingInformation.multiBuyPrice!!
+                    )
+
+                    Text(
+                        text = stringResource(
+                            id = R.string.multibuy_format,
+                            pricingInformation.multiBuyQuantity!!,
+                            price.first,
+                            price.second
+                        ),
+                        fontSize = 14.sp
+                    )
+                }
+
+                if (pricingInformation.clubOnly == true) {
+                    Text(
+                        text = stringResource(
+                            id = R.string.club_only,
+                        ),
+
+                        lineHeight = 14.sp,
+                        fontSize = 10.sp
+                    )
+                }
             }
         }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.N)
+/**
+ * Function used to handle adding the product to the shopping list.
+ *
+ * @param product The product selected to be added to the shopping list.
+ * @param snackbarHostState The passed down SnackbarHostState.
+ * @param retailers List of retailers who are selling the product.
+ */
 @Composable
-fun RetailerPrices(padding: PaddingValues, products: List<Product>) {
-    Scaffold(
+fun ProductInformation(
+    product: Pair<String, Product>?,
+    snackbarHostState: SnackbarHostState,
+    retailers: Map<String, Retailer>?,
+    viewModel: ProductViewModel
+) {
+    val bestInformation = product?.second?.getBestInformation()
+    val loading = product == null
 
-
-        content = { padding ->
-            Box(
-                modifier = Modifier
-                    .offset(x = 0.dp, y = 0.dp)
-            ) {
-                Column () {
-                    Row() {
-                        Box(
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Button(
-                                onClick = { /* ... */ },
-                                // Uses ButtonDefaults.ContentPadding by default
-                                contentPadding = PaddingValues(
-                                    start = 20.dp,
-                                    top = 12.dp,
-                                    end = 20.dp,
-                                    bottom = 12.dp
-                                )
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(30.dp)
-                                        .height(50.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "+1",
-                                        fontSize = 24.sp
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(Modifier.width(10.dp))
-
-                        Box(
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Button(
-                                onClick = { /* ... */ },
-                                // Uses ButtonDefaults.ContentPadding by default
-                                contentPadding = PaddingValues(
-                                    start = 20.dp,
-                                    top = 12.dp,
-                                    end = 20.dp,
-                                    bottom = 12.dp
-                                )
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(60.dp)
-                                        .height(50.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "1",
-                                        fontSize = 24.sp
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(Modifier.width(10.dp))
-
-                        Box(
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Button(
-                                onClick = { /* ... */ },
-                                // Uses ButtonDefaults.ContentPadding by default
-                                contentPadding = PaddingValues(
-                                    start = 20.dp,
-                                    top = 12.dp,
-                                    end = 20.dp,
-                                    bottom = 12.dp
-                                )
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(30.dp)
-                                        .height(50.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = "-1",
-                                        fontSize = 24.sp
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-
-
-
-                    Spacer(Modifier.height(10.0.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .padding(top = 0.dp)
-                            .fillMaxWidth() ,
-
-                        //horizontalArrangement = Arrangement.spacedBy(100.dp)
-
-                    ) {
-
-                        Text(text = "Retailer", fontSize = 18.sp)
-                        Spacer(Modifier.width(110.0.dp))
-                        Text(text = "Price", fontSize = 18.sp)
-                        Spacer(Modifier.width(60.0.dp))
-                        Text(text = "Sale Price", fontSize = 18.sp)
-                    }
-                    Spacer(Modifier.height(-10.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 10.dp, end = 0.dp, start = 0.dp)
-                    ) {
-                        LazyColumn() {
-                            items(products) { product ->
-                                RetailerSlot(padding, product)
-                            }
-                        }
-
-
-                    }
-                }
-
-
-
-
-            }
-
-        }
+    Column(
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp)
     )
+    {
+
+        AddToShoppingListBlock(
+            snackbarHostState = snackbarHostState,
+            productPair = product,
+            retailers = retailers,
+            loading = loading,
+            onAddToShoppingList = { productId, retailerProductInfoId, storeId, quantity ->
+                viewModel.addToShoppingList(productId, retailerProductInfoId, storeId, quantity)
+            }
+        )
+    }
 
 
 }
 
-@RequiresApi(Build.VERSION_CODES.N)
+/**
+ * Function used to layout the main content of the product screen page.
+ *
+ * @param productId A string representing the id of the product.
+ * @param viewModel Instance of the SearchViewModel class (see [com.example.cosc345project.viewmodel.SearchViewModel])
+ * @param nav Instance of the nav controller for navigation class.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
-fun ProductScreen() {
+fun ProductScreen(
+    productId: String,
+    viewModel: ProductViewModel = hiltViewModel(),
+    nav: NavHostController
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
     )
 
+    viewModel.getProduct(productId)
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val retailers by viewModel.retailers.collectAsState()
+    val product by viewModel.product.collectAsState()
+    val localRetailerProductInformation by viewModel.localRetailerInfo.collectAsState()
+    val nonLocalRetailerProductInformation by viewModel.nonLocalRetailerInfo.collectAsState()
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
 
         topBar = {
-            LargeTopAppBar(
+            StatusBarLargeTopAppBar(
                 title = {
-                    Text(
-                        "Could Be This Many Characters Or Even More",
-                        maxLines = 2,
-                        //style = MaterialTheme.typography.displaySmall,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .offset(x = 0.dp, y = 0.dp),
+                    ProductTitle(
+                        info = product?.second?.getBestInformation(),
+                        loading = product == null,
+                        applyStyling = false
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* doSomething() */ }) {
+                    IconButton(onClick = {
+                        nav.navigateUp()
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 },
-
+                modifier = Modifier
+                    .statusBarsPadding(),
                 scrollBehavior = scrollBehavior
             )
         },
 
         content = { padding ->
-            ProductImage(padding)
+            LazyColumn(contentPadding = padding) {
+                item {
+                    ProductImage(image = product?.second?.getBestInformation()?.image)
+                }
+
+                item {
+                    ProductInformation(
+                        product = product,
+                        snackbarHostState = snackbarHostState,
+                        retailers = retailers,
+                        viewModel = viewModel
+                    )
+                }
+
+                if (localRetailerProductInformation.isNotEmpty() && retailers.isNotEmpty()) {
+                    item {
+                        TableHeader(true)
+                    }
+
+                    //var sortedInformation = localRetailerProductInformation.sortedByDescending { it.pricing }
+
+                    val sortedList = localRetailerProductInformation.sortedBy { info ->
+                        info.pricing!!.minByOrNull {
+                            it.getPrice(
+                                info
+                            )
+                        }!!
+                            .getPrice(info)
+                    }
+
+                    items(sortedList.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
+                        RetailerSlot(
+                            pricingInformation = item.first,
+                            retailer = retailers[item.second.retailer]!!,
+                            productInformation = item.second
+                        )
+
+                    }
+                }
+
+                val sortedList = nonLocalRetailerProductInformation.sortedBy { info ->
+                    info.pricing!!.minByOrNull {
+                        it.getPrice(
+                            info
+                        )
+                    }!!
+                        .getPrice(info)
+                }
+
+
+                if (nonLocalRetailerProductInformation.isNotEmpty() && retailers.isNotEmpty()) {
+                    item {
+                        TableHeader(false)
+                    }
+
+                    items(sortedList.flatMap { info -> info.pricing!!.map { it to info } }) { item ->
+                        RetailerSlot(
+                            pricingInformation = item.first,
+                            retailer = retailers[item.second.retailer]!!,
+                            productInformation = item.second
+                        )
+                    }
+                }
+
+            }
         }
     )
 
+}
+
+/**
+ * Function used to create the headers (local/non-local, retailer, price, discount price) above the
+ * lists of cards with their retailer and price.
+ *
+ * @param local Whether or not the section is for local products.
+ */
+@Composable
+fun TableHeader(local: Boolean) {
+    Text(
+        text = stringResource(id = if (local) R.string.local_prices else R.string.non_local_prices),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp, top = 16.dp, bottom = 4.dp)
+
+    )
+
+    Row(
+        modifier = Modifier.padding(all = 10.dp),
+        verticalAlignment = Alignment.Bottom
+    )
+    {
+        Text(
+            text = stringResource(id = R.string.retailer),
+            modifier = Modifier.weight(1.0f),
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = stringResource(id = R.string.price),
+            modifier = Modifier.weight(0.5f),
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = stringResource(id = R.string.discount_price),
+            modifier = Modifier.weight(0.5f),
+            lineHeight = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
 }

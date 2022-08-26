@@ -15,6 +15,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.cosc345project.R
 
+/**
+ * A component that shows whenever there is an error with the search (for example, no internet or
+ * no results found).
+ *
+ * @param title The string resource to use for the error title.
+ * @param description The string resource to use for the error description.
+ * @param icon The icon to use for the error.
+ * @param onRetry If specified, a retry button will display, and this is the function called when it
+ * is pressed.
+ */
 @Composable
 fun SearchError(
     @StringRes title: Int,
