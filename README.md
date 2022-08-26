@@ -22,7 +22,9 @@ shopping list, to make your shop more convenient.
 To run the app on your device, click the run button in Android Studio in the toolbar. Make sure the
 dropdown is set to "app" to ensure you are running the proper app (rather than the scraper app).
 
-For emulators, any phone emulator running API level 32 is recommended.
+In terms of devices, a physical device is recommended, as the results returned from Firebase can be
+very slow on an emulator. Otherwise, a Pixel emulator running API 32 is recommended, as long as the
+computer is sufficiently powerful, and the emulator allocated enough resources.
 
 When evaluating the app, it is strongly recommended that you wait until the "app is currently
 processing" message goes away. This means you'll see the true performance and behavior of the
