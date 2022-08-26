@@ -27,7 +27,8 @@ For emulators, any phone emulator running API level 32 is recommended.
 When evaluating the app, it is strongly recommended that you wait until the "app is currently
 processing" message goes away. This means you'll see the true performance and behavior of the
 search, however, there is a fallback search technique that can be used during this optimisation.
-Additionally, the app will be slower to run during this indexing.
+Additionally, the app will be slower to run during this indexing. The indexing takes around 10
+minutes on a physical device, but only needs to run on the first run.
 
 ## Technical Details
 
