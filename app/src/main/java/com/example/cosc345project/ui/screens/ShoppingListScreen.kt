@@ -237,8 +237,7 @@ fun ProductCard(
         // master row layout
         Row(
             modifier = Modifier
-                .padding(8.dp)
-                .fillMaxHeight(),
+                .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -253,7 +252,8 @@ fun ProductCard(
                 model = product.first.image,
                 contentDescription = stringResource(id = R.string.content_description_product_image),
                 modifier = Modifier
-                    .fillMaxSize(0.3f)
+                    .height(50.dp)
+                    .width(50.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .background(Color.White)
             )
