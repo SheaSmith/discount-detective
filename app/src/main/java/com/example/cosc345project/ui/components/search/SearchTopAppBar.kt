@@ -1,5 +1,6 @@
 package com.example.cosc345project.ui.components.search
 
+import android.view.KeyEvent.KEYCODE_ENTER
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -40,7 +42,7 @@ fun SearchTopAppBar(
     loading: Boolean,
     onValueChange: (String) -> Unit,
     onFocusChanged: (FocusState) -> Unit,
-    onSearch: (Any) -> Unit,
+    onSearch: (Any?) -> Unit,
     onClear: () -> Unit
 ) {
     Surface(
@@ -70,7 +72,15 @@ fun SearchTopAppBar(
                     modifier = Modifier
                         .weight(1f)
                         .padding(0.dp)
-                        .onFocusChanged(onFocusChanged),
+                        .onFocusChanged(onFocusChanged)
+                        .onKeyEvent {
+                            if (it.nativeKeyEvent.keyCode == KEYCODE_ENTER) {
+                                onSearch(null)
+                                true
+                            } else {
+                                false
+                            }
+                        },
                     textStyle = MaterialTheme.typography.bodyMedium,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(

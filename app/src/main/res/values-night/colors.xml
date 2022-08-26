@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Switch states -->
+    <color name="settingslib_state_on_color">@color/md_theme_dark_onPrimary</color>
+    <color name="settingslib_state_off_color">@color/md_theme_dark_surfaceVariant</color>
+    <color name="settingslib_thumb_disabled_color">@color/md_theme_dark_onSurface</color>
+    <color name="settingslib_thumb_off_color">@color/md_theme_dark_outline</color>
+    <color name="settingslib_track_on_color">@color/md_theme_dark_primary</color>
+    <color name="settingslib_track_off_color">@color/md_theme_dark_surfaceVariant</color>
+</resources>

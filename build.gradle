@@ -2,7 +2,7 @@
 buildscript {
     ext {
         // Do not update until we are on API 33 (i.e. when AS Dolphin is out)
-        compose_version = '1.3.0-alpha02'
+        compose_version = '1.3.0-beta01'
     }
     dependencies {
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.43'
@@ -36,4 +36,5 @@ task clean(type: Delete) {
 
 dokkaHtmlMultiModule {
     includes.from("README.md")
+    pluginsMapConfiguration.set(["org.jetbrains.dokka.base.DokkaBase": """{ "footerMessage": "Copyright @ 2022 Discount Detective", "customAssets": ["$projectDir/docs-assets/logo.png"], "customStyleSheets": ["$projectDir/docs-assets/logo-styles.css"] }"""])
 }
