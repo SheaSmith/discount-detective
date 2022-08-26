@@ -152,7 +152,7 @@ fun ShoppingListScreen(
                             contentDescription = "settings"
                         )
                     }
-                }
+                },
             )
         }
     ) { innerPadding ->
@@ -193,7 +193,8 @@ fun productList(
     viewModel: ShoppingListViewModel,
     innerPadding: PaddingValues,
 ) {
-    val data = remember { mutableStateOf(grouped.values.toList()) }
+    val data = remember { mutableStateOf(grouped.values.toList().flatten()) }
+
     val state = rememberReorderableLazyListState(onMove = { from, to ->
         data.value = data.value.toMutableList().apply {
             add(to.index, removeAt(from.index))
@@ -212,16 +213,27 @@ fun productList(
             stickyHeader {
                 Text(
                     text = store,
-                    textAlign = TextAlign.Center,
+                    textAlign = TextAlign.Left,
                     modifier = Modifier
-                        .width(200.dp)
+                        .fillMaxWidth()
                         .background(Color.White)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(10.dp),
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
-            items(productsForStore) { product ->
+            //select items for reordering
+            val dataIdList = data.value.map { it.productID }
+            val productsForStoreId = productsForStore.map { it.productID }
+            val intersectIds = productsForStoreId.intersect(dataIdList.toSet())
+            val selection = mutableListOf<RetailerProductInfo>()
+            data.value.forEach {
+                if (it.productID in intersectIds) {
+                    selection.add(it)
+                }
+            }
+            items(selection) { product ->
                 ReorderableItem(
                     reorderableState = state,
                     key = product
@@ -273,8 +285,10 @@ fun ProductCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .shadow(elevation.value),
+            .fillMaxHeight(0.2f)
+            .padding(horizontal = 16.dp, vertical = 5.dp) //this for padding
+            .shadow(elevation.value)
+            .alpha(if (isChecked.value) 0.5f else 3f),
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent
         ),
@@ -287,21 +301,20 @@ fun ProductCard(
                 .padding(8.dp)
                 .fillMaxHeight()
                 .safeContentPadding(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
                 imageVector = Icons.Filled.DragHandle,
-                contentDescription ="dd",
-                modifier = Modifier.align(Alignment.CenterVertically)
+                contentDescription = "dd",
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .fillMaxSize(0.1f)
             )
             AsyncImage(
                 model = productInfo?.image,
                 contentDescription = stringResource(id = R.string.content_description_product_image),
                 modifier = Modifier
-                    .alpha(if (isChecked.value) 1.0f else 0.5f)
-                    .fillMaxHeight()
-                    .height(60.dp)
-                    .width(60.dp)
+                    .fillMaxSize(0.3f)
                     .placeholder(
                         visible = productInfo == null,
                         shape = RoundedCornerShape(4.dp),
@@ -310,14 +323,16 @@ fun ProductCard(
                     )
                     .clip(RoundedCornerShape(4.dp))
                     .background(Color.White)
-                )
+            )
 
             //brand-name, product name and pricing info
-            Column (
-                modifier = Modifier.fillMaxWidth(),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(horizontal = 10.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start
-            ){
+            ) {
                 Text(
                     // add the variant, quantity to title
                     // productInfo?.name ?: stringResource(id = R.string.placeholder)
@@ -336,7 +351,6 @@ fun ProductCard(
                         ),
                     fontWeight = FontWeight.Normal,
                     style = MaterialTheme.typography.titleSmall
-
                 )
                 val saleType = if (productInfo?.saleType == SaleType.WEIGHT) {
                     "kg"
@@ -369,15 +383,14 @@ fun ProductCard(
                     style = MaterialTheme.typography.titleSmall
                 )
             }
-            Column {
-                Checkbox(
-                    checked = isChecked.value,
-                    onCheckedChange = {
-                        isChecked.value = it
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+            Checkbox(
+                checked = isChecked.value,
+                onCheckedChange = {
+                    isChecked.value = it
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
         }
     }
 }
