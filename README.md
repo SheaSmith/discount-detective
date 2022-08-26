@@ -26,6 +26,12 @@ In terms of devices, a physical device is recommended, as the results returned f
 very slow on an emulator. Otherwise, a Pixel emulator running API 32 is recommended, as long as the
 computer is sufficiently powerful, and the emulator allocated enough resources.
 
+On some of our emulators, results didn't return at all. This appears to be a bug in Firebase, and
+not something we can change at all. Physical devices worked perfectly, but two computers didn't.
+
+This could be an architectural thing, as an emulator on an Apple M1 processor ran fine, but x86
+emulators appeared to have problems.
+
 When evaluating the app, it is strongly recommended that you wait until the "app is currently
 processing" message goes away. This means you'll see the true performance and behavior of the
 search, however, there is a fallback search technique that can be used during this optimisation.
