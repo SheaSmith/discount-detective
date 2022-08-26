@@ -225,15 +225,14 @@ fun ProductCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.2f)
             .padding(horizontal = 16.dp, vertical = 5.dp) //this for padding
             .shadow(elevation.value)
-            .alpha(if (isChecked.value) 0.5f else 3f),
+            .alpha(if (isChecked.value) 0.5f else 1f),
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent
         ),
         shape = CardDefaults.elevatedShape,
-        elevation = CardDefaults.cardElevation()
+        elevation = CardDefaults.elevatedCardElevation()
     ) {
         // master row layout
         Row(
@@ -241,7 +240,8 @@ fun ProductCard(
                 .padding(8.dp)
                 .fillMaxHeight()
                 .safeContentPadding(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Filled.DragHandle,
