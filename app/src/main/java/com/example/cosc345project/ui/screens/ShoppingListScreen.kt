@@ -10,9 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +27,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -41,7 +38,7 @@ import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.StorePricingInformation
 import com.example.cosc345project.R
-import com.example.cosc345project.ui.components.StatusBarCenterAlignedTopAppBar
+import com.example.cosc345project.ui.components.StatusBarLargeTopAppBar
 import com.example.cosc345project.viewmodel.ShoppingListViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
@@ -79,37 +76,15 @@ fun ShoppingListScreen(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            StatusBarCenterAlignedTopAppBar(
+            StatusBarLargeTopAppBar(
                 modifier = Modifier
-                    .statusBarsPadding()
-                    .padding(bottom = 8.dp),
+                    .statusBarsPadding(),
                 title = {
                     Text(
-                        "Your Shopping List",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        "Your Shopping List"
                     )
                 },
-                navigationIcon = {
-                    //go back to last view
-                    val previousView = navController.previousBackStackEntry?.destination?.id
-                    IconButton(onClick = {
-                        if (previousView != null) {
-                            navController.navigate(previousView)
-                        }
-                    }) {
-                        Icon(Icons.Filled.ArrowBack, "backIcon")
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "settings"
-                        )
-                    }
-                },
+                scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
@@ -172,8 +147,6 @@ fun ProductList(
                     ) ?: "",
                     textAlign = TextAlign.Left,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
                         .fillMaxWidth()
                         .padding(10.dp),
                     fontWeight = FontWeight.Bold,
@@ -278,7 +251,7 @@ fun ProductCard(
                         ).filterNotNull()
                             .joinToString(" ")
                     }",
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleSmall
                 )
 
