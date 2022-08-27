@@ -41,7 +41,7 @@ minutes on a physical device, but only needs to run on the first run.
 ## Technical Details
 
 This app is split into four modules, which are documented below (if you are viewing this on
-the [documentation](https://sheasmith.github.io/COSC345-Project) page).
+the [documentation](https://sheasmith.github.io/discount-detective) page).
 
 For the app, we are using Jetpack Compose (a SwiftUI analogue for Android) for the UI, along with
 the Google recommended clean architecture. This means we follow a reasonably strict MVVM (Model,
