@@ -29,10 +29,11 @@ class WarehouseScraper : Scraper() {
 
         val storeWhitelist = arrayOf("South Dunedin")
         warehouseService.getStores().stores.forEach { warehouseStore ->
-            if (storeWhitelist.contains(warehouseStore.name)) {
+            val name = warehouseStore.name.split(" - ").first().trim()
+            if (storeWhitelist.contains(name)) {
                 val store = Store(
                     id = warehouseStore.branchId,
-                    name = warehouseStore.name,
+                    name = name,
                     address = warehouseStore.address.address,
                     latitude = warehouseStore.latitude,
                     longitude = warehouseStore.longitude,
