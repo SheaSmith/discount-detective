@@ -40,4 +40,8 @@
     <string name="retry">Retry</string>
     <string name="back">Back</string>
     <string name="multibuy_format">%1$d for %2$s%3$s</string>
+    <string name="scan_barcode">Scan barcode</string>
+    <string name="camera_permission_title">Camera Permissions Required</string>
+    <string name="camera_permission_message">Access to your camera is required in order to use the barcode scanner.</string>
+    <string name="ok">Ok</string>
 </resources>

@@ -32,6 +32,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.example.cosc345project.R
+import com.example.cosc345project.ui.Navigation
 import com.example.cosc345project.ui.components.StatusBarCenterAlignedTopAppBar
 import com.example.cosc345project.ui.components.search.SearchError
 import com.example.cosc345project.ui.components.search.SearchProductCard
@@ -107,6 +108,9 @@ fun SearchScreen(
                             coroutineScope.launch {
                                 listState.scrollToItem(0)
                             }
+                        },
+                        onScanBarcode = {
+                            navController.navigate(Navigation.BARCODE_SCANNER.route)
                         }
                     )
                 },

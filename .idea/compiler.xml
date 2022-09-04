@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="1.8">
+    <bytecodeTargetLevel target="1.7">
       <module name="COSC345_Project.app" target="11" />
       <module name="Discount_Detective.app" target="11" />
       <module name="Discount_Detective.appsearch-compiler" target="11" />
@@ -10,7 +10,13 @@
       <module name="Discount_Detective.appsearch-compiler2" target="11" />
       <module name="Discount_Detective.appsearch-compiler2.main" target="11" />
       <module name="Discount_Detective.appsearch-compiler2.test" target="11" />
+      <module name="Discount_Detective.scraper" target="1.8" />
+      <module name="Discount_Detective.scraper.main" target="1.8" />
+      <module name="Discount_Detective.scraper.test" target="1.8" />
       <module name="Discount_Detective.scraperapp" target="11" />
+      <module name="Discount_Detective.shared" target="1.8" />
+      <module name="Discount_Detective.shared.main" target="1.8" />
+      <module name="Discount_Detective.shared.test" target="1.8" />
       <module name="DiscountDetective.app" target="11" />
       <module name="DiscountDetective.appsearch-compiler" target="11" />
       <module name="DiscountDetective.appsearch-compiler.main" target="11" />

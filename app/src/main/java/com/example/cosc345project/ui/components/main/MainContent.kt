@@ -17,10 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.cosc345project.ui.Navigation
-import com.example.cosc345project.ui.screens.ProductScreen
-import com.example.cosc345project.ui.screens.SearchScreen
-import com.example.cosc345project.ui.screens.SettingsScreen
-import com.example.cosc345project.ui.screens.ShoppingListScreen
+import com.example.cosc345project.ui.screens.*
 import com.example.cosc345project.ui.utils.NavigationType
 import com.example.cosc345project.viewmodel.SearchViewModel
 import com.example.cosc345project.viewmodel.ShoppingListViewModel
@@ -71,6 +68,9 @@ fun MainContent(
                         ProductScreen(it.arguments!!.getString("productId")!!, nav = navController)
                     }
                     composable(Navigation.SETTINGS.route) { SettingsScreen() }
+                    composable(Navigation.BARCODE_SCANNER.route) {
+                        BarcodeScreen()
+                    }
                 }
             }
 

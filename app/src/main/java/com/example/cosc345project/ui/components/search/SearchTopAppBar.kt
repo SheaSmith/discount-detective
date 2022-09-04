@@ -20,6 +20,7 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -43,7 +44,8 @@ fun SearchTopAppBar(
     onValueChange: (String) -> Unit,
     onFocusChanged: (FocusState) -> Unit,
     onSearch: (Any?) -> Unit,
-    onClear: () -> Unit
+    onClear: () -> Unit,
+    onScanBarcode: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -98,6 +100,14 @@ fun SearchTopAppBar(
                         Icon(
                             Icons.Rounded.Close,
                             stringResource(id = R.string.content_description_clear_search)
+                        )
+                    }
+                }
+                AnimatedVisibility(visible = search.isEmpty()) {
+                    IconButton(onClick = onScanBarcode) {
+                        Icon(
+                            painterResource(id = R.drawable.ic_barcode_scanner),
+                            stringResource(id = R.string.scan_barcode)
                         )
                     }
                 }
