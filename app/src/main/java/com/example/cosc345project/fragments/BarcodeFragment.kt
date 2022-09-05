@@ -17,13 +17,14 @@
 package com.example.cosc345project.fragments
 
 import android.Manifest
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,16 +33,18 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.example.cosc345project.R
 import com.example.cosc345project.barcode.BarcodeScannerProcessor
 import com.example.cosc345project.databinding.FragmentBarcodeScanBinding
 import com.example.cosc345project.viewmodel.BarcodeViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.common.base.Objects
 import com.google.mlkit.common.MlKitException
 
 /** Live preview demo app for ML Kit APIs using CameraX. */
-class BarcodeFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
+class BarcodeFragment : Fragment() {
 
     val viewModel: BarcodeViewModel by viewModels()
     private lateinit var binding: FragmentBarcodeScanBinding
@@ -54,6 +57,8 @@ class BarcodeFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
     private var lensFacing = CameraSelector.LENS_FACING_BACK
     private var cameraSelector: CameraSelector? = null
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+    private var currentWorkflowState: BarcodeViewModel.WorkflowState? = null
+    private lateinit var promptChipAnimator: AnimatorSet
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +67,7 @@ class BarcodeFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
-                bindAllCameraUseCases()
+                bindAllCameraUseCases(false)
             } else {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.camera_permission_title)
@@ -78,7 +83,7 @@ class BarcodeFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
                 requireContext(),
                 Manifest.permission.CAMERA
             ) -> {
-                bindAllCameraUseCases()
+                bindAllCameraUseCases(false)
             }
             else -> {
                 // You can directly ask for the permission.
@@ -99,43 +104,67 @@ class BarcodeFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
         cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
         binding = FragmentBarcodeScanBinding.inflate(inflater, container, false)
 
-        binding.facingSwitch.setOnCheckedChangeListener(this)
+        binding.facingSwitch.setOnClickListener {
+            if (cameraProvider == null) {
+                return@setOnClickListener
+            }
+            val newLensFacing =
+                if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+                    it.isSelected = false
+                    CameraSelector.LENS_FACING_BACK
+                } else {
+                    it.isSelected = true
+                    CameraSelector.LENS_FACING_FRONT
+                }
+            val newCameraSelector =
+                CameraSelector.Builder().requireLensFacing(newLensFacing).build()
+            try {
+                if (cameraProvider!!.hasCamera(newCameraSelector)) {
+                    Log.d("BarcodeFragment", "Set facing to $newLensFacing")
+                    lensFacing = newLensFacing
+                    cameraSelector = newCameraSelector
+                    bindAllCameraUseCases(false)
+                    return@setOnClickListener
+                }
+            } catch (e: CameraInfoUnavailableException) {
+                // Falls through
+            }
+            Toast
+                .makeText(
+                    context,
+                    "This device does not have lens with facing: $newLensFacing",
+                    Toast.LENGTH_SHORT
+                )
+                .show()
+        }
+
+        binding.flashButton.setOnClickListener {
+            if (it.isSelected) {
+                bindAllCameraUseCases(false)
+            } else {
+                bindAllCameraUseCases(true)
+            }
+        }
+
+        binding.closeButton.setOnClickListener {
+            binding.root.findNavController().navigateUp()
+        }
+
         viewModel.processCameraProvider.observe(viewLifecycleOwner) {
             cameraProvider = it
-            bindAllCameraUseCases()
+            bindAllCameraUseCases(false)
         }
+
+        promptChipAnimator = (AnimatorInflater.loadAnimator(
+            requireContext(),
+            R.animator.bottom_prompt_chip_enter
+        ) as AnimatorSet).apply {
+            setTarget(binding.bottomPromptChip)
+        }
+
+        setUpWorkflowModel()
 
         return binding.root
-    }
-
-    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        if (cameraProvider == null) {
-            return
-        }
-        val newLensFacing =
-            if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
-                CameraSelector.LENS_FACING_BACK
-            } else {
-                CameraSelector.LENS_FACING_FRONT
-            }
-        val newCameraSelector = CameraSelector.Builder().requireLensFacing(newLensFacing).build()
-        try {
-            if (cameraProvider!!.hasCamera(newCameraSelector)) {
-                Log.d("BarcodeFragment", "Set facing to $newLensFacing")
-                lensFacing = newLensFacing
-                cameraSelector = newCameraSelector
-                bindAllCameraUseCases()
-                return
-            }
-        } catch (e: CameraInfoUnavailableException) {
-            // Falls through
-        }
-        Toast.makeText(
-            context,
-            "This device does not have lens with facing: $newLensFacing",
-            Toast.LENGTH_SHORT
-        )
-            .show()
     }
 
     override fun onPause() {
@@ -149,16 +178,20 @@ class BarcodeFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
         imageProcessor?.run { this.stop() }
     }
 
-    private fun bindAllCameraUseCases() {
+    private fun bindAllCameraUseCases(flash: Boolean) {
+        if (this::binding.isInitialized) {
+            binding.flashButton.isSelected = flash
+        }
+
         if (cameraProvider != null) {
             // As required by CameraX API, unbinds all use cases before trying to re-bind any of them.
             cameraProvider!!.unbindAll()
-            bindPreviewUseCase()
+            bindPreviewUseCase(flash)
             bindAnalysisUseCase()
         }
     }
 
-    private fun bindPreviewUseCase() {
+    private fun bindPreviewUseCase(flash: Boolean) {
         if (cameraProvider == null) {
             return
         }
@@ -173,10 +206,19 @@ class BarcodeFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
 //        }
         previewUseCase = builder.build()
         previewUseCase!!.setSurfaceProvider(binding.previewView.surfaceProvider)
-        cameraProvider!!.bindToLifecycle(/* lifecycleOwner= */ this,
+        val camera = cameraProvider!!.bindToLifecycle(
+            this,
             cameraSelector!!,
             previewUseCase
         )
+
+        binding.flashButton.visibility = if (camera.cameraInfo.hasFlashUnit()) {
+            View.VISIBLE
+        } else {
+            View.INVISIBLE
+        }
+
+        camera.cameraControl.enableTorch(flash)
     }
 
     private fun bindAnalysisUseCase() {
@@ -191,7 +233,7 @@ class BarcodeFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
         }
         imageProcessor =
             try {
-                BarcodeScannerProcessor(requireContext())
+                BarcodeScannerProcessor(requireContext(), viewModel, binding.graphicOverlay)
             } catch (e: Exception) {
                 Log.e("BarcodeFragment", "Can not create image processor", e)
                 Toast.makeText(
@@ -245,9 +287,56 @@ class BarcodeFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
                 Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
             }
         }
-        cameraProvider!!.bindToLifecycle(/* lifecycleOwner= */ this,
+        cameraProvider!!.bindToLifecycle(
+            this,
             cameraSelector!!,
             analysisUseCase
         )
+    }
+
+    private fun setUpWorkflowModel() {
+        // Observes the workflow state changes, if happens, update the overlay view indicators and
+        // camera preview state.
+        viewModel.workflowState.observe(viewLifecycleOwner, Observer { workflowState ->
+            if (workflowState == null || Objects.equal(currentWorkflowState, workflowState)) {
+                return@Observer
+            }
+
+            currentWorkflowState = workflowState
+            Log.d("BarcodeFragment", "Current workflow state: ${currentWorkflowState!!.name}")
+
+            val wasPromptChipGone = binding.bottomPromptChip.visibility == View.GONE
+
+            when (workflowState) {
+                BarcodeViewModel.WorkflowState.DETECTING -> {
+                    binding.bottomPromptChip.visibility = View.VISIBLE
+                    binding.bottomPromptChip.setText(R.string.prompt_point_at_a_barcode)
+                }
+                BarcodeViewModel.WorkflowState.CONFIRMING -> {
+                    binding.bottomPromptChip.visibility = View.VISIBLE
+                    binding.bottomPromptChip.setText(R.string.prompt_move_camera_closer)
+                }
+                BarcodeViewModel.WorkflowState.SEARCHING -> {
+                    binding.bottomPromptChip.visibility = View.VISIBLE
+                    binding.bottomPromptChip.setText(R.string.prompt_searching)
+                }
+                BarcodeViewModel.WorkflowState.DETECTED, BarcodeViewModel.WorkflowState.SEARCHED -> {
+                    binding.bottomPromptChip.visibility = View.GONE
+                }
+                else -> binding.bottomPromptChip.visibility = View.GONE
+            }
+
+            val shouldPlayPromptChipEnteringAnimation =
+                wasPromptChipGone && binding.bottomPromptChip.visibility == View.VISIBLE
+            promptChipAnimator.let {
+                if (shouldPlayPromptChipEnteringAnimation && !it.isRunning) it.start()
+            }
+        })
+
+        viewModel.detectedBarcode.observe(viewLifecycleOwner) { barcode ->
+            if (barcode != null) {
+
+            }
+        }
     }
 }

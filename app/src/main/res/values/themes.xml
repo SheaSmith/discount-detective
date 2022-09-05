@@ -1,7 +1,7 @@
 <resources>
     <!-- Allows us to override platform level specific attributes in their
          respective values-vXX folder. -->
-    <style name="Platform.Theme.DiscountDetective" parent="Theme.Material3.DayNight">
+    <style name="Platform.Theme.DiscountDetective" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/black</item>
     </style>
 

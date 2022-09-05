@@ -18,8 +18,10 @@ package com.example.cosc345project.barcode
 
 import android.content.Context
 import android.util.Log
+import com.example.cosc345project.barcode.camera.CameraReticleAnimator
 import com.example.cosc345project.barcode.camera.GraphicOverlay
 import com.example.cosc345project.barcode.camera.VisionProcessorBase
+import com.example.cosc345project.viewmodel.BarcodeViewModel
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -27,7 +29,12 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 
 /** Barcode Detector Demo.  */
-class BarcodeScannerProcessor(context: Context) : VisionProcessorBase<List<Barcode>>(context) {
+class BarcodeScannerProcessor(
+    context: Context,
+    private val viewmodel: BarcodeViewModel,
+    graphicOverlay: GraphicOverlay
+) :
+    VisionProcessorBase<List<Barcode>>(context) {
 
     // Note that if you know which format of barcode your app is dealing with, detection will be
     // faster to specify the supported barcode formats one by one, e.g.
@@ -35,6 +42,7 @@ class BarcodeScannerProcessor(context: Context) : VisionProcessorBase<List<Barco
     //     .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
     //     .build();
     private val barcodeScanner: BarcodeScanner = BarcodeScanning.getClient()
+    private val cameraReticleAnimator: CameraReticleAnimator = CameraReticleAnimator(graphicOverlay)
 
     override fun stop() {
         super.stop()
@@ -46,14 +54,44 @@ class BarcodeScannerProcessor(context: Context) : VisionProcessorBase<List<Barco
     }
 
     override fun onSuccess(results: List<Barcode>, graphicOverlay: GraphicOverlay) {
-        if (results.isEmpty()) {
-            Log.v("BarcodeScannerProcessor", "No barcode has been detected")
+        Log.d(TAG, "Barcode result size: ${results.size}")
+
+        // Picks the barcode, if exists, that covers the center of graphic overlay.
+
+        val barcodeInCenter = results.firstOrNull { barcode ->
+            val boundingBox = barcode.boundingBox ?: return@firstOrNull false
+            val box = graphicOverlay.translateRect(boundingBox)
+            box.contains(graphicOverlay.width / 2f, graphicOverlay.height / 2f)
         }
-        for (i in results.indices) {
-            val barcode = results[i]
-            graphicOverlay.add(BarcodeGraphic(graphicOverlay, barcode))
-            logExtrasForTesting(barcode)
+
+        graphicOverlay.clear()
+        if (barcodeInCenter == null) {
+            cameraReticleAnimator.start()
+            graphicOverlay.add(BarcodeReticleGraphic(graphicOverlay, cameraReticleAnimator))
+        } else {
+            cameraReticleAnimator.cancel()
+//            val sizeProgress = PreferenceUtils.getProgressToMeetBarcodeSizeRequirement(
+//                graphicOverlay,
+//                barcodeInCenter
+//            )
+//            if (sizeProgress < 1) {
+//                // Barcode in the camera view is too small, so prompt user to move camera closer.
+//                graphicOverlay.add(BarcodeConfirmingGraphic(graphicOverlay, barcodeInCenter))
+//                viewmodel.setWorkflowState(BarcodeViewModel.WorkflowState.CONFIRMING)
+//            } else {
+            // Barcode size in the camera view is sufficient.
+//                if (PreferenceUtils.shouldDelayLoadingBarcodeResult(graphicOverlay.context)) {
+//                    val loadingAnimator = createLoadingAnimator(graphicOverlay, barcodeInCenter)
+//                    loadingAnimator.start()
+//                    graphicOverlay.add(BarcodeLoadingGraphic(graphicOverlay, loadingAnimator))
+//                    viewmodel.setWorkflowState(BarcodeViewModel.WorkflowState.SEARCHING)
+//                } else {
+            viewmodel.setWorkflowState(BarcodeViewModel.WorkflowState.DETECTED)
+            viewmodel.detectedBarcode.setValue(barcodeInCenter)
+//                }
+//            }
         }
+        graphicOverlay.invalidate()
     }
 
     override fun onFailure(e: Exception) {

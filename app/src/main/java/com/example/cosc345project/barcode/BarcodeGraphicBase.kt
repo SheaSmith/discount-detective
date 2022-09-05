@@ -52,7 +52,7 @@ internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) :
         pathEffect = CornerPathEffect(boxCornerRadius)
     }
 
-    val boxRect: RectF = PreferenceUtils.getBarcodeReticleBox(overlay)
+    val boxRect: RectF = getBarcodeReticleBox(overlay)
 
     override fun draw(canvas: Canvas) {
         // Draws the dark background scrim and leaves the box area clear.
@@ -65,5 +65,18 @@ internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) :
         canvas.drawRoundRect(boxRect, boxCornerRadius, boxCornerRadius, eraserPaint)
         // Draws the box.
         canvas.drawRoundRect(boxRect, boxCornerRadius, boxCornerRadius, boxPaint)
+    }
+
+    private fun getBarcodeReticleBox(overlay: GraphicOverlay): RectF {
+        val context = overlay.context
+        val overlayWidth = overlay.width.toFloat()
+        val overlayHeight = overlay.height.toFloat()
+        val boxWidth =
+            overlayWidth * 80 / 100
+        val boxHeight =
+            overlayHeight * 35 / 100
+        val cx = overlayWidth / 2
+        val cy = overlayHeight / 2
+        return RectF(cx - boxWidth / 2, cy - boxHeight / 2, cx + boxWidth / 2, cy + boxHeight / 2)
     }
 }

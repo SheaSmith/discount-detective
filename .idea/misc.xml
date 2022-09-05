@@ -5,23 +5,12 @@
       <map>
         <entry key="../../../../layout/compose-model-1659923007922.xml" value="0.1" />
         <entry key="../../../../layout/compose-model-1659994406026.xml" value="0.25" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/drawable/ic_round_place_24.xml" value="0.1" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/layout/fragment_container_settings.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/layout/preferences_fragment.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/layout/settings_activity.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/xml/preferences.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/xml/root_preferences.xml" value="0.1453804347826087" />
-        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/xml/settings_screen.xml" value="0.22" />
+        <entry key="..\:/Development/COSC345Project/app/src/main/res/drawable/top_action_bar_scrim.xml" value="0.177" />
+        <entry key="..\:/Development/COSC345Project/app/src/main/res/layout/fragment_barcode_scan.xml" value="0.2" />
+        <entry key="..\:/Development/COSC345Project/app/src/main/res/layout/fragment_container_settings.xml" value="0.16945288753799392" />
+        <entry key="..\:/Development/COSC345Project/app/src/main/res/layout/preferences_fragment.xml" value="0.20104166666666667" />
+        <entry key="..\:/Development/COSC345Project/app/src/main/res/xml/preferences.xml" value="0.2" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.222" />
-        <entry key="app/src/main/res/drawable/barcode_scanner-48px.xml" value="0.1655" />
-        <entry key="app/src/main/res/drawable/ic_back.xml" value="0.18" />
-        <entry key="app/src/main/res/drawable/ic_flash.xml" value="0.1655" />
-        <entry key="app/src/main/res/drawable/ic_switch_camera.xml" value="0.1655" />
-        <entry key="app/src/main/res/layout/fragment_barcode_scan.xml" value="0.16210739614994935" />
-        <entry key="app/src/main/res/layout/fragment_container_barcode_scan.xml" value="0.16160081053698075" />
-        <entry key="app/src/main/res/layout/fragment_container_settings.xml" value="0.16210739614994935" />
-        <entry key="app/src/main/res/layout/partial_barcode_scan_top.xml" value="0.16160081053698075" />
-        <entry key="app/src/main/res/layout/partial_camera_preview_overlay.xml" value="0.16160081053698075" />
       </map>
     </option>
   </component>

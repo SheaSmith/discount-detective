@@ -17,9 +17,7 @@
 package com.example.cosc345project.barcode.camera
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Matrix
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import com.example.cosc345project.barcode.camera.GraphicOverlay.Graphic
@@ -78,6 +76,8 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
      * instances to the overlay using [GraphicOverlay.add].
      */
     abstract class Graphic(private val overlay: GraphicOverlay) {
+        protected val context: Context = overlay.context
+
         /**
          * Draw the graphic on the supplied canvas. Drawing should use the following methods to convert
          * to view coordinates for the graphics that are drawn:
@@ -225,4 +225,21 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
             needUpdateTransformation = true
         }
     }
+
+    /**
+     * Adjusts the `rect`'s coordinate from the preview's coordinate system to the view
+     * coordinate system.
+     */
+    fun translateRect(rect: Rect) = RectF(
+        translateX(rect.left.toFloat()),
+        translateY(rect.top.toFloat()),
+        translateX(rect.right.toFloat()),
+        translateY(rect.bottom.toFloat())
+    )
+
+    private var widthScaleFactor = 1.0f
+    private var heightScaleFactor = 1.0f
+
+    fun translateX(x: Float): Float = x * widthScaleFactor
+    fun translateY(y: Float): Float = y * heightScaleFactor
 }

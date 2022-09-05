@@ -29,6 +29,6 @@ enum class Navigation(
     BARCODE_SCANNER("barcode_scanner", null, null);
 
     companion object {
-        val topLevel = arrayOf(SEARCH, SHOPPING_LIST)
+        val topLevel = arrayOf(SEARCH, SHOPPING_LIST, SETTINGS)
     }
 }

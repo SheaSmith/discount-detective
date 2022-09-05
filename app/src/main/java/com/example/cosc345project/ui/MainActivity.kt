@@ -2,6 +2,7 @@ package com.example.cosc345project.ui
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -9,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.window.layout.FoldingFeature
@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.stateIn
  * The activity which calls the compose functions for our app, along with handling device size and posture (for folding devices).
  */
 @AndroidEntryPoint
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
