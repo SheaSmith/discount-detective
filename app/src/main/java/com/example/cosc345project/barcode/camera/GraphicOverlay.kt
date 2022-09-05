@@ -17,7 +17,9 @@
 package com.example.cosc345project.barcode.camera
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.example.cosc345project.barcode.camera.GraphicOverlay.Graphic
@@ -217,17 +219,6 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
             needUpdateTransformation = true
         }
     }
-
-    /**
-     * Adjusts the `rect`'s coordinate from the preview's coordinate system to the view
-     * coordinate system.
-     */
-    fun translateRect(rect: Rect) = RectF(
-        translateX(rect.left.toFloat()),
-        translateY(rect.top.toFloat()),
-        translateX(rect.right.toFloat()),
-        translateY(rect.bottom.toFloat())
-    )
 
     private var widthScaleFactor = 1.0f
     private var heightScaleFactor = 1.0f
