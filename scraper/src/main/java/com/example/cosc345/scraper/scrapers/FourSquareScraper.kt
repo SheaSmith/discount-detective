@@ -36,7 +36,10 @@ class FourSquareScraper : Scraper() {
             "Four Square Ascot" to Region.INVERCARGILL,
             "Four Square Newfield" to Region.INVERCARGILL,
             "Four Square Bluff" to Region.INVERCARGILL,
-            "Four Square Otatara" to Region.INVERCARGILL
+            "Four Square Otatara" to Region.INVERCARGILL,
+            "Four Square Buffalo Beach" to Region.WHITIANGA,
+            "Four Square Matarangi" to Region.WHITIANGA,
+            "Four Square Tairua" to Region.WHITIANGA
         )
         val fourSquareStores = fourSquareJsonService.getStores()
 

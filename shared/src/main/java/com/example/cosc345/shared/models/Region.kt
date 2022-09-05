@@ -13,4 +13,9 @@ object Region {
      * The store is in Invercargill.
      */
     const val INVERCARGILL = "Invercargill"
+
+    /**
+     * The store is in Whitianga.
+     */
+    const val WHITIANGA = "Whitianga"
 }

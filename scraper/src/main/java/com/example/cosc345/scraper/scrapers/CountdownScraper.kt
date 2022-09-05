@@ -33,7 +33,8 @@ class CountdownScraper : Scraper() {
             "1226961" to Region.DUNEDIN,
             "2655603" to Region.DUNEDIN,
             "2791790" to Region.DUNEDIN,
-            "2810973" to Region.DUNEDIN
+            "2810973" to Region.DUNEDIN,
+            "2791350" to Region.WHITIANGA
         )
 
         val stores: MutableList<Store> = mutableListOf()
