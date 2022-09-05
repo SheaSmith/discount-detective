@@ -40,7 +40,8 @@ class WarehouseScraper : Scraper() {
                     address = warehouseStore.address.address,
                     latitude = warehouseStore.latitude,
                     longitude = warehouseStore.longitude,
-                    automated = true
+                    automated = true,
+                    region = storeWhitelist[name]
                 )
                 stores.add(store)
 

@@ -28,12 +28,12 @@ class CountdownScraper : Scraper() {
         val retailerName = "Countdown"
 
         val storeWhitelist = mapOf(
-            "9429" to Region.INVERCARGILL,
-            "9191" to Region.INVERCARGILL,
-            "9190" to Region.DUNEDIN,
-            "9185" to Region.DUNEDIN,
-            "9524" to Region.DUNEDIN,
-            "9442" to Region.DUNEDIN
+            "1799246" to Region.INVERCARGILL,
+            "1488549" to Region.INVERCARGILL,
+            "1226961" to Region.DUNEDIN,
+            "2655603" to Region.DUNEDIN,
+            "2791790" to Region.DUNEDIN,
+            "2810973" to Region.DUNEDIN
         )
 
         val stores: MutableList<Store> = mutableListOf()
