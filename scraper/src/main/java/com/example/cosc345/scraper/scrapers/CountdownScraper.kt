@@ -27,11 +27,21 @@ class CountdownScraper : Scraper() {
         val retailerId = "countdown"
         val retailerName = "Countdown"
 
+        val storeWhitelist = mapOf(
+            "1799246" to Region.INVERCARGILL,
+            "1488549" to Region.INVERCARGILL,
+            "1226961" to Region.DUNEDIN,
+            "2655603" to Region.DUNEDIN,
+            "2791790" to Region.DUNEDIN,
+            "2810973" to Region.DUNEDIN,
+            "2791350" to Region.WHITIANGA
+        )
+
         val stores: MutableList<Store> = mutableListOf()
         val products: MutableList<RetailerProductInformation> = mutableListOf()
         countdownService.getStores().siteDetails
             .forEach { countdownStore ->
-                if (countdownStore.site.suburb == "Dunedin") {
+                if (storeWhitelist.containsKey(countdownStore.site.storeId)) {
                     val addressList = mutableListOf(
                         countdownStore.site.addressLine1.replace(
                             ", ${countdownStore.site.suburb}",
@@ -52,7 +62,8 @@ class CountdownScraper : Scraper() {
                         addressList.joinToString(", "),
                         countdownStore.site.latitude,
                         countdownStore.site.longitude,
-                        true
+                        true,
+                        storeWhitelist[countdownStore.site.storeId]
                     )
                     stores.add(store)
 

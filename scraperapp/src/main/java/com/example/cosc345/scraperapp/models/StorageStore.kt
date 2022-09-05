@@ -64,7 +64,12 @@ data class StorageStore(
      * Required.
      */
     @ColumnInfo(name = "storeAutomated")
-    val automated: Boolean
+    val automated: Boolean,
+
+    /**
+     * The region of this specific store. Required.
+     */
+    var region: String
 ) {
     constructor(store: Store, retailer: String) : this(
         retailer,
@@ -73,7 +78,8 @@ data class StorageStore(
         store.address,
         store.latitude,
         store.longitude,
-        store.automated!!
+        store.automated!!,
+        store.region!!
     )
 
     fun toStore(): Store {
@@ -83,7 +89,8 @@ data class StorageStore(
             address,
             latitude,
             longitude,
-            automated
+            automated,
+            region
         )
     }
 }

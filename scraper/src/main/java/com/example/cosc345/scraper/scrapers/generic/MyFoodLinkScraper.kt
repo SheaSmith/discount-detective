@@ -22,7 +22,7 @@ import kotlin.text.Typography.nbsp
  * @param id The ID of the retailer we want to use.
  * @param retailer The retailer object to attach stores to.
  * @param baseUrl The base URL for the get stores request.
- * @param storeWhiteList The stores that we can query as they we are currently geolocked to Dunedin.
+ * @param storeWhiteList The stores that we can query as they we are currently geolocked, with the key being the store ID and the value being the region.
  *
  * @author Shea Smith
  * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
@@ -31,7 +31,7 @@ abstract class MyFoodLinkScraper(
     private val id: String,
     private val retailer: Retailer,
     private val baseUrl: String,
-    private val storeWhiteList: Array<String>
+    private val storeWhiteList: Map<String, String>
 ) : Scraper() {
     override suspend fun runScraper(): ScraperResult {
         val myFoodLinkJsonService = generateJsonRequest(MyFoodLinkApi::class.java, baseUrl)
@@ -47,7 +47,8 @@ abstract class MyFoodLinkScraper(
                     Store(
                         id = myFoodLinkStore.id,
                         name = myFoodLinkStore.name.replace(retailer.name!!, "").trim(),
-                        automated = true
+                        automated = true,
+                        region = storeWhiteList[myFoodLinkStore.name]
                     )
                 )
 

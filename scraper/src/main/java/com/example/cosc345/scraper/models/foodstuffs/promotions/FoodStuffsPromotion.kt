@@ -15,7 +15,7 @@ data class FoodStuffsPromotion(
      * The ID of the product that has the promotion is being run on.
      */
     @Json(name = "productId")
-    val productId: String,
+    val productId: String?,
 
     /**
      * The price on promotion of this product.

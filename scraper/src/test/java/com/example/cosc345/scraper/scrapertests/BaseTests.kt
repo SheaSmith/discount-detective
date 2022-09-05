@@ -43,5 +43,6 @@ abstract class BaseTests {
         assert(stores.none { it.id.isNullOrEmpty() })
         assert(stores.none { it.name.isNullOrEmpty() })
         assert(stores.none { it.automated == null })
+        assert(stores.none { it.region == null })
     }
 }

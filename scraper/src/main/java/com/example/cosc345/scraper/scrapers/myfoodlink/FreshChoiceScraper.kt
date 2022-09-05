@@ -1,6 +1,7 @@
 package com.example.cosc345.scraper.scrapers.myfoodlink
 
 import com.example.cosc345.scraper.scrapers.generic.MyFoodLinkScraper
+import com.example.cosc345.shared.models.Region
 import com.example.cosc345.shared.models.Retailer
 
 /**
@@ -23,5 +24,8 @@ class FreshChoiceScraper : MyFoodLinkScraper(
         local = false
     ),
     "https://www.freshchoice.co.nz",
-    arrayOf("FreshChoice Roslyn", "FreshChoice Green Island")
+    mapOf(
+        "FreshChoice Roslyn" to Region.DUNEDIN,
+        "FreshChoice Green Island" to Region.DUNEDIN
+    )
 )

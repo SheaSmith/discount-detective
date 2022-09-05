@@ -3,6 +3,7 @@ package com.example.cosc345.scraper.scrapers.woocommerce
 import com.example.cosc345.scraper.api.MadButcherApi
 import com.example.cosc345.scraper.models.ScraperResult
 import com.example.cosc345.scraper.scrapers.generic.WooCommerceScraper
+import com.example.cosc345.shared.models.Region
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.SaleType
 import com.example.cosc345.shared.models.Store
@@ -31,7 +32,8 @@ class MadButcherScraper : WooCommerceScraper(
                 "280 Andersons Bay Road, South Dunedin, Dunedin 9012",
                 -45.8910911,
                 170.5030409,
-                true
+                true,
+                Region.DUNEDIN
             )
         ),
         colourLight = 0xFFffe174,

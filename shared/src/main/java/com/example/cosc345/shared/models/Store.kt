@@ -47,5 +47,10 @@ data class Store(
      *
      * Required.
      */
-    var automated: Boolean? = null
+    var automated: Boolean? = null,
+
+    /**
+     * The region of this specific store. Required.
+     */
+    var region: String? = null
 )
