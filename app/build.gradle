@@ -131,10 +131,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
 
     implementation platform('com.google.firebase:firebase-bom:30.3.1')
-    implementation 'com.firebaseui:firebase-ui-auth:8.0.1'
     implementation 'com.google.firebase:firebase-database-ktx'
-    // Fix for https://stackoverflow.com/questions/72751904/firebase-authentication-is-not-working-on-android-12-targeting-s-requires-that
-    implementation "com.google.android.gms:play-services-auth:20.2.0"
 
     implementation "androidx.work:work-runtime-ktx:$work_version"
     androidTestImplementation "androidx.work:work-testing:$work_version"
@@ -178,6 +175,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-flowlayout:$accompanist_version"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist_version"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
 
     implementation "androidx.preference:preference-ktx:1.2.0"
     implementation "androidx.preference:preference:1.2.0"

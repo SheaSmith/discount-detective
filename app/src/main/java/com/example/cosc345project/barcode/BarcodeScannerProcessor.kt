@@ -58,11 +58,7 @@ class BarcodeScannerProcessor(
 
         // Picks the barcode, if exists, that covers the center of graphic overlay.
 
-        val barcodeInCenter = results.firstOrNull { barcode ->
-            val boundingBox = barcode.boundingBox ?: return@firstOrNull false
-            val box = graphicOverlay.translateRect(boundingBox)
-            box.contains(graphicOverlay.width / 2f, graphicOverlay.height / 2f)
-        }
+        val barcodeInCenter = results.firstOrNull()
 
         graphicOverlay.clear()
         if (barcodeInCenter == null) {
@@ -70,26 +66,8 @@ class BarcodeScannerProcessor(
             graphicOverlay.add(BarcodeReticleGraphic(graphicOverlay, cameraReticleAnimator))
         } else {
             cameraReticleAnimator.cancel()
-//            val sizeProgress = PreferenceUtils.getProgressToMeetBarcodeSizeRequirement(
-//                graphicOverlay,
-//                barcodeInCenter
-//            )
-//            if (sizeProgress < 1) {
-//                // Barcode in the camera view is too small, so prompt user to move camera closer.
-//                graphicOverlay.add(BarcodeConfirmingGraphic(graphicOverlay, barcodeInCenter))
-//                viewmodel.setWorkflowState(BarcodeViewModel.WorkflowState.CONFIRMING)
-//            } else {
-            // Barcode size in the camera view is sufficient.
-//                if (PreferenceUtils.shouldDelayLoadingBarcodeResult(graphicOverlay.context)) {
-//                    val loadingAnimator = createLoadingAnimator(graphicOverlay, barcodeInCenter)
-//                    loadingAnimator.start()
-//                    graphicOverlay.add(BarcodeLoadingGraphic(graphicOverlay, loadingAnimator))
-//                    viewmodel.setWorkflowState(BarcodeViewModel.WorkflowState.SEARCHING)
-//                } else {
             viewmodel.setWorkflowState(BarcodeViewModel.WorkflowState.DETECTED)
             viewmodel.detectedBarcode.setValue(barcodeInCenter)
-//                }
-//            }
         }
         graphicOverlay.invalidate()
     }
@@ -101,41 +79,5 @@ class BarcodeScannerProcessor(
     companion object {
         private const val TAG = "BarcodeProcessor"
 
-        private fun logExtrasForTesting(barcode: Barcode?) {
-            if (barcode != null) {
-                Log.v(
-                    "BarcodeScannerProcessor",
-                    String.format(
-                        "Detected barcode's bounding box: %s",
-                        barcode.boundingBox!!.flattenToString()
-                    )
-                )
-                Log.v(
-                    "BarcodeScannerProcessor",
-                    String.format(
-                        "Expected corner point size is 4, get %d",
-                        barcode.cornerPoints!!.size
-                    )
-                )
-                for (point in barcode.cornerPoints!!) {
-                    Log.v(
-                        "BarcodeScannerProcessor",
-                        String.format(
-                            "Corner point is located at: x = %d, y = %d",
-                            point.x,
-                            point.y
-                        )
-                    )
-                }
-                Log.v(
-                    "BarcodeScannerProcessor",
-                    "barcode display value: " + barcode.displayValue
-                )
-                Log.v(
-                    "BarcodeScannerProcessor",
-                    "barcode raw value: " + barcode.rawValue
-                )
-            }
-        }
     }
 }

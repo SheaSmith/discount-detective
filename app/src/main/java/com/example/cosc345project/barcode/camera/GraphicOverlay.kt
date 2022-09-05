@@ -51,10 +51,8 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
 
     // Matrix for transforming from image coordinates to overlay view coordinates.
     private val transformationMatrix = Matrix()
-    var imageWidth = 0
-        private set
-    var imageHeight = 0
-        private set
+    private var imageWidth = 0
+    private var imageHeight = 0
 
     // The factor of overlay View size to image size. Anything in the image coordinates need to be
     // scaled by this amount to fit with the area of overlay View.
@@ -156,12 +154,6 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
         synchronized(lock) { graphics.add(graphic) }
     }
 
-    /** Removes a graphic from the overlay.  */
-    fun remove(graphic: Graphic) {
-        synchronized(lock) { graphics.remove(graphic) }
-        postInvalidate()
-    }
-
     /**
      * Sets the source information of the image being processed by detectors, including size and
      * whether it is flipped, which informs how to transform image coordinates later.
@@ -240,6 +232,6 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
     private var widthScaleFactor = 1.0f
     private var heightScaleFactor = 1.0f
 
-    fun translateX(x: Float): Float = x * widthScaleFactor
-    fun translateY(y: Float): Float = y * heightScaleFactor
+    private fun translateX(x: Float): Float = x * widthScaleFactor
+    private fun translateY(y: Float): Float = y * heightScaleFactor
 }

@@ -77,6 +77,16 @@ fun SearchScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val hasIndexed by viewModel.hasIndexed.observeAsState()
 
+    val barcodeResult = navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
+        "barcode"
+    )!!.observeAsState()
+
+    remember {
+        barcodeResult.value?.let {
+            viewModel.setQuery(it, true)
+        }
+    }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },

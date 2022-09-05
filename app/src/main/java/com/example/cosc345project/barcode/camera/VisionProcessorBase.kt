@@ -110,8 +110,7 @@ abstract class VisionProcessorBase<T>(context: Context) {
                 mlImage,
                 graphicOverlay,
                 /* originalCameraImage= */ null,
-                /* shouldShowFps= */ false,
-                frameStartMs
+                /* shouldShowFps= */ frameStartMs
             )
             mlImage.close()
             return
@@ -121,8 +120,7 @@ abstract class VisionProcessorBase<T>(context: Context) {
             InputImage.fromBitmap(bitmap!!, 0),
             graphicOverlay,
             /* originalCameraImage= */ null,
-            /* shouldShowFps= */ false,
-            frameStartMs
+            /* shouldShowFps= */ frameStartMs
         )
     }
 
@@ -175,7 +173,6 @@ abstract class VisionProcessorBase<T>(context: Context) {
                 mlImage,
                 graphicOverlay,
                 bitmap, /* shouldShowFps= */
-                true,
                 frameStartMs
             )
                 .addOnSuccessListener(executor) { processLatestImage(graphicOverlay) }
@@ -195,8 +192,7 @@ abstract class VisionProcessorBase<T>(context: Context) {
             ),
             graphicOverlay,
             bitmap,
-            /* shouldShowFps= */ true,
-            frameStartMs
+            /* shouldShowFps= */ frameStartMs
         )
             .addOnSuccessListener(executor) { processLatestImage(graphicOverlay) }
     }
@@ -219,8 +215,7 @@ abstract class VisionProcessorBase<T>(context: Context) {
                 mlImage,
                 graphicOverlay,
                 /* originalCameraImage= */ bitmap,
-                /* shouldShowFps= */ true,
-                frameStartMs
+                /* shouldShowFps= */ frameStartMs
             )
                 // When the image is from CameraX analysis use case, must call image.close() on received
                 // images when finished using them. Otherwise, new images may not be received or the camera
@@ -236,8 +231,7 @@ abstract class VisionProcessorBase<T>(context: Context) {
             InputImage.fromMediaImage(image.image!!, image.imageInfo.rotationDegrees),
             graphicOverlay,
             /* originalCameraImage= */ bitmap,
-            /* shouldShowFps= */ true,
-            frameStartMs
+            /* shouldShowFps= */ frameStartMs
         )
             // When the image is from CameraX analysis use case, must call image.close() on received
             // images when finished using them. Otherwise, new images may not be received or the camera
@@ -250,14 +244,12 @@ abstract class VisionProcessorBase<T>(context: Context) {
         image: InputImage,
         graphicOverlay: GraphicOverlay,
         originalCameraImage: Bitmap?,
-        shouldShowFps: Boolean,
         frameStartMs: Long
     ): Task<T> {
         return setUpListener(
             detectInImage(image),
             graphicOverlay,
             originalCameraImage,
-            shouldShowFps,
             frameStartMs
         )
     }
@@ -266,14 +258,12 @@ abstract class VisionProcessorBase<T>(context: Context) {
         image: MlImage,
         graphicOverlay: GraphicOverlay,
         originalCameraImage: Bitmap?,
-        shouldShowFps: Boolean,
         frameStartMs: Long
     ): Task<T> {
         return setUpListener(
             detectInImage(image),
             graphicOverlay,
             originalCameraImage,
-            shouldShowFps,
             frameStartMs
         )
     }
@@ -282,7 +272,6 @@ abstract class VisionProcessorBase<T>(context: Context) {
         task: Task<T>,
         graphicOverlay: GraphicOverlay,
         originalCameraImage: Bitmap?,
-        shouldShowFps: Boolean,
         frameStartMs: Long
     ): Task<T> {
         val detectorStartMs = SystemClock.elapsedRealtime()

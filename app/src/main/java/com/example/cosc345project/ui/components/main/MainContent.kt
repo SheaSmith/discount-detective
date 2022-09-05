@@ -71,7 +71,7 @@ fun MainContent(
                     }
                     composable(Navigation.SETTINGS.route) { SettingsScreen() }
                     composable(Navigation.BARCODE_SCANNER.route) {
-                        BarcodeScreen()
+                        BarcodeScreen(hiltViewModel(), navController)
                     }
                 }
             }

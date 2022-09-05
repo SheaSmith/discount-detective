@@ -45,13 +45,6 @@ internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) :
     val boxCornerRadius: Float =
         context.resources.getDimensionPixelOffset(R.dimen.barcode_reticle_corner_radius).toFloat()
 
-    val pathPaint: Paint = Paint().apply {
-        color = Color.WHITE
-        style = Style.STROKE
-        strokeWidth = boxPaint.strokeWidth
-        pathEffect = CornerPathEffect(boxCornerRadius)
-    }
-
     val boxRect: RectF = getBarcodeReticleBox(overlay)
 
     override fun draw(canvas: Canvas) {
@@ -68,7 +61,6 @@ internal abstract class BarcodeGraphicBase(overlay: GraphicOverlay) :
     }
 
     private fun getBarcodeReticleBox(overlay: GraphicOverlay): RectF {
-        val context = overlay.context
         val overlayWidth = overlay.width.toFloat()
         val overlayHeight = overlay.height.toFloat()
         val boxWidth =
