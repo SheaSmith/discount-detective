@@ -22,4 +22,14 @@
         <item>"system"</item>
     </string-array>
 
+    <string-array name="array_local">
+        <item>"Only local"</item>
+        <item>"All stores"</item>
+    </string-array>
+
+    <string-array name="array_local_values">
+        <item>"local"</item>
+        <item>"all"</item>
+    </string-array>
+
 </resources>
