@@ -27,7 +27,10 @@ class WarehouseScraper : Scraper() {
         val stores = mutableListOf<Store>()
         val products = mutableListOf<RetailerProductInformation>()
 
-        val storeWhitelist = arrayOf("South Dunedin")
+        val storeWhitelist = mapOf(
+            "South Dunedin" to Region.DUNEDIN,
+            "Invercargill" to Region.INVERCARGILL
+        )
         warehouseService.getStores().stores.forEach { warehouseStore ->
             val name = warehouseStore.name.split(" - ").first().trim()
             if (storeWhitelist.contains(name)) {
@@ -65,31 +68,31 @@ class WarehouseScraper : Scraper() {
                                     verified = false
                                 )
 
-                                var name = warehouseProduct.name
+                                var productName = warehouseProduct.name
                                     .replace(warehouseProduct.brand, "", true)
                                     .trim()
 
                                 val weightInGrams =
-                                    Units.GRAMS.regex.find(name)?.groups?.get(1)?.value?.toDouble()
+                                    Units.GRAMS.regex.find(productName)?.groups?.get(1)?.value?.toDouble()
                                         ?.toInt()
                                 val weightInKilograms =
-                                    Units.KILOGRAMS.regex.find(name)?.groups?.get(1)?.value?.toDouble()
+                                    Units.KILOGRAMS.regex.find(productName)?.groups?.get(1)?.value?.toDouble()
 
                                 product.weight =
                                     weightInGrams ?: weightInKilograms?.times(1000)?.toInt()
 
-                                name = name
+                                productName = productName
                                     .replace(Units.GRAMS.regex, "")
                                     .replace(Units.KILOGRAMS.regex, "")
                                     .replace(Regex("\\s+"), " ")
                                     .trim()
 
-                                if (name.isEmpty()) {
-                                    name = warehouseProduct.brand
+                                if (productName.isEmpty()) {
+                                    productName = warehouseProduct.brand
                                     product.brandName = null
                                 }
 
-                                product.name = name
+                                product.name = productName
                                 product.quantity =
                                     if (weightInGrams != null) "${weightInGrams}${Units.GRAMS}" else "${weightInKilograms}${Units.KILOGRAMS}"
                             }

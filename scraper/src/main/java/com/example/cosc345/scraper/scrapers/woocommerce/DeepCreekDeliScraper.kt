@@ -1,6 +1,7 @@
 package com.example.cosc345.scraper.scrapers.woocommerce
 
 import com.example.cosc345.scraper.scrapers.generic.WooCommerceScraper
+import com.example.cosc345.shared.models.Region
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.Store
 /**
@@ -22,7 +23,8 @@ class DeepCreekDeliScraper : WooCommerceScraper(
                 "35 North Road, North East Valley, Dunedin 9010",
                 -45.8541306,
                 170.5154902,
-                true
+                true,
+                Region.DUNEDIN
             )
         ),
         colourLight = 0xFFffe164,

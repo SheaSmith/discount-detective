@@ -29,7 +29,8 @@ class RobertsonsMeatsScraper : Scraper() {
                 "527 Hillside Road, Caversham, Dunedin 9012",
                 -45.897719,
                 170.4879171,
-                true
+                true,
+                Region.DUNEDIN
             )
         )
 

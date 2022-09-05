@@ -29,7 +29,7 @@ import com.example.cosc345.shared.models.*
  * @param productsIndex The URL path parameter that specifies which Agoria (the search engine used by FoodStuffs) index should be queried for the products request.
  * @param categoriesIndex The URL path parameter that specific which Agoria index should be queried for the categories request.
  * @param refreshToken The refresh token to use to generate an access token.
- * @param storeWhiteList The stores we should download data for, as the app is currently region locked.
+ * @param storeWhiteList The stores we should download data for, as the app is currently region locked, with the key being the store ID and the value being the region.
  *
  * @author Shea Smith
  * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
@@ -40,7 +40,7 @@ abstract class FoodStuffsScraper(
     private val productsIndex: String,
     private val categoriesIndex: String,
     private val refreshToken: String,
-    private val storeWhiteList: Array<String>
+    private val storeWhiteList: Map<String, String>
 ) : Scraper() {
     override suspend fun runScraper(): ScraperResult {
         val foodStuffsService =
@@ -62,7 +62,8 @@ abstract class FoodStuffsScraper(
                 address = it.address,
                 latitude = it.latitude,
                 longitude = it.longitude,
-                automated = true
+                automated = true,
+                region = storeWhiteList[it.name]
             )
         }
 
@@ -170,7 +171,7 @@ abstract class FoodStuffsScraper(
                 ).promotions.forEach { foodStuffsPromotion ->
 
                     val price =
-                        products.first { it.id == foodStuffsPromotion.productId }.pricing!!.first { it.store == discountMap.key }
+                        products.first { it.id == foodStuffsPromotion.productId || it.id == foodStuffsPromotion.loyaltyPromotion?.productId }.pricing!!.first { it.store == discountMap.key }
 
                     parsePromotion(foodStuffsPromotion, price, false)
                 }

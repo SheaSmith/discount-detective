@@ -29,8 +29,15 @@ class FourSquareScraper : Scraper() {
         val stores = mutableListOf<Store>()
         val products = mutableListOf<RetailerProductInformation>()
 
-        val storeWhitelist =
-            arrayOf("Four Square Mitchells", "Four Square St Clair", "Four Square Port Chalmers")
+        val storeWhitelist = mapOf(
+            "Four Square Mitchells" to Region.DUNEDIN,
+            "Four Square St Clair" to Region.DUNEDIN,
+            "Four Square Port Chalmers" to Region.DUNEDIN,
+            "Four Square Ascot" to Region.INVERCARGILL,
+            "Four Square Newfield" to Region.INVERCARGILL,
+            "Four Square Bluff" to Region.INVERCARGILL,
+            "Four Square Otatara" to Region.INVERCARGILL
+        )
         val fourSquareStores = fourSquareJsonService.getStores()
 
         fourSquareStores.forEach { fourSquareStore ->
@@ -41,7 +48,8 @@ class FourSquareScraper : Scraper() {
                     address = fourSquareStore.address,
                     latitude = fourSquareStore.latitude,
                     longitude = fourSquareStore.longitude,
-                    automated = true
+                    automated = true,
+                    region = storeWhitelist[fourSquareStore.name]
                 )
                 stores.add(store)
             }

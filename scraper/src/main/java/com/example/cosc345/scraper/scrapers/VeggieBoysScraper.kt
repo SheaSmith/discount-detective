@@ -27,7 +27,8 @@ class VeggieBoysScraper : Scraper() {
                 "16 Prince Albert Road, St Kilda, Dunedin 9012",
                 -45.90009,
                 170.503682,
-                true
+                true,
+                Region.DUNEDIN
             ),
             Store(
                 "${retailerId}-north",
@@ -35,7 +36,8 @@ class VeggieBoysScraper : Scraper() {
                 "16 Prince Albert Road, St Kilda, Dunedin 9012",
                 -45.867877,
                 170.514351,
-                true
+                true,
+                Region.DUNEDIN
             )
         )
 

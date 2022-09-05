@@ -1,6 +1,7 @@
 package com.example.cosc345.scraper.scrapers.shopify
 
 import com.example.cosc345.scraper.scrapers.generic.ShopifyScraper
+import com.example.cosc345.shared.models.Region
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.Store
 
@@ -24,7 +25,8 @@ class PrincesStreetButcherScraper :
                     "416 Princes Street, Central Dunedin, Dunedin 9016",
                     -45.880502,
                     170.4998258,
-                    true
+                    true,
+                    Region.DUNEDIN
                 )
             ),
             colourLight = 0xFF97f0ff,
