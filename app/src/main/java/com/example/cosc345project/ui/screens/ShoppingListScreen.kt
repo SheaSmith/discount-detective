@@ -2,6 +2,7 @@
 
 package com.example.cosc345project.ui.screens
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -32,7 +33,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
@@ -40,17 +40,18 @@ import com.example.cosc345.shared.models.StorePricingInformation
 import com.example.cosc345project.R
 import com.example.cosc345project.ui.components.StatusBarLargeTopAppBar
 import com.example.cosc345project.viewmodel.ShoppingListViewModel
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 @Preview(showBackground = true)
 fun ShoppingListScreen(
     viewModel: ShoppingListViewModel = hiltViewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberAnimatedNavController()
 ) {
 
     val retailers by viewModel.retailers.collectAsState()
