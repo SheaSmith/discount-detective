@@ -71,4 +71,8 @@
     <color name="settingslib_thumb_off_color">@color/md_theme_light_outline</color>
     <color name="settingslib_track_on_color">@color/md_theme_light_primary</color>
     <color name="settingslib_track_off_color">@color/md_theme_light_surfaceVariant</color>
+
+    <color name="barcode_reticle_background">#99000000</color>
+    <color name="barcode_reticle_stroke">#40000000</color>
+    <color name="reticle_ripple">#9AFFFFFF</color>
 </resources>

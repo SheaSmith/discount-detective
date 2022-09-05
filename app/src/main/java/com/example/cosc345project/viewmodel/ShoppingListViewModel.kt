@@ -55,7 +55,7 @@ class ShoppingListViewModel @Inject constructor(
 
                     if (product != null) {
                         val key =
-                            product.information!!.first { it.id == shoppingListInfo.retailerProductInformationID }
+                            product.information!!.first { info -> info.id == shoppingListInfo.retailerProductInformationID && info.pricing!!.any { it.store == shoppingListInfo.storePricingInformationID } }
                         val value =
                             key.pricing!!.first { it.store == shoppingListInfo.storePricingInformationID }
 

@@ -1,6 +1,7 @@
 package com.example.cosc345project.ui.components.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,17 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.cosc345project.ui.Navigation
-import com.example.cosc345project.ui.screens.ProductScreen
-import com.example.cosc345project.ui.screens.SearchScreen
-import com.example.cosc345project.ui.screens.SettingsScreen
-import com.example.cosc345project.ui.screens.ShoppingListScreen
+import com.example.cosc345project.ui.screens.*
 import com.example.cosc345project.ui.utils.NavigationType
 import com.example.cosc345project.viewmodel.SearchViewModel
 import com.example.cosc345project.viewmodel.ShoppingListViewModel
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
 
 /**
  * The main content of the page, including the screens themselves.
@@ -32,6 +30,7 @@ import com.example.cosc345project.viewmodel.ShoppingListViewModel
  * @param navigationType The type of navigation that is being used, based on screen size.
  * @param onDrawerClicked The function to be called when the open drawer button is clicked.
  */
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainContent(
     navController: NavHostController,
@@ -51,7 +50,7 @@ fun MainContent(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             Surface(modifier = Modifier.weight(1.0f)) {
-                NavHost(
+                AnimatedNavHost(
                     navController = navController,
                     startDestination = Navigation.SEARCH.route,
                     modifier = Modifier.fillMaxSize()
@@ -71,6 +70,9 @@ fun MainContent(
                         ProductScreen(it.arguments!!.getString("productId")!!, nav = navController)
                     }
                     composable(Navigation.SETTINGS.route) { SettingsScreen() }
+                    composable(Navigation.BARCODE_SCANNER.route) {
+                        BarcodeScreen(hiltViewModel(), navController)
+                    }
                 }
             }
 

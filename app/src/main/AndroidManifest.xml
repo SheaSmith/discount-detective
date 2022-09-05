@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.cosc345project">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".DiscountDetectorApp"
         android:allowBackup="true"

@@ -1,13 +1,14 @@
 package com.example.cosc345project.ui.components.main
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
 import com.example.cosc345project.ui.utils.NavigationType
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.launch
 
 /**
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
  *
  * @param navigationType The type of navigation that is being used, based on screen size.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun NavigationWrapper(
     navigationType: NavigationType,
@@ -23,7 +24,7 @@ fun NavigationWrapper(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val navController = rememberNavController()
+    val navController = rememberAnimatedNavController()
 
     if (navigationType == NavigationType.PERMANENT_NAVIGATION_DRAWER) {
         PermanentNavigationDrawer(

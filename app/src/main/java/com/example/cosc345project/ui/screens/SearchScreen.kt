@@ -3,6 +3,7 @@
 package com.example.cosc345project.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -27,16 +28,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.example.cosc345project.R
+import com.example.cosc345project.ui.Navigation
 import com.example.cosc345project.ui.components.StatusBarCenterAlignedTopAppBar
 import com.example.cosc345project.ui.components.search.SearchError
 import com.example.cosc345project.ui.components.search.SearchProductCard
 import com.example.cosc345project.ui.components.search.SearchTopAppBar
 import com.example.cosc345project.viewmodel.SearchViewModel
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.launch
 
 /**
@@ -48,11 +50,12 @@ import kotlinx.coroutines.launch
  * @param viewModel Instance of the SearchViewModel class (see [com.example.cosc345project.viewmodel.SearchViewModel])
  * @param navController Instance of the nav controller for navigation class.
  */
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 @Preview
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberAnimatedNavController()
 ) {
     val search by viewModel.searchQuery.collectAsState()
     val retailers by viewModel.retailers.collectAsState()
@@ -73,6 +76,16 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val hasIndexed by viewModel.hasIndexed.observeAsState()
+
+    val barcodeResult = navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
+        "barcode"
+    )!!.observeAsState()
+
+    remember {
+        barcodeResult.value?.let {
+            viewModel.setQuery(it, true)
+        }
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -107,6 +120,9 @@ fun SearchScreen(
                             coroutineScope.launch {
                                 listState.scrollToItem(0)
                             }
+                        },
+                        onScanBarcode = {
+                            navController.navigate(Navigation.BARCODE_SCANNER.route)
                         }
                     )
                 },
