@@ -19,12 +19,10 @@ package com.example.cosc345project.barcode.camera
 import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Bitmap
-import android.os.Build.VERSION_CODES
 import android.os.SystemClock
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.GuardedBy
-import androidx.annotation.RequiresApi
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
 import com.google.android.gms.tasks.Task
@@ -78,12 +76,14 @@ abstract class VisionProcessorBase<T>(context: Context) {
     // To keep the latest images and its metadata.
     @GuardedBy("this")
     private var latestImage: ByteBuffer? = null
+
     @GuardedBy("this")
     private var latestImageMetaData: FrameMetadata? = null
 
     // To keep the images and metadata in process.
     @GuardedBy("this")
     private var processingImage: ByteBuffer? = null
+
     @GuardedBy("this")
     private var processingMetaData: FrameMetadata? = null
 
@@ -105,7 +105,7 @@ abstract class VisionProcessorBase<T>(context: Context) {
         val frameStartMs = SystemClock.elapsedRealtime()
 
         if (isMlImageEnabled(graphicOverlay.context)) {
-            val mlImage = BitmapMlImageBuilder(bitmap!!).build()
+            val mlImage = BitmapMlImageBuilder(bitmap ?: return).build()
             requestDetectInImage(
                 mlImage,
                 graphicOverlay,
@@ -117,7 +117,7 @@ abstract class VisionProcessorBase<T>(context: Context) {
         }
 
         requestDetectInImage(
-            InputImage.fromBitmap(bitmap!!, 0),
+            InputImage.fromBitmap(bitmap ?: return, 0),
             graphicOverlay,
             /* originalCameraImage= */ null,
             /* shouldShowFps= */ frameStartMs
@@ -145,7 +145,7 @@ abstract class VisionProcessorBase<T>(context: Context) {
         latestImage = null
         latestImageMetaData = null
         if (processingImage != null && processingMetaData != null && !isShutdown) {
-            processImage(processingImage!!, processingMetaData!!, graphicOverlay)
+            processImage(processingImage ?: return, processingMetaData ?: return, graphicOverlay)
         }
     }
 
@@ -198,7 +198,6 @@ abstract class VisionProcessorBase<T>(context: Context) {
     }
 
     // -----------------Code for processing live preview frame from CameraX API-----------------------
-    @RequiresApi(VERSION_CODES.LOLLIPOP)
     @ExperimentalGetImage
     fun processImageProxy(image: ImageProxy, graphicOverlay: GraphicOverlay) {
         val frameStartMs = SystemClock.elapsedRealtime()
@@ -209,7 +208,9 @@ abstract class VisionProcessorBase<T>(context: Context) {
 
         if (isMlImageEnabled(graphicOverlay.context)) {
             val mlImage =
-                MediaMlImageBuilder(image.image!!).setRotation(image.imageInfo.rotationDegrees)
+                MediaMlImageBuilder(
+                    image.image ?: return
+                ).setRotation(image.imageInfo.rotationDegrees)
                     .build()
             requestDetectInImage(
                 mlImage,
@@ -228,7 +229,7 @@ abstract class VisionProcessorBase<T>(context: Context) {
         }
 
         requestDetectInImage(
-            InputImage.fromMediaImage(image.image!!, image.imageInfo.rotationDegrees),
+            InputImage.fromMediaImage(image.image ?: return, image.imageInfo.rotationDegrees),
             graphicOverlay,
             /* originalCameraImage= */ bitmap,
             /* shouldShowFps= */ frameStartMs
@@ -381,7 +382,5 @@ abstract class VisionProcessorBase<T>(context: Context) {
 
     protected abstract fun onFailure(e: Exception)
 
-    protected open fun isMlImageEnabled(context: Context?): Boolean {
-        return false
-    }
+    protected open fun isMlImageEnabled(context: Context?): Boolean = false
 }

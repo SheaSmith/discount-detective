@@ -1,5 +1,6 @@
 package com.example.cosc345project.ui.components.main
 
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -7,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.cosc345project.ui.utils.NavigationType
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.launch
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
+@ExperimentalGetImage
 fun NavigationWrapper(
     navigationType: NavigationType,
 ) {
@@ -29,10 +32,15 @@ fun NavigationWrapper(
     if (navigationType == NavigationType.PERMANENT_NAVIGATION_DRAWER) {
         PermanentNavigationDrawer(
             drawerContent = {
-                NavigationDrawerContent(
-                    navController,
-                    navigationType = navigationType
-                )
+                ModalDrawerSheet(
+                    drawerContainerColor = MaterialTheme.colorScheme.background,
+                    drawerTonalElevation = 0.dp
+                ) {
+                    NavigationDrawerContent(
+                        navController,
+                        navigationType = navigationType
+                    )
+                }
             },
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
@@ -41,27 +49,21 @@ fun NavigationWrapper(
             MainContent(navController, navigationType)
         }
     } else {
-        // Apparently we need the explicit type so Android Studio doesn't try to say it's not needed
-        @Suppress("RedundantExplicitType") var modifier: Modifier = Modifier
-
-        if (navigationType != NavigationType.BOTTOM_NAVIGATION) {
-            modifier = modifier.navigationBarsPadding()
-        }
-
         ModalNavigationDrawer(
             drawerContent = {
-                NavigationDrawerContent(
-                    navController,
-                    onDrawerClicked = {
-                        scope.launch {
-                            drawerState.close()
-                        }
-                    },
-                    navigationType = navigationType
-                )
+                ModalDrawerSheet {
+                    NavigationDrawerContent(
+                        navController,
+                        onDrawerClicked = {
+                            scope.launch {
+                                drawerState.close()
+                            }
+                        },
+                        navigationType = navigationType
+                    )
+                }
             },
-            drawerState = drawerState,
-            modifier = modifier
+            drawerState = drawerState
         ) {
             MainContent(
                 navController,

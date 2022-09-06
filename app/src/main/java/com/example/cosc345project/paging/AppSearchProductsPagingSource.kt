@@ -21,9 +21,8 @@ class AppSearchProductsPagingSource(
     override val keyReuseSupported: Boolean
         get() = true
 
-    override fun getRefreshKey(state: PagingState<SearchResults, Pair<String, Product>>): SearchResults? {
-        return null
-    }
+    override fun getRefreshKey(state: PagingState<SearchResults, Pair<String, Product>>): SearchResults? =
+        null
 
     override suspend fun load(params: LoadParams<SearchResults>): LoadResult<SearchResults, Pair<String, Product>> {
         val searchResults = params.key ?: repository.queryProductsAppSearch(query, params.loadSize)

@@ -1,0 +1,54 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "14b61185ba354d95f7552e8736a9cfb5",
+    "entities": [
+      {
+        "tableName": "retailerProductInfo",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productID` TEXT NOT NULL, `retailerProductInformation` TEXT NOT NULL, `storePricingID` TEXT NOT NULL, `quantity` INTEGER NOT NULL, PRIMARY KEY(`productID`, `retailerProductInformation`, `storePricingID`))",
+        "fields": [
+          {
+            "fieldPath": "productID",
+            "columnName": "productID",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "retailerProductInformationID",
+            "columnName": "retailerProductInformation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePricingInformationID",
+            "columnName": "storePricingID",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quantity",
+            "columnName": "quantity",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "productID",
+            "retailerProductInformation",
+            "storePricingID"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '14b61185ba354d95f7552e8736a9cfb5')"
+    ]
+  }
+}

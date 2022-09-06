@@ -45,6 +45,8 @@ import com.google.common.base.Preconditions
  *  1. [Graphic.translateX] and [Graphic.translateY] adjust the
  * coordinate from the image's coordinate system to the view coordinate system.
  *
+ * @param context The context to use.
+ * @param attrs The attribute set to pass to the base view.
  */
 class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
@@ -102,7 +104,12 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
             canvas.drawText(text!!, x, y, paint!!)
         }
 
-        /** Adjusts the supplied value from the image scale to the view scale.  */
+        /**
+         * Adjusts the supplied value from the image scale to the view scale.
+         *
+         * @param imagePixel The value to adjust.
+         * @return The adjusted value.
+         */
         fun scale(imagePixel: Float): Float {
             return imagePixel * overlay.scaleFactor
         }
@@ -111,12 +118,18 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
         val applicationContext: Context
             get() = overlay.context.applicationContext
 
+        /**
+         * Is the image flipped (e.g. front camera).
+         */
         fun isImageFlipped(): Boolean {
             return overlay.isImageFlipped
         }
 
         /**
          * Adjusts the x coordinate from the image's coordinate system to the view coordinate system.
+         *
+         * @param x The coordinate to adjust.
+         * @return The adjusted coordinate.
          */
         fun translateX(x: Float): Float {
             return if (overlay.isImageFlipped) {
@@ -128,6 +141,9 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
 
         /**
          * Adjusts the y coordinate from the image's coordinate system to the view coordinate system.
+         *
+         * @param y The coordinate to adjust.
+         * @return The adjusted coordinate.
          */
         fun translateY(y: Float): Float {
             return scale(y) - overlay.postScaleHeightOffset
@@ -135,23 +151,34 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
 
         /**
          * Returns a [Matrix] for transforming from image coordinates to overlay view coordinates.
+         *
+         * @return The matrix for transforming.
          */
         fun getTransformationMatrix(): Matrix {
             return overlay.transformationMatrix
         }
 
+        /**
+         * A function that is called when the view invalidation is done.
+         */
         fun postInvalidate() {
             overlay.postInvalidate()
         }
     }
 
-    /** Removes all graphics from the overlay.  */
+    /**
+     * Removes all graphics from the overlay.
+     */
     fun clear() {
         synchronized(lock) { graphics.clear() }
         postInvalidate()
     }
 
-    /** Adds a graphic to the overlay.  */
+    /**
+     * Adds a graphic to the overlay.
+     *
+     * @param graphic The graphic to add.
+     */
     fun add(graphic: Graphic) {
         synchronized(lock) { graphics.add(graphic) }
     }
@@ -203,7 +230,11 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
         needUpdateTransformation = false
     }
 
-    /** Draws the overlay with its associated graphic objects.  */
+    /**
+     * Draws the overlay with its associated graphic objects.
+     *
+     * @param canvas The canvas to draw on.
+     */
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         synchronized(lock) {
@@ -219,10 +250,4 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
             needUpdateTransformation = true
         }
     }
-
-    private var widthScaleFactor = 1.0f
-    private var heightScaleFactor = 1.0f
-
-    private fun translateX(x: Float): Float = x * widthScaleFactor
-    private fun translateY(y: Float): Float = y * heightScaleFactor
 }
