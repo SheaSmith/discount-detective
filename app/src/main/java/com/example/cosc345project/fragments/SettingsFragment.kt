@@ -1,16 +1,17 @@
 package com.example.cosc345project.fragments
 
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.view.updatePadding
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cosc345project.R
+import com.google.android.material.appbar.AppBarLayout
 
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
-
     }
 
     override fun onCreateRecyclerView(
@@ -29,4 +30,24 @@ class SettingsFragment : PreferenceFragmentCompat() {
         return view
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+
+        val appBar = view.findViewById<AppBarLayout>(R.id.appbar_layout)
+        val appBarTopPadding = appBar.paddingTop
+
+        val windowService = requireContext().getSystemService(Context.WINDOW_SERVICE)
+        (windowService as WindowManager).apply {
+            val statusBar =
+                currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.statusBars())
+            val statusBarHeight = statusBar.top
+            appBar.updatePadding(top = appBarTopPadding + statusBarHeight)
+        }
+
+        return view
+    }
 }
