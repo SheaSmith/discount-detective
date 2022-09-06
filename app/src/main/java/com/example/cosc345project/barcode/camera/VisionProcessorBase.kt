@@ -381,7 +381,5 @@ abstract class VisionProcessorBase<T>(context: Context) {
 
     protected abstract fun onFailure(e: Exception)
 
-    protected open fun isMlImageEnabled(context: Context?): Boolean {
-        return false
-    }
+    protected open fun isMlImageEnabled(context: Context?): Boolean = false
 }

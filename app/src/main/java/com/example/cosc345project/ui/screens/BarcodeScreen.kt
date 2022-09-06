@@ -3,6 +3,7 @@ package com.example.cosc345project.ui.screens
 import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
@@ -45,6 +46,7 @@ import com.google.mlkit.common.MlKitException
  *
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@ExperimentalGetImage
 @Composable
 fun BarcodeScreen(viewModel: BarcodeViewModel, navController: NavController) {
     val systemUiController = rememberSystemUiController()

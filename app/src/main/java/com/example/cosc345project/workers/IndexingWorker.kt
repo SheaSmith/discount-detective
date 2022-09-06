@@ -37,7 +37,7 @@ class IndexingWorker @AssistedInject constructor(
 
     private fun createForegroundInfo(): ForegroundInfo {
         val id = applicationContext.getString(R.string.notification_channel_id)
-        val title = applicationContext.getString(R.string.notification_title)
+        val title = applicationContext.getString(R.string.app_name)
 
         val notificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

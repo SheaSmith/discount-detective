@@ -19,7 +19,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import com.example.cosc345project.barcode.camera.GraphicOverlay.Graphic
 
-/** Draw camera image to background.  */
+/**
+ * An overlay for the camera that shows a static image.
+ *
+ * @param overlay The graphic overlay to use for the overlay.
+ * @param bitmap The bitmap to overlay.
+ */
 class CameraImageGraphic(overlay: GraphicOverlay?, private val bitmap: Bitmap) : Graphic(
     overlay!!
 ) {
