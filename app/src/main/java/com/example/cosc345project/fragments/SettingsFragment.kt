@@ -1,6 +1,7 @@
 package com.example.cosc345project.fragments
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.updatePadding
@@ -40,12 +41,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val appBar = view.findViewById<AppBarLayout>(R.id.appbar_layout)
         val appBarTopPadding = appBar.paddingTop
 
-        val windowService = requireContext().getSystemService(Context.WINDOW_SERVICE)
-        (windowService as WindowManager).apply {
-            val statusBar =
-                currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.statusBars())
-            val statusBarHeight = statusBar.top
-            appBar.updatePadding(top = appBarTopPadding + statusBarHeight)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowService = requireContext().getSystemService(Context.WINDOW_SERVICE)
+            (windowService as WindowManager).apply {
+                val statusBar =
+                    currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.statusBars())
+                val statusBarHeight = statusBar.top
+                appBar.updatePadding(top = appBarTopPadding + statusBarHeight)
+            }
+        } else {
+            var result = 0
+            val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+            if (resourceId > 0) {
+                result = resources.getDimensionPixelSize(resourceId)
+            }
+
+            appBar.updatePadding(top = appBarTopPadding + result)
         }
 
         return view

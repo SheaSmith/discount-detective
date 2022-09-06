@@ -1,5 +1,6 @@
 package com.example.cosc345project.ui.components.main
 
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -31,6 +32,7 @@ import com.google.accompanist.navigation.animation.composable
  * @param onDrawerClicked The function to be called when the open drawer button is clicked.
  */
 @OptIn(ExperimentalAnimationApi::class)
+@ExperimentalGetImage
 @Composable
 fun MainContent(
     navController: NavHostController,

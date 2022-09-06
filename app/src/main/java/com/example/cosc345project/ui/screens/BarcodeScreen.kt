@@ -46,7 +46,10 @@ import com.google.mlkit.common.MlKitException
  * @param viewModel The view model for the barcode screen.
  * @param navController The navigation controller for navigating between pages.
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalPermissionsApi::class
+)
 @ExperimentalGetImage
 @Composable
 fun BarcodeScreen(viewModel: BarcodeViewModel, navController: NavController) {
@@ -73,7 +76,8 @@ fun BarcodeScreen(viewModel: BarcodeViewModel, navController: NavController) {
     cameraProvider?.unbindAll()
 
     DisposableEffect(systemUiController, useDarkIcons) {
-        systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = false)
+        systemUiController.setStatusBarColor(Color.Transparent, darkIcons = false)
+        systemUiController.setNavigationBarColor(Color.Transparent, darkIcons = true)
 
         onDispose {
             systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = useDarkIcons)
@@ -85,10 +89,10 @@ fun BarcodeScreen(viewModel: BarcodeViewModel, navController: NavController) {
     )
 
     if (cameraPermissionState.status is PermissionStatus.Denied) {
-        handlePermissionDenial(cameraPermissionState, navController)
+        HandlePermissionDenial(cameraPermissionState, navController)
     }
 
-    DiscountDetectiveTheme(darkTheme = true) {
+    DiscountDetectiveTheme(darkTheme = true, doNotOverride = true) {
         Box(
             modifier = Modifier
                 .background(Color.Black)
@@ -166,6 +170,7 @@ fun BarcodeScreen(viewModel: BarcodeViewModel, navController: NavController) {
 
 }
 
+@ExperimentalGetImage
 private fun updateGraphicOverlay(
     cameraProvider: ProcessCameraProvider?,
     previousAnalysisUseCase: ImageAnalysis?,
@@ -230,6 +235,7 @@ private fun updateGraphicOverlay(
     return null
 }
 
+@ExperimentalGetImage
 private fun updatePreview(
     cameraProvider: ProcessCameraProvider?,
     previousPreviewUseCase: Preview?,
@@ -264,7 +270,7 @@ private fun updatePreview(
 
 @Composable
 @OptIn(ExperimentalPermissionsApi::class)
-private fun handlePermissionDenial(
+private fun HandlePermissionDenial(
     cameraPermissionState: PermissionState,
     navController: NavController
 ) {
@@ -286,10 +292,8 @@ private fun handlePermissionDenial(
             text = { Text(text = stringResource(id = R.string.camera_permission_message)) }
         )
     } else {
-        try {
+        SideEffect {
             cameraPermissionState.launchPermissionRequest()
-        } catch (e: IllegalStateException) {
-            // Do nothing
         }
     }
 }

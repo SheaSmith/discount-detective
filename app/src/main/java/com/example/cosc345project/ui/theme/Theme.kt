@@ -5,6 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorScheme = darkColorScheme(
     primary = DarkPrimary,
@@ -30,17 +33,35 @@ private val LightColorScheme = lightColorScheme(
 
 /**
  * Sets our own colour scheme.
+ *
+ * @param darkTheme Whether the dark theme should be used or not.
+ * @param doNotOverride Whether the status bar colours should not be overriden.
+ * @param content The content of the page.
  */
 @Composable
 fun DiscountDetectiveTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    doNotOverride: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    if (!doNotOverride) {
+        val systemUiController = rememberSystemUiController()
+
+        DisposableEffect(systemUiController, darkTheme) {
+            // Update all of the system bar colors to be transparent, and use
+            // dark icons if we're in light theme
+            systemUiController.setSystemBarsColor(
+                color = Color.Transparent,
+                darkIcons = !darkTheme
+            )
+
+            // setStatusBarColor() and setNavigationBarColor() also exist
+
+            onDispose {}
+        }
+    }
+
     val colorScheme = when {
-//        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-//            val context = LocalContext.current
-//            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-//        }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
