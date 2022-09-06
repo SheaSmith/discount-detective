@@ -3,6 +3,7 @@ package com.example.cosc345project.ui
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.stateIn
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    @ExperimentalGetImage
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,6 +79,7 @@ class MainActivity : AppCompatActivity() {
  */
 @Preview(showBackground = true)
 @Composable
+@ExperimentalGetImage
 fun AppPreview() {
     DiscountDetectiveTheme {
         MainScreen(
@@ -91,6 +94,7 @@ fun AppPreview() {
  */
 @Preview(showBackground = true, widthDp = 700)
 @Composable
+@ExperimentalGetImage
 fun AppPreviewTablet() {
     DiscountDetectiveTheme {
         MainScreen(
@@ -105,6 +109,7 @@ fun AppPreviewTablet() {
  */
 @Preview(showBackground = true, widthDp = 1000)
 @Composable
+@ExperimentalGetImage
 fun AppPreviewDesktop() {
     DiscountDetectiveTheme {
         MainScreen(

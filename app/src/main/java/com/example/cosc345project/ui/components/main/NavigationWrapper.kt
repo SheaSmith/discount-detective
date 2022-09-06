@@ -1,5 +1,6 @@
 package com.example.cosc345project.ui.components.main
 
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
+@ExperimentalGetImage
 fun NavigationWrapper(
     navigationType: NavigationType,
 ) {
