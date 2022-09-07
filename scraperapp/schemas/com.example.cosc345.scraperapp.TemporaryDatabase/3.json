@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "6dd4cf3c04cb055bca2786debda39d31",
+    "identityHash": "12e4d1b2d12f9b7f47d8490d3604a84a",
     "entities": [
       {
         "tableName": "RetailerProductInformation",
@@ -249,7 +249,7 @@
       },
       {
         "tableName": "Stores",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`storeRetailer` TEXT NOT NULL, `storeId` TEXT NOT NULL, `storeName` TEXT NOT NULL, `storeAddress` TEXT, `storeLatitude` REAL, `storeLongitude` REAL, `storeAutomated` INTEGER NOT NULL, PRIMARY KEY(`storeRetailer`, `storeId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`storeRetailer` TEXT NOT NULL, `storeId` TEXT NOT NULL, `storeName` TEXT NOT NULL, `storeAddress` TEXT, `storeLatitude` REAL, `storeLongitude` REAL, `storeAutomated` INTEGER NOT NULL, `region` TEXT NOT NULL, PRIMARY KEY(`storeRetailer`, `storeId`))",
         "fields": [
           {
             "fieldPath": "retailer",
@@ -292,6 +292,12 @@
             "columnName": "storeAutomated",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "region",
+            "columnName": "region",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -308,7 +314,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6dd4cf3c04cb055bca2786debda39d31')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '12e4d1b2d12f9b7f47d8490d3604a84a')"
     ]
   }
 }
