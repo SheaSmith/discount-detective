@@ -11,7 +11,6 @@ import com.example.cosc345.shared.models.*
  * # Process
  * A list of all Veggie Boys products is requested. Then each product is scraped, processed and cleaned up. For some products, it is necessary to determine whether it is sold per KG or not, so a specific request to the product details page is required.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class VeggieBoysScraper : Scraper() {

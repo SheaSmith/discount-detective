@@ -11,8 +11,6 @@ import retrofit2.http.Path
 
 /**
  * The definitions for retrieving data from Four Square.
- *
- * @author Shea Smith
  */
 interface FourSquareApi {
     /**

@@ -18,7 +18,6 @@ import com.example.cosc345.shared.models.*
  * @param retailer The retailer to return.
  * @param baseUrl The base URL that all API requests are made relative to.
  *
- * @author William Hadden
  * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
  */
 abstract class WooCommerceScraper(

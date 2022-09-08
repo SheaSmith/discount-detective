@@ -3,7 +3,6 @@ package com.example.cosc345.shared.models
 /**
  * Different units, the unit used to denote them, and regex to parse them out.
  *
- * @author Shea Smith
  * @constructor Specify the parameters for a new unit enum.
  */
 enum class Units(

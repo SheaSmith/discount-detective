@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 class ValueMatcherUnitTest {
     @Test
     @DisplayName("Multi-value test")
-    fun `Multi-barcode test`() {
+    fun `Multi-value test`() {
         val retailerProductInfos = mutableListOf<RetailerProductInformation>()
         val repeat = 1000
 

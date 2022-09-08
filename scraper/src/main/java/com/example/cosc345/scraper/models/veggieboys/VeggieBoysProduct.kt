@@ -5,7 +5,6 @@ import pl.droidsonroids.jspoon.annotation.Selector
 /**
  * A product from Veggie Boys.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Jspoon.
  */
 data class VeggieBoysProduct(

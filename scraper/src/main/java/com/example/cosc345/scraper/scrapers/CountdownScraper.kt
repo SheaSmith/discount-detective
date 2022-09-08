@@ -17,7 +17,6 @@ import com.example.cosc345.shared.models.*
  *
  * Finally, each product is processed and tidied up.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class CountdownScraper : Scraper() {

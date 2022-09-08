@@ -13,7 +13,6 @@ import com.example.cosc345.shared.models.*
  *
  * Then each category is iterated, and the products for each is requested. This data is then scraped, processed and cleaned up.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class RobertsonsMeatsScraper : Scraper() {

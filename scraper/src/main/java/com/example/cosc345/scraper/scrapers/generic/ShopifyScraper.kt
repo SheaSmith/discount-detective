@@ -17,7 +17,6 @@ import com.example.cosc345.shared.models.*
  * @param retailer The retailer to return.
  * @param baseUrl The base URL that all requests are done from.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
  */
 abstract class ShopifyScraper(

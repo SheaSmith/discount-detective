@@ -15,7 +15,6 @@ import com.example.cosc345.shared.models.*
  *
  * Then the local specials page for each region is scraped. This data is cleaned up in a similar way to the mailer data.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class FourSquareScraper : Scraper() {

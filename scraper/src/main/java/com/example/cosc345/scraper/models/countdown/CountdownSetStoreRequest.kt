@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * The request used to set the active store for pricing purposes.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)

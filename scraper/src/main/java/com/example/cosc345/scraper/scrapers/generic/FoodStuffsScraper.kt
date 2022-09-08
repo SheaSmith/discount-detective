@@ -31,7 +31,6 @@ import com.example.cosc345.shared.models.*
  * @param refreshToken The refresh token to use to generate an access token.
  * @param storeWhiteList The stores we should download data for, as the app is currently region locked, with the key being the store ID and the value being the region.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
  */
 abstract class FoodStuffsScraper(

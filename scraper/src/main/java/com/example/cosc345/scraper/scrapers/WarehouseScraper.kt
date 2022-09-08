@@ -15,7 +15,6 @@ import com.example.cosc345.shared.models.*
  *
  * Each product is then processed and cleaned up as normal.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class WarehouseScraper : Scraper() {

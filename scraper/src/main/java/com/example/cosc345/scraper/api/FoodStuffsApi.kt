@@ -11,8 +11,6 @@ import retrofit2.http.*
 
 /**
  * The definition for FoodStuffs-based stores that defines how to retrieve data from them.
- *
- * @author Shea Smith
  */
 interface FoodStuffsApi {
     /**

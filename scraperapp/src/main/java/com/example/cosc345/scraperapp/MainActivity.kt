@@ -23,8 +23,10 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.*
 import com.example.cosc345.scraperapp.ui.theme.DiscountDetectiveTheme
+import com.example.cosc345.scraperapp.workers.BarcodeMergeWorker
 import com.example.cosc345.scraperapp.workers.SaveToFirebaseWorker
 import com.example.cosc345.scraperapp.workers.ScraperWorker
+import com.example.cosc345.scraperapp.workers.ValuesMergeWorker
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
@@ -55,6 +57,7 @@ class MainActivity : ComponentActivity() {
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = viewModel(),
@@ -125,6 +128,44 @@ fun MainScreen(
                 }
 
                 Button(onClick = {
+                    val workRequest = OneTimeWorkRequestBuilder<BarcodeMergeWorker>()
+                        .setBackoffCriteria(
+                            BackoffPolicy.LINEAR,
+                            Duration.ofMinutes(30)
+                        )
+                        .build()
+
+                    WorkManager
+                        .getInstance(context)
+                        .cancelAllWork()
+
+                    WorkManager
+                        .getInstance(context)
+                        .enqueueUniqueWork("barcode", ExistingWorkPolicy.REPLACE, workRequest)
+                }) {
+                    Text(text = "Run barcode matcher")
+                }
+
+                Button(onClick = {
+                    val workRequest = OneTimeWorkRequestBuilder<ValuesMergeWorker>()
+                        .setBackoffCriteria(
+                            BackoffPolicy.LINEAR,
+                            Duration.ofMinutes(30)
+                        )
+                        .build()
+
+                    WorkManager
+                        .getInstance(context)
+                        .cancelAllWork()
+
+                    WorkManager
+                        .getInstance(context)
+                        .enqueueUniqueWork("values", ExistingWorkPolicy.REPLACE, workRequest)
+                }) {
+                    Text(text = "Run value matcher")
+                }
+
+                Button(onClick = {
                     val workRequest = OneTimeWorkRequestBuilder<SaveToFirebaseWorker>()
                         .setBackoffCriteria(
                             BackoffPolicy.LINEAR,
@@ -140,7 +181,7 @@ fun MainScreen(
                         .getInstance(context)
                         .enqueueUniqueWork("firebase", ExistingWorkPolicy.REPLACE, workRequest)
                 }) {
-                    Text(text = "Run value matcher")
+                    Text(text = "Run Firebase uploader")
                 }
             }
         }

@@ -15,8 +15,6 @@ import com.example.cosc345.shared.models.Store
  *
  * The main WooCommerce scraper is then called, which utilises this data.
  *
- * @author William Hadden
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class MadButcherScraper : WooCommerceScraper(

@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * A store that exists for a particular FoodStuffs retailer.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)

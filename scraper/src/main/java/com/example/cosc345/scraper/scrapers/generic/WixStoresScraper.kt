@@ -19,7 +19,6 @@ import com.example.cosc345.shared.models.StorePricingInformation
  * @param retailer The retailer to return.
  * @param baseUrl The base URL all API requests are made relative to.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
  */
 abstract class WixStoresScraper(

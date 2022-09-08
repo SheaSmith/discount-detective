@@ -193,7 +193,7 @@ class BarcodeMatcherUnitTest {
             ),
             RetailerProductInformation(
                 "new-world",
-                "5046525-KGM-000",
+                "5046526-KGM-000",
                 "Royal Gala Apples",
                 null,
                 null,

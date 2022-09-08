@@ -24,7 +24,6 @@ import kotlin.text.Typography.nbsp
  * @param baseUrl The base URL for the get stores request.
  * @param storeWhiteList The stores that we can query as they we are currently geolocked, with the key being the store ID and the value being the region.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
  */
 abstract class MyFoodLinkScraper(
