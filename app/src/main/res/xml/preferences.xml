@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory app:title="General">
+    <PreferenceCategory
+        app:icon="@drawable/ic_baseline_settings_24"
+        app:title="General">
 
         <ListPreference
             app:defaultValue="system"
@@ -12,16 +14,9 @@
 
     </PreferenceCategory>
 
-    <!--    <PreferenceCategory app:title="Language">-->
-
-    <!--        <SwitchPreferenceCompat-->
-    <!--            app:key="reo"-->
-    <!--            app:title="Te Reo Māori"-->
-    <!--            app:defaultValue="false" />-->
-
-    <!--    </PreferenceCategory>-->
-
-    <PreferenceCategory app:title="Location">
+    <PreferenceCategory
+        app:icon="@drawable/ic_round_place_24"
+        app:title="Location">
 
         <ListPreference
             app:defaultValue="dunedin"
@@ -40,9 +35,10 @@
             app:title="Local option" />
 
     </PreferenceCategory>
-    >
 
-    <PreferenceCategory app:title="Feedback">
+    <PreferenceCategory
+        app:icon="@drawable/ic_baseline_message_24"
+        app:title="Feedback">
 
         <Preference
             app:key="feedback"
@@ -50,7 +46,6 @@
             app:title="Send feedback" />
 
     </PreferenceCategory>
-    >
 
 
 </androidx.preference.PreferenceScreen>
