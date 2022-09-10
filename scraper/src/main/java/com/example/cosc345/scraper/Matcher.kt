@@ -165,96 +165,56 @@ class Matcher {
         productMap: Map<String, Product>,
         retailers: Map<String, Retailer>
     ): Pair<Map<String, Retailer>, Map<String, Product>> {
-        val newProductsMap = mutableMapOf<String, Product>()
+        val products = productMap.values.toMutableList()
 
         val time = measureTime {
-            val test =
-                productMap
-                    .flatMap { product ->
-                        product.value.information!!
-                            .map { it to product.key }
-                    }
-                    .groupBy { MatcherGrouping(it.first) }
-                    .mapValues { it.value.toMutableList() }
-                    .toList()
-                    .toMutableList()
-
-            val retailersFix = test.filter { map ->
-                map.second.map { it.first.retailer }.distinct().size != map.second.size
+            val productWithMatcherGroup = products.associateWith { product ->
+                product.information!!.map { MatcherGrouping(it) }.toMutableSet()
             }
 
-            retailersFix.forEach { entry ->
-                val retailersForEntry = entry.second.map { it.first.retailer }.distinct()
-
-                retailersForEntry.forEach { retailer ->
-                    val infoForRetailer = entry.second.filter { it.first.retailer == retailer }
-
-                    if (infoForRetailer.size > 1) {
-                        val toRemove =
-                            infoForRetailer.filterIndexed { index, _ -> index != 0 }.toSet()
-                        test.first { it.first == entry.first }.second.removeAll(toRemove)
-
-                        toRemove.forEach {
-                            test.add(Pair(MatcherGrouping(it.first), mutableListOf(it)))
-                        }
-                    }
+            productWithMatcherGroup.forEach { map ->
+                val retailersForProduct = map.key.information!!.map { it.retailer }
+                val matches = productWithMatcherGroup.filter { match ->
+                    match.key.information!!.isNotEmpty() &&
+                            match != map && match.key.information!!.none {
+                        retailersForProduct.contains(
+                            it.retailer
+                        )
+                    } && match.value.intersect(map.value).isNotEmpty()
                 }
-            }
 
-            val newProductIdMap = mutableMapOf<String, String>()
-
-            test.map { it.second }.forEach { mapList ->
-                val productIds = mapList.map { newProductIdMap[it.second] ?: it.second }.toSet()
-
-                val matchingProductIds = newProductsMap.keys.intersect(productIds)
-
-                if (matchingProductIds.isNotEmpty()) {
-                    val ids = matchingProductIds.filterIndexed { index, _ -> index != 0 }
-                    val newId = matchingProductIds.first()
-
-                    val productInfoToAdd = mapList.map { it.first }.toMutableList()
-                    if (ids.isNotEmpty()) {
-                        ids.forEach {
-                            productInfoToAdd.addAll(newProductsMap[it]!!.information!!)
-                            newProductsMap.remove(it)
-                            newProductIdMap[it] = newId
+                if (matches.isNotEmpty()) {
+                    if (matches.size > 1) {
+                        val firstMatch = matches.keys.first()
+                        val firstMatchValues = matches[firstMatch]
+                        matches.keys.forEachIndexed { index, product ->
+                            if (index != 0 && product.information!!.none { retailerInfo -> firstMatch.information!!.any { retailerInfo.retailer == it.retailer } }) {
+                                firstMatch.information!!.addAll(product.information!!)
+                                products.remove(product)
+                                val value = matches.filterKeys { it == product }.values.first()
+                                firstMatchValues!!.addAll(value)
+                                value.clear()
+                                product.information!!.clear()
+                            }
                         }
                     }
 
-                    mapList.map { it.second }.forEach {
-                        if (!newProductIdMap.containsKey(it)) {
-                            newProductIdMap[it] = newId
-                        }
-                    }
-
-                    newProductsMap[newId]!!.information!!.addAll(productInfoToAdd)
-                } else {
-                    val newId = mapList.first().second
-
-                    val otherIds =
-                        mapList.filterIndexed { index, _ -> index != 0 }.map { it.second }
-                    otherIds.forEach {
-                        newProductIdMap[it] = newId
-                    }
-
-                    val product = Product(mapList.map { it.first }.toMutableList())
-                    newProductsMap[newId] = product
+                    val match = matches.keys.first()
+                    match.information!!.addAll(map.key.information!!)
+                    matches.filterKeys { it == match }.values.first().addAll(map.value)
+                    products.remove(map.key)
+                    map.key.information!!.clear()
+                    map.value.clear()
                 }
             }
-
-            newProductsMap.forEach { product ->
-                product.value.information!!.removeAll { info ->
-                    newProductsMap.values.flatMap { it.information!! }
-                        .count { it.id == info.id && it.retailer == info.retailer } > 1
-                }
-            }
-            newProductsMap.values.removeAll { it.information.isNullOrEmpty() }
         }
 
-        printStatus(newProductsMap.values.toList(), retailers)
+        printStatus(products, retailers)
         print("Barcode matching took ${time.toString(DurationUnit.SECONDS, 1)}")
 
-        return Pair(retailers, newProductsMap)
+        val mappedProducts = mapProducts(products)
+
+        return Pair(retailers, mappedProducts)
     }
 
     private fun mapProducts(products: List<Product>): Map<String, Product> {
