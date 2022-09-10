@@ -17,9 +17,7 @@ class FirebaseProductsPagingSource(
     private val repository: SearchRepository,
     private val query: String
 ) : PagingSource<String, Pair<String, Product>>() {
-    override fun getRefreshKey(state: PagingState<String, Pair<String, Product>>): String? {
-        return null
-    }
+    override fun getRefreshKey(state: PagingState<String, Pair<String, Product>>): String? = null
 
     override suspend fun load(params: LoadParams<String>): LoadResult<String, Pair<String, Product>> {
         return try {

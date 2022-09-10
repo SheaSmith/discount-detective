@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
  * Creates the user interface search screen and links elements of the UI to the database so that
  * users can search for certain foods.
  *
- * @param viewModel Instance of the SearchViewModel class (see [io.github.sheasmith.discountdetective.viewmodel.SearchViewModel])
+ * @param viewModel Instance of the SearchViewModel class (see [SearchViewModel])
  * @param navController Instance of the nav controller for navigation class.
  */
 @OptIn(ExperimentalAnimationApi::class)
@@ -77,14 +77,13 @@ fun SearchScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val hasIndexed by viewModel.hasIndexed.observeAsState()
 
-    val barcodeResult = navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
+    val barcodeResult = (navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
         "barcode"
-    )!!.observeAsState()
+    ) ?: return).observeAsState()
 
-    remember {
-        barcodeResult.value?.let {
-            viewModel.setQuery(it, true)
-        }
+    barcodeResult.value?.let {
+        navController.currentBackStackEntry?.savedStateHandle?.set("barcode", null)
+        viewModel.setQuery(it, true)
     }
 
     Scaffold(
@@ -205,7 +204,7 @@ fun SearchScreen(
                 } else if (retailers.isNotEmpty() && productResults.itemCount != 0) {
                     items(
                         items = productResults,
-                        key = { product -> product.first }
+                        key = { (first, _) -> first }
                     ) {
                         SearchProductCard(
                             it,

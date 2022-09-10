@@ -84,7 +84,7 @@ data class SearchableRetailerProductInformation(
     /**
      * An URL of the image for this product, hosted on the retailer's server.
      */
-    @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_EXACT_TERMS)
+    @Document.StringProperty(indexingType = AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_NONE)
     val image: String?,
 
     /**

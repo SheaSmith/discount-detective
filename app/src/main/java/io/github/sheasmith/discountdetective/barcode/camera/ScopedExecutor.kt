@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 /**
  * Wraps an existing executor to provide a [.shutdown] method that allows subsequent
  * cancellation of submitted runnables.
+ *
+ * @param executor The executor to wrap.
  */
 class ScopedExecutor(private val executor: Executor) : Executor {
     private val shutdown = AtomicBoolean()

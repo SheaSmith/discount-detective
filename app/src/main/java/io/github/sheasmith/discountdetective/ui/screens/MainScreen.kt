@@ -1,5 +1,6 @@
 package io.github.sheasmith.discountdetective.ui.screens
 
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import io.github.sheasmith.discountdetective.ui.components.main.NavigationWrapper
@@ -18,6 +19,7 @@ import io.github.sheasmith.discountdetective.ui.utils.NavigationType
  */
 // Based on https://github.com/googlecodelabs/android-compose-codelabs/blob/end/AdaptiveUiCodelab/app/src/main/java/com/example/reply/ui/ReplyApp.kt
 @Composable
+@ExperimentalGetImage
 fun MainScreen(
     windowSize: WindowWidthSizeClass,
     foldingDevicePosture: DevicePosture

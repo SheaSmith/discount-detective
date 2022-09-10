@@ -3,9 +3,7 @@ package io.github.sheasmith.discountdetective.repository
 import android.content.Context
 import android.util.Log
 import androidx.appsearch.app.SearchResults
-import androidx.appsearch.app.SearchSpec
-import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_DOCUMENT_SCORE
-import androidx.appsearch.app.SearchSpec.RANKING_STRATEGY_RELEVANCE_SCORE
+import androidx.appsearch.app.SearchSpec.*
 import androidx.appsearch.app.SearchSuggestionSpec
 import androidx.concurrent.futures.await
 import com.example.cosc345.shared.extensions.capitaliseNZ
@@ -55,8 +53,9 @@ class SearchRepository @Inject constructor(
         awaitInitialization()
         Log.d(TAG, "Initialised. Starting the AppSearch query.")
 
-        val searchSpec = SearchSpec.Builder()
-            .setRankingStrategy(if (query.isEmpty()) RANKING_STRATEGY_DOCUMENT_SCORE else RANKING_STRATEGY_RELEVANCE_SCORE)
+        val searchSpec = Builder()
+            .setRankingStrategy(RANKING_STRATEGY_DOCUMENT_SCORE)
+            .setOrder(ORDER_DESCENDING)
             .setResultCountPerPage(count)
             .build()
 

@@ -4,7 +4,7 @@ import androidx.appsearch.annotation.Document
 import com.example.cosc345.shared.models.Product
 
 /**
- * A [com.example.cosc345.shared.models.Product] that is able to be inserted into the AppSearch database.
+ * A [Product] that is able to be inserted into the AppSearch database.
  */
 @Document
 data class SearchableProduct(
@@ -26,7 +26,7 @@ data class SearchableProduct(
      * prioritise more "popular" items.
      */
     @Document.Score
-    val size: Int,
+    val score: Int,
 
     /**
      * A list of information associated with this product. We index on these properties as well.
@@ -35,7 +35,7 @@ data class SearchableProduct(
     val information: List<SearchableRetailerProductInformation>
 ) {
     /**
-     * Create this searchable product from the [com.example.cosc345.shared.models.Product] model.
+     * Create this searchable product from the [Product] model.
      *
      * @param product The product to create this searchable version from.
      * @param id The ID of the product.
@@ -44,7 +44,7 @@ data class SearchableProduct(
      */
     constructor(product: Product, id: String, localMap: Map<String, Boolean>) : this(
         id = id,
-        size = product.information!!.size,
+        score = calculateScore(product),
         information = product.information!!.map {
             SearchableRetailerProductInformation(
                 it,
@@ -53,7 +53,7 @@ data class SearchableProduct(
         })
 
     /**
-     * Convert the searchable product back to the standard [com.example.cosc345.shared.models.Product].
+     * Convert the searchable product back to the standard [Product].
      *
      * @return A pair with the ID of the product as the ID, and the product as the value.
      */
@@ -62,5 +62,19 @@ data class SearchableProduct(
             id,
             Product(information.map { it.toRetailerProductInformation() }.toMutableList())
         )
+    }
+
+    companion object {
+        private fun calculateScore(product: Product): Int {
+            val bestInformation = product.getBestInformation()
+
+            val wordScore = 100 - ((bestInformation.name?.count { it == ' ' } ?: 0) +
+                    (bestInformation.brandName?.count { it == ' ' } ?: 0) +
+                    (bestInformation.variant?.count { it == ' ' } ?: 0))
+
+            val retailersScore = product.information!!.size * 3
+
+            return wordScore + retailersScore
+        }
     }
 }

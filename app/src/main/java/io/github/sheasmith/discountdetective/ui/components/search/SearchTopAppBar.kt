@@ -1,5 +1,6 @@
 package io.github.sheasmith.discountdetective.ui.components.search
 
+import android.content.pm.PackageManager
 import android.view.KeyEvent.KEYCODE_ENTER
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -102,7 +104,11 @@ fun SearchTopAppBar(
                         )
                     }
                 }
-                AnimatedVisibility(visible = search.isEmpty()) {
+                AnimatedVisibility(
+                    visible = search.isEmpty() && LocalContext.current.packageManager.hasSystemFeature(
+                        PackageManager.FEATURE_CAMERA
+                    )
+                ) {
                     IconButton(onClick = onScanBarcode) {
                         Icon(
                             painterResource(id = R.drawable.ic_barcode_scanner),

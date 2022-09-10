@@ -20,7 +20,11 @@ import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 
-/** Custom animator for the object or barcode reticle in live camera.  */
+/**
+ * Custom animator for the object or barcode reticle in live camera.
+ *
+ * @param graphicOverlay The graphic overlay view to draw.
+ */
 class CameraReticleAnimator(graphicOverlay: GraphicOverlay) {
 
     /** Returns the scale value of ripple alpha ranges in [0, 1].  */
@@ -88,10 +92,16 @@ class CameraReticleAnimator(graphicOverlay: GraphicOverlay) {
         )
     }
 
+    /**
+     * Start the animation.
+     */
     fun start() {
         if (!animatorSet.isRunning) animatorSet.start()
     }
 
+    /**
+     * Cancel the animation.
+     */
     fun cancel() {
         animatorSet.cancel()
         rippleAlphaScale = 0f
