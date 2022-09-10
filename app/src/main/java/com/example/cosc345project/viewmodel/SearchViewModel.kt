@@ -2,6 +2,7 @@ package com.example.cosc345project.viewmodel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -12,12 +13,12 @@ import androidx.paging.cachedIn
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345project.exceptions.NoInternetException
-import com.example.cosc345project.models.RetailerProductInfo
+import com.example.cosc345project.models.ShoppingListItem
 import com.example.cosc345project.paging.AppSearchProductsPagingSource
 import com.example.cosc345project.paging.FirebaseProductsPagingSource
-import com.example.cosc345project.repository.ProductRepository
 import com.example.cosc345project.repository.RetailersRepository
 import com.example.cosc345project.repository.SearchRepository
+import com.example.cosc345project.repository.ShoppingListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,35 +32,38 @@ import javax.inject.Inject
  *
  * @param searchRepository The search repository, which handles searching items.
  * @param retailersRepository The retailers repository, which handles getting retailers.
- * @param productRepository The products repository, which handles adding items to the shopping list.
+ * @param shoppingListRepository The shopping list repository, which handles adding items to the shopping list.
  */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
     private val retailersRepository: RetailersRepository,
-    private val productRepository: ProductRepository
+    private val shoppingListRepository: ShoppingListRepository
 ) : ViewModel() {
 
     /**
      * The current search query.
      */
-    val searchQuery = MutableStateFlow("")
+    val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
 
     /**
      * The current search suggestions for the current query.
      */
-    val suggestions = MutableStateFlow<List<String>>(listOf())
+    val suggestions: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
 
     /**
      * Whether suggestions should be shown or not.
      */
-    val showSuggestions = mutableStateOf(false)
+    val showSuggestions: MutableState<Boolean> = mutableStateOf(false)
 
     /**
      * The retailers currently stored in Firebase.
      */
-    val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
+    val retailers: MutableStateFlow<Map<String, Retailer>> = MutableStateFlow(mapOf())
 
+    /**
+     * The live data for the paged search results.
+     */
     val searchLiveData: MutableState<Flow<PagingData<Pair<String, Product>>>> =
         mutableStateOf(
             getFirebaseState()
@@ -75,8 +79,14 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    val hasIndexed = searchRepository.hasIndexedBefore().asLiveData()
+    /**
+     * Whether the app search indexing has finished or not.
+     */
+    val hasIndexed: LiveData<Boolean> = searchRepository.hasIndexedBefore().asLiveData()
 
+    /**
+     * Run a query on either firebase or app search.
+     */
     fun query() {
         viewModelScope.launch {
             if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore()
@@ -112,6 +122,12 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Set the current search query.
+     *
+     * @param query The query to set the search query to.
+     * @param runSearch Whether the search should be run or not.
+     */
     fun setQuery(query: String, runSearch: Boolean = false) {
         searchQuery.value = query
         querySuggestions()
@@ -120,9 +136,29 @@ class SearchViewModel @Inject constructor(
             query()
     }
 
-    fun addToShoppingList(productId: String, retailerProductInfoId: String, storeId: String, quantity: Int) {
+    /**
+     * Add the product to the shopping list.
+     *
+     * @param productId The ID of the product to add to the shopping list.
+     * @param retailerProductInfoId The ID of the retailer product info the user has selected.
+     * @param storeId The ID of the store whose price the user has selected.
+     * @param quantity The quantity picked by the user.
+     */
+    fun addToShoppingList(
+        productId: String,
+        retailerProductInfoId: String,
+        storeId: String,
+        quantity: Int
+    ) {
         viewModelScope.launch {
-            productRepository.insert(RetailerProductInfo(productId, retailerProductInfoId, storeId, quantity))
+            shoppingListRepository.addToShoppingList(
+                ShoppingListItem(
+                    productId,
+                    retailerProductInfoId,
+                    storeId,
+                    quantity
+                )
+            )
         }
     }
 }

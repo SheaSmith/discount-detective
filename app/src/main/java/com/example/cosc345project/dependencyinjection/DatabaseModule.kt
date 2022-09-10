@@ -2,7 +2,7 @@ package com.example.cosc345project.dependencyinjection
 
 import android.content.Context
 import androidx.room.Room
-import com.example.cosc345project.dao.ProductDao
+import com.example.cosc345project.dao.ShoppingListDao
 import com.example.cosc345project.database.ShoppingListDatabase
 import dagger.Module
 import dagger.Provides
@@ -41,7 +41,7 @@ object DatabaseModule {
      * @return The dao.
      */
     @Provides
-    fun provideProductDao(db: ShoppingListDatabase): ProductDao {
+    fun provideProductDao(db: ShoppingListDatabase): ShoppingListDao {
         return db.productDao()
     }
 }

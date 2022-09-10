@@ -28,8 +28,15 @@ abstract class SearchBaseRepository(private val context: Context) {
      * A flow, specifying whether the AppSearch session for this repository has been started yet.
      */
     val isInitialized: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    /**
+     * Whether something is dependent on the session existing (i.e. is it actively being used).
+     */
     protected var dependentOnSession: Boolean = false
 
+    /**
+     * The app search session used.
+     */
     protected lateinit var appSearchSession: AppSearchSession
 
     /**

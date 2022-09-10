@@ -28,7 +28,9 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 
-/** Barcode Detector Demo.  */
+/**
+ * A processor responsible for scanning barcodes.
+ */
 class BarcodeScannerProcessor(
     context: Context,
     private val viewmodel: BarcodeViewModel,

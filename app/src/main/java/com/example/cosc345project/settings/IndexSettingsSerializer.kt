@@ -28,7 +28,7 @@ object IndexSettingsSerializer : Serializer<IndexSettings> {
         }
     }
 
-    override suspend fun writeTo(t: IndexSettings, output: OutputStream) = t.writeTo(output)
+    override suspend fun writeTo(t: IndexSettings, output: OutputStream): Unit = t.writeTo(output)
 }
 
 /**
