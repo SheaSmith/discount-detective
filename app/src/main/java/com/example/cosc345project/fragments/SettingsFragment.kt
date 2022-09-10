@@ -10,11 +10,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cosc345project.R
 import com.google.android.material.appbar.AppBarLayout
 
+/**
+ * The fragment responsible for inflating the settings page, which uses AndroidX preferences.
+ */
 class SettingsFragment : PreferenceFragmentCompat() {
+    /**
+     * Creates the preferences options from the specified XML file.
+     */
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
     }
 
+    /**
+     * Creates the recyclerview for the preferences items. We use this to disable nested scrolling.
+     */
     override fun onCreateRecyclerView(
         inflater: LayoutInflater,
         parent: ViewGroup,
@@ -31,6 +40,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         return view
     }
 
+    /**
+     * Creates the overall view for the settings screen.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

@@ -16,9 +16,12 @@ import com.example.cosc345project.repository.SearchIndexRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
+/**
+ * A worker that is responsible for indexing the products into app search.
+ */
 @HiltWorker
 class IndexingWorker @AssistedInject constructor(
-    @Assisted val appContext: Context,
+    @Assisted private val appContext: Context,
     @Assisted params: WorkerParameters,
     private val searchRepository: SearchIndexRepository
 ) : CoroutineWorker(appContext, params) {

@@ -26,6 +26,12 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class ScopedExecutor(private val executor: Executor) : Executor {
     private val shutdown = AtomicBoolean()
+
+    /**
+     * Execute whatever task is necessary.
+     *
+     * @param command The command to execute.
+     */
     override fun execute(command: Runnable) {
         // Return early if this object has been shut down.
         if (shutdown.get()) {

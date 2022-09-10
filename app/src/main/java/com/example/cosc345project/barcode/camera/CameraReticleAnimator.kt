@@ -28,15 +28,15 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 class CameraReticleAnimator(graphicOverlay: GraphicOverlay) {
 
     /** Returns the scale value of ripple alpha ranges in [0, 1].  */
-    var rippleAlphaScale = 0f
+    var rippleAlphaScale: Float = 0f
         private set
 
     /** Returns the scale value of ripple size ranges in [0, 1].  */
-    var rippleSizeScale = 0f
+    var rippleSizeScale: Float = 0f
         private set
 
     /** Returns the scale value of ripple stroke width ranges in [0, 1].  */
-    var rippleStrokeWidthScale = 1f
+    var rippleStrokeWidthScale: Float = 1f
         private set
 
     private val animatorSet: AnimatorSet

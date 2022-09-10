@@ -4,7 +4,7 @@ import androidx.appsearch.annotation.Document
 import com.example.cosc345.shared.models.StorePricingInformation
 
 /**
- * A version of the [com.example.cosc345.shared.models.StorePricingInformation] specifically for
+ * A version of the [StorePricingInformation] specifically for
  * inserting into the AppSearch database.
  */
 @Document
@@ -77,9 +77,9 @@ data class SearchablePricingInformation(
     val verified: Boolean
 ) {
     /**
-     * Convert this object back to a standard [com.example.cosc345.shared.models.StorePricingInformation].
+     * Convert this object back to a standard [StorePricingInformation].
      */
-    fun toStorePricingInformation() = StorePricingInformation(
+    fun toStorePricingInformation(): StorePricingInformation = StorePricingInformation(
         store,
         price,
         discountPrice,
@@ -91,7 +91,7 @@ data class SearchablePricingInformation(
     )
 
     /**
-     * Create this searchable version based off the standard [com.example.cosc345.shared.models.StorePricingInformation].
+     * Create this searchable version based off the standard [StorePricingInformation].
      *
      * @param pricingInformation The pricing information to use to initialise this.
      * @param retailerId The retailer ID to use.

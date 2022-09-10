@@ -5,7 +5,7 @@ import androidx.appsearch.app.AppSearchSchema
 import com.example.cosc345.shared.models.RetailerProductInformation
 
 /**
- * A version of [com.example.cosc345.shared.models.RetailerProductInformation] that can be inserted into the AppSearch database.
+ * A version of [RetailerProductInformation] that can be inserted into the AppSearch database.
  */
 @Document
 data class SearchableRetailerProductInformation(

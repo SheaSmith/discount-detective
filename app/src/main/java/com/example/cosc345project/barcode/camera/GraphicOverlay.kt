@@ -78,6 +78,9 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
      * instances to the overlay using [GraphicOverlay.add].
      */
     abstract class Graphic(private val overlay: GraphicOverlay) {
+        /**
+         * The context to use for the graphic drawing.
+         */
         protected val context: Context = overlay.context
 
         /**
@@ -94,12 +97,32 @@ class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
          * @param canvas drawing canvas
          */
         abstract fun draw(canvas: Canvas)
+
+        /**
+         * Draw a rectangle.
+         *
+         * @param canvas The canvas to draw on.
+         * @param left The left point for the rectangle.
+         * @param top The top point for the rectangle.
+         * @param right The right point for the rectangle.
+         * @param bottom The bottom point for the rectangle.
+         * @param paint The paint for the rectangle.
+         */
         protected fun drawRect(
             canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, paint: Paint?
         ) {
             canvas.drawRect(left, top, right, bottom, paint!!)
         }
 
+        /**
+         * Draw text on the canvas.
+         *
+         * @param canvas The canvas to draw on.
+         * @param text The text to draw.
+         * @param x The x coordinate to draw at.
+         * @param y The y coordinate to draw at.
+         * @param paint The paint to use for the text.
+         */
         protected fun drawText(canvas: Canvas, text: String?, x: Float, y: Float, paint: Paint?) {
             canvas.drawText(text!!, x, y, paint!!)
         }
