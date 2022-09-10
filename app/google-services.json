@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:452541404422:android:ecb0e16408d52eaba3ba87",
         "android_client_info": {
-          "package_name": "com.example.cosc345project"
+          "package_name": "com.example.cosc345"
         }
       },
       "oauth_client": [
@@ -40,6 +40,35 @@
         "mobilesdk_app_id": "1:452541404422:android:8ee198ebf862586da3ba87",
         "android_client_info": {
           "package_name": "com.example.cosc345.scraperapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "452541404422-j6ijnejre442ic5cq9nqi2so605cgkhr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXeJ-Fo5laDXa3KgwpDEXixnP_to6TE1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "452541404422-j6ijnejre442ic5cq9nqi2so605cgkhr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452541404422:android:9171eecca5b67d0ea3ba87",
+        "android_client_info": {
+          "package_name": "io.github.sheasmith.discountdetective"
         }
       },
       "oauth_client": [
