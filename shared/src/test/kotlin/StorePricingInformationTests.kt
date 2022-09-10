@@ -74,20 +74,11 @@ class StorePricingInformationTests {
         val retailerProductInformation = RetailerProductInformation(
             "test",
             saleType = SaleType.WEIGHT,
-            weight = 2000,
-            pricing = mutableListOf(
-                StorePricingInformation(
-                    "test",
-                    discountPrice = 200,
-                    price = 400
-                )
-            )
+            weight = 2000
         )
 
-        val pricingInformation = retailerProductInformation.pricing!!.first()
-
         assert(
-            pricingInformation.getDisplayPrice(retailerProductInformation, 100) == Pair(
+            StorePricingInformation.getDisplayPrice(retailerProductInformation, 100) == Pair(
                 "$1",
                 ".00/kg"
             )
@@ -102,19 +93,11 @@ class StorePricingInformationTests {
     fun `Check display price manual input`() {
         val retailerProductInformation = RetailerProductInformation(
             "test",
-            saleType = SaleType.EACH,
-            pricing = mutableListOf(
-                StorePricingInformation(
-                    "test",
-                    price = 100
-                )
-            )
+            saleType = SaleType.EACH
         )
 
-        val pricingInformation = retailerProductInformation.pricing!!.first()
-
         assert(
-            pricingInformation.getDisplayPrice(retailerProductInformation, 100) == Pair(
+            StorePricingInformation.getDisplayPrice(retailerProductInformation, 100) == Pair(
                 "$1",
                 ".00/ea"
             )

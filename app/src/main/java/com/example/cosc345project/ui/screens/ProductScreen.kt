@@ -156,7 +156,7 @@ fun RetailerSlot(
                     .align(Alignment.CenterVertically)
             ) {
                 val price = pricingInformation.price?.let {
-                    pricingInformation.getDisplayPrice(
+                    StorePricingInformation.getDisplayPrice(
                         productInformation,
                         it
                     )
@@ -174,7 +174,7 @@ fun RetailerSlot(
                     .align(Alignment.CenterVertically)
             ) {
                 if (pricingInformation.discountPrice != null) {
-                    val price = pricingInformation.getDisplayPrice(
+                    val price = StorePricingInformation.getDisplayPrice(
                         productInformation,
                         pricingInformation.discountPrice!!
                     )
@@ -186,7 +186,7 @@ fun RetailerSlot(
                 }
 
                 if (pricingInformation.multiBuyPrice != null && pricingInformation.multiBuyQuantity != null) {
-                    val price = pricingInformation.getDisplayPrice(
+                    val price = StorePricingInformation.getDisplayPrice(
                         productInformation,
                         pricingInformation.multiBuyPrice!!
                     )
@@ -231,7 +231,6 @@ fun ProductInformation(
     retailers: Map<String, Retailer>?,
     viewModel: ProductViewModel
 ) {
-    val bestInformation = product?.second?.getBestInformation()
     val loading = product == null
 
     Column(
