@@ -10,6 +10,9 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 data class MyFoodLinkGtmEcommerce(
+    /**
+     * The GTM impressions information.
+     */
     @Json(name = "impressions")
     val impressions: Array<MyFoodLinkGtmImpression>?
 ) {

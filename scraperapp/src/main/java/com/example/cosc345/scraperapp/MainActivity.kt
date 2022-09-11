@@ -2,6 +2,7 @@
 
 package com.example.cosc345.scraperapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,7 +32,9 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.Duration
 
-
+/**
+ * The main activity for the app, which contains the contents of the app.
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -43,6 +46,11 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    /**
+     * The method called when the app is created.
+     *
+     * @param savedInstanceState Data that has been saved from the last open.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -57,6 +65,9 @@ class MainActivity : ComponentActivity() {
 
 }
 
+/**
+ * The main screen for the app, which contains some useful buttons for running some functions.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -88,24 +99,7 @@ fun MainScreen(
                         Text(text = "Login")
                     }
                 }
-                Button(onClick = {
-                    val workRequest = OneTimeWorkRequestBuilder<ScraperWorker>()
-                        .setBackoffCriteria(
-                            BackoffPolicy.LINEAR,
-                            Duration.ofMinutes(30)
-                        )
-                        .build()
 
-                    WorkManager
-                        .getInstance(context)
-                        .cancelAllWork()
-
-                    WorkManager
-                        .getInstance(context)
-                        .enqueueUniqueWork("scraper", ExistingWorkPolicy.REPLACE, workRequest)
-                }) {
-                    Text(text = "Run scraper now")
-                }
                 Button(onClick = {
                     val workRequest = PeriodicWorkRequestBuilder<ScraperWorker>(Duration.ofDays(1))
                         .setBackoffCriteria(
@@ -127,67 +121,47 @@ fun MainScreen(
                     Text(text = "Schedule scraper")
                 }
 
-                Button(onClick = {
-                    val workRequest = OneTimeWorkRequestBuilder<BarcodeMergeWorker>()
-                        .setBackoffCriteria(
-                            BackoffPolicy.LINEAR,
-                            Duration.ofMinutes(30)
-                        )
-                        .build()
+                ActionButton<ScraperWorker>("Run scraper now", "scraper", context)
 
-                    WorkManager
-                        .getInstance(context)
-                        .cancelAllWork()
+                ActionButton<BarcodeMergeWorker>("Run barcode matcher", "barcode", context)
 
-                    WorkManager
-                        .getInstance(context)
-                        .enqueueUniqueWork("barcode", ExistingWorkPolicy.REPLACE, workRequest)
-                }) {
-                    Text(text = "Run barcode matcher")
-                }
+                ActionButton<ValuesMergeWorker>("Run value matcher", "firebase", context)
 
-                Button(onClick = {
-                    val workRequest = OneTimeWorkRequestBuilder<ValuesMergeWorker>()
-                        .setBackoffCriteria(
-                            BackoffPolicy.LINEAR,
-                            Duration.ofMinutes(30)
-                        )
-                        .build()
-
-                    WorkManager
-                        .getInstance(context)
-                        .cancelAllWork()
-
-                    WorkManager
-                        .getInstance(context)
-                        .enqueueUniqueWork("values", ExistingWorkPolicy.REPLACE, workRequest)
-                }) {
-                    Text(text = "Run value matcher")
-                }
-
-                Button(onClick = {
-                    val workRequest = OneTimeWorkRequestBuilder<SaveToFirebaseWorker>()
-                        .setBackoffCriteria(
-                            BackoffPolicy.LINEAR,
-                            Duration.ofMinutes(30)
-                        )
-                        .build()
-
-                    WorkManager
-                        .getInstance(context)
-                        .cancelAllWork()
-
-                    WorkManager
-                        .getInstance(context)
-                        .enqueueUniqueWork("firebase", ExistingWorkPolicy.REPLACE, workRequest)
-                }) {
-                    Text(text = "Run Firebase uploader")
-                }
+                ActionButton<SaveToFirebaseWorker>("Run Firebase uploader", "firebase", context)
             }
         }
     )
 }
 
+@Composable
+private inline fun <reified W : ListenableWorker> ActionButton(
+    text: String,
+    tag: String,
+    context: Context
+) {
+    Button(onClick = {
+        val workRequest = OneTimeWorkRequestBuilder<W>()
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                Duration.ofMinutes(30)
+            )
+            .build()
+
+        WorkManager
+            .getInstance(context)
+            .cancelAllWork()
+
+        WorkManager
+            .getInstance(context)
+            .enqueueUniqueWork(tag, ExistingWorkPolicy.REPLACE, workRequest)
+    }) {
+        Text(text = text)
+    }
+}
+
+/**
+ * A preview of the app.
+ */
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {

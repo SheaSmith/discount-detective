@@ -42,16 +42,16 @@ class FourSquareScraper : Scraper() {
         )
         val fourSquareStores = fourSquareJsonService.getStores()
 
-        fourSquareStores.forEach { fourSquareStore ->
-            if (storeWhitelist.contains(fourSquareStore.name)) {
+        fourSquareStores.forEach { (id, name, address, latitude, longitude, _) ->
+            if (storeWhitelist.contains(name)) {
                 val store = Store(
-                    id = fourSquareStore.id,
-                    name = fourSquareStore.name.replace(retailerName, "").trim(),
-                    address = fourSquareStore.address,
-                    latitude = fourSquareStore.latitude,
-                    longitude = fourSquareStore.longitude,
+                    id = id,
+                    name = name.replace(retailerName, "").trim(),
+                    address = address,
+                    latitude = latitude,
+                    longitude = longitude,
                     automated = true,
-                    region = storeWhitelist[fourSquareStore.name]
+                    region = storeWhitelist[name]
                 )
                 stores.add(store)
             }
@@ -59,12 +59,12 @@ class FourSquareScraper : Scraper() {
 
         val regionsStoreMap = fourSquareStores.groupBy { it.region }
 
-        regionsStoreMap.forEach { regionMap ->
+        regionsStoreMap.forEach { (key, value) ->
             val mailerId =
-                fourSquareJsonService.getMailers(if (regionMap.key == "SI") "4316" else "3291")
+                fourSquareJsonService.getMailers(if (key == "SI") "4316" else "3291")
                     .first().id
 
-            val regionStores = stores.filter { store -> regionMap.value.any { it.id == store.id } }
+            val regionStores = stores.filter { (id, _, _, _, _, _, _) -> value.any { it.id == id } }
 
             if (regionStores.isNotEmpty()) {
 
@@ -72,19 +72,19 @@ class FourSquareScraper : Scraper() {
                     fourSquareJsonService.getProductsForMailer(mailerId).values.toTypedArray()
                         .flatten()
 
-                mailerProducts.forEach { fourSquareProduct ->
-                    if (fourSquareProduct.type == "product" && products.none { it.id == fourSquareProduct.name.trim() }) {
+                mailerProducts.forEach { (type, mailerName, price, saleType, imageUrls) ->
+                    if (type == "product" && products.none { it.id == mailerName.trim() }) {
                         val product = RetailerProductInformation(
                             retailer = retailerId,
-                            id = fourSquareProduct.name.trim(),
-                            saleType = if (fourSquareProduct.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
-                            weight = if (fourSquareProduct.saleType == "kg") 1000 else null,
-                            image = fourSquareProduct.imageUrls.first(),
+                            id = mailerName.trim(),
+                            saleType = if (saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
+                            weight = if (saleType == "kg") 1000 else null,
+                            image = imageUrls.first(),
                             automated = true,
                             verified = false
                         )
 
-                        var name = fourSquareProduct.name.trim()
+                        var name = mailerName.trim()
 
                         Units.all.forEach {
                             val pair = extractAndRemoveQuantity(name, it)
@@ -122,7 +122,7 @@ class FourSquareScraper : Scraper() {
                         product.pricing = regionStores.map {
                             StorePricingInformation(
                                 it.id,
-                                price = fourSquareProduct.price.toDouble().times(100).toInt(),
+                                price = price.toDouble().times(100).toInt(),
                                 automated = true,
                                 verified = false
                             )
@@ -133,21 +133,21 @@ class FourSquareScraper : Scraper() {
                 }
 
                 val specialsProducts =
-                    fourSquareHtmlService.getLocalSpecials("region_code=${regionMap.key};")
+                    fourSquareHtmlService.getLocalSpecials("region_code=${key};")
 
-                specialsProducts.specials?.forEach { fourSquareProduct ->
-                    if (products.none { it.id == fourSquareProduct.name?.trim() }) {
+                specialsProducts.specials?.forEach { (specialName, imagePath, dollars, cents, saleType) ->
+                    if (products.none { it.id == specialName?.trim() }) {
                         val product = RetailerProductInformation(
                             retailer = retailerId,
-                            id = fourSquareProduct.name?.trim(),
-                            saleType = if (fourSquareProduct.saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
-                            weight = if (fourSquareProduct.saleType == "kg") 1000 else null,
-                            image = "${baseUrl}${fourSquareProduct.imagePath}",
+                            id = specialName?.trim(),
+                            saleType = if (saleType == "kg") SaleType.WEIGHT else SaleType.EACH,
+                            weight = if (saleType == "kg") 1000 else null,
+                            image = "${baseUrl}${imagePath}",
                             automated = true,
                             verified = false
                         )
 
-                        var name = fourSquareProduct.name!!.trim()
+                        var name = specialName!!.trim()
 
                         Units.all.forEach {
                             val pair = extractAndRemoveQuantity(name, it)
@@ -183,7 +183,7 @@ class FourSquareScraper : Scraper() {
                         product.name = name
 
                         val price =
-                            "${fourSquareProduct.dollars}.${fourSquareProduct.cents}".toDouble()
+                            "${dollars}.${cents}".toDouble()
                                 .times(100).toInt()
 
                         product.pricing = regionStores.map {

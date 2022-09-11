@@ -44,20 +44,20 @@ class VeggieBoysScraper : Scraper() {
 
         var dairyDaleMultiBuy: Double? = null
 
-        veggieBoysService.getProducts().products!!.forEach { veggieBoysProduct ->
-            if (veggieBoysProduct.id == "275") {
-                dairyDaleMultiBuy = veggieBoysProduct.price
+        veggieBoysService.getProducts().products!!.forEach { (productName, price, imagePath, id, href, onSpecial) ->
+            if (id == "275") {
+                dairyDaleMultiBuy = price
             } else {
 
                 val product = RetailerProductInformation(
                     retailer = retailerId,
-                    id = veggieBoysProduct.id,
+                    id = id,
                     saleType = SaleType.EACH,
                     automated = true,
                     verified = false
                 )
 
-                var name = veggieBoysProduct.name!!
+                var name = productName!!
                 Units.all.forEach {
                     val result = extractAndRemoveQuantity(name, it)
 
@@ -99,7 +99,7 @@ class VeggieBoysScraper : Scraper() {
                 product.name = name
 
                 if (product.quantity == null) {
-                    val details = veggieBoysService.getProductDetails(veggieBoysProduct.href!!)
+                    val details = veggieBoysService.getProductDetails(href!!)
 
                     if (details.perKg?.isNotEmpty() == true) {
                         product.saleType = SaleType.WEIGHT
@@ -110,10 +110,10 @@ class VeggieBoysScraper : Scraper() {
                 product.pricing = stores.map {
                     StorePricingInformation(
                         store = it.id,
-                        price = if (veggieBoysProduct.onSpecial == null) veggieBoysProduct.price?.times(
+                        price = if (onSpecial == null) price?.times(
                             100
                         )?.toInt() else null,
-                        discountPrice = if (veggieBoysProduct.onSpecial != null) veggieBoysProduct.price?.times(
+                        discountPrice = if (onSpecial != null) price?.times(
                             100
                         )?.toInt() else null,
                         automated = true,
@@ -128,7 +128,7 @@ class VeggieBoysScraper : Scraper() {
                     }
                 }
 
-                product.image = "${baseUrl}${veggieBoysProduct.imagePath}"
+                product.image = "${baseUrl}${imagePath}"
 
                 products.add(product)
             }

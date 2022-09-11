@@ -7,6 +7,7 @@ import com.example.cosc345.shared.models.Region
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.SaleType
 import com.example.cosc345.shared.models.Store
+
 /**
  * The Mad Butcher specific implementation of the [WooCommerceScraper]. However, as the sale type for individual products at the Mad Butcher doesn't seem to be present in the API, it needs to be scraped from the HTML, so this acts as an extension to the WooCommerce scraper to facilitate this.
  *

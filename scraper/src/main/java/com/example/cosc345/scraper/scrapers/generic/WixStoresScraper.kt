@@ -38,20 +38,20 @@ abstract class WixStoresScraper(
             WixStoresProductsRequest(
                 "query getProductList { products(limit: 400) { id name price isInStock media { fullUrl }, ribbon } }",
             ), token
-        ).data.products.filter { it.isInStock }.forEach { wixStoresProduct ->
+        ).data.products.filter { it.isInStock }.forEach { (wixId, name, price, _, media) ->
             products.add(
                 RetailerProductInformation(
                     retailer = id,
-                    id = wixStoresProduct.id,
-                    name = wixStoresProduct.name
+                    id = wixId,
+                    name = name
                         .replace(Regex("\\s+"), " ")
                         .replace(Regex("\\s([()])"), "$1")
                         .trim(),
-                    image = wixStoresProduct.media.first().imageUrl,
+                    image = media.first().imageUrl,
                     pricing = mutableListOf(
                         StorePricingInformation(
                             store = id,
-                            price = wixStoresProduct.price.times(100).toInt()
+                            price = price.times(100).toInt()
                         )
                     ),
                     saleType = SaleType.EACH,

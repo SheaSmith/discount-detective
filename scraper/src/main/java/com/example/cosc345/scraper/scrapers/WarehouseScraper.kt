@@ -30,15 +30,15 @@ class WarehouseScraper : Scraper() {
             "South Dunedin" to Region.DUNEDIN,
             "Invercargill" to Region.INVERCARGILL
         )
-        warehouseService.getStores().stores.forEach { warehouseStore ->
-            val name = warehouseStore.name.split(" - ").first().trim()
+        warehouseService.getStores().stores.forEach { (branchId, storeName, latitude, longitude, _, address) ->
+            val name = storeName.split(" - ").first().trim()
             if (storeWhitelist.contains(name)) {
                 val store = Store(
-                    id = warehouseStore.branchId,
+                    id = branchId,
                     name = name,
-                    address = warehouseStore.address.address,
-                    latitude = warehouseStore.latitude,
-                    longitude = warehouseStore.longitude,
+                    address = address.address,
+                    latitude = latitude,
+                    longitude = longitude,
                     automated = true,
                     region = storeWhitelist[name]
                 )
@@ -51,25 +51,25 @@ class WarehouseScraper : Scraper() {
 
                     while (start - 200 < total) {
                         val response =
-                            warehouseService.getProducts(start, category, warehouseStore.branchId)
+                            warehouseService.getProducts(start, category, branchId)
 
-                        response.products.forEach { warehouseProduct ->
-                            var product = products.firstOrNull { it.id == warehouseProduct.id }
+                        response.products.forEach { (id, originalProductName, imageUrl, barcode, brand, priceInfo, inventory, promotions) ->
+                            var product = products.firstOrNull { it.id == id }
 
                             if (product == null) {
                                 product = RetailerProductInformation(
                                     retailer = retailerId,
-                                    id = warehouseProduct.id,
-                                    brandName = warehouseProduct.brand,
+                                    id = id,
+                                    brandName = brand,
                                     saleType = SaleType.EACH,
-                                    barcodes = listOf(warehouseProduct.barcode),
-                                    image = warehouseProduct.imageUrl,
+                                    barcodes = listOf(barcode),
+                                    image = imageUrl,
                                     automated = true,
                                     verified = false
                                 )
 
-                                var productName = warehouseProduct.name
-                                    .replace(warehouseProduct.brand, "", true)
+                                var productName = originalProductName
+                                    .replace(brand, "", true)
                                     .trim()
 
                                 val weightInGrams =
@@ -88,7 +88,7 @@ class WarehouseScraper : Scraper() {
                                     .trim()
 
                                 if (productName.isEmpty()) {
-                                    productName = warehouseProduct.brand
+                                    productName = brand
                                     product.brandName = null
                                 }
 
@@ -97,18 +97,18 @@ class WarehouseScraper : Scraper() {
                                     if (weightInGrams != null) "${weightInGrams}${Units.GRAMS}" else "${weightInKilograms}${Units.KILOGRAMS}"
                             }
 
-                            if (warehouseProduct.inventory.available && product.pricing?.none { it.store == warehouseStore.branchId } != false) {
+                            if (inventory.available && product.pricing?.none { it.store == branchId } != false) {
                                 if (product.pricing == null) {
                                     product.pricing = mutableListOf()
                                     products.add(product)
                                 }
 
                                 val pricing = StorePricingInformation(
-                                    store = warehouseStore.branchId,
-                                    price = if (warehouseProduct.priceInfo.date == null) warehouseProduct.priceInfo.price.times(
+                                    store = branchId,
+                                    price = if (priceInfo.date == null) priceInfo.price.times(
                                         100
                                     ).toInt() else null,
-                                    discountPrice = if (warehouseProduct.priceInfo.date != null) warehouseProduct.priceInfo.price.times(
+                                    discountPrice = if (priceInfo.date != null) priceInfo.price.times(
                                         100
                                     ).toInt() else null,
                                     verified = false,
@@ -116,7 +116,7 @@ class WarehouseScraper : Scraper() {
                                 )
 
                                 val discount =
-                                    warehouseProduct.promotions.firstOrNull { it.price != null }
+                                    promotions.firstOrNull { it.price != null }
 
                                 if (discount != null) {
                                     pricing.discountPrice = discount.price?.times(100)?.toInt()
@@ -126,7 +126,7 @@ class WarehouseScraper : Scraper() {
                                 }
 
                                 val multiBuy =
-                                    warehouseProduct.promotions.firstOrNull { it.association != null }
+                                    promotions.firstOrNull { it.association != null }
                                 if (multiBuy != null) {
                                     pricing.multiBuyQuantity =
                                         (multiBuy.association?.quantity1

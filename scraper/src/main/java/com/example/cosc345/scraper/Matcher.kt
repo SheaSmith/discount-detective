@@ -104,19 +104,19 @@ class Matcher {
 
             val skipBarcodes = mutableListOf<String>()
 
-            infoGroupedByBarcode.forEach { pair ->
-                if (pair.key !in skipBarcodes) {
-                    val barcodes = pair.value.flatMap { it.barcodes!! }.distinct().toMutableList()
-                    val allRetailers = pair.value.map { it.retailer }.toSet()
-                    barcodes.remove(pair.key)
+            infoGroupedByBarcode.forEach { (key, value) ->
+                if (key !in skipBarcodes) {
+                    val barcodes = value.flatMap { it.barcodes!! }.distinct().toMutableList()
+                    val allRetailers = value.map { it.retailer }.toSet()
+                    barcodes.remove(key)
 
                     val productsInOtherBarcodes =
                         infoGroupedByBarcode.filter {
                             it.key in barcodes
                         }.values.flatten()
                             .distinct()
-                            .filter { it !in pair.value && it.retailer !in allRetailers }
-                    pair.value.addAll(productsInOtherBarcodes)
+                            .filter { it !in value && it.retailer !in allRetailers }
+                    value.addAll(productsInOtherBarcodes)
 
                     skipBarcodes.addAll(productsInOtherBarcodes.flatMap { it.barcodes!! }
                         .distinct())
@@ -128,10 +128,10 @@ class Matcher {
             products.addAll(infoGroupedByBarcode.values.map { Product(it) })
             products.addAll(retailerProductInfo.map { Product(mutableListOf(it)) })
 
-            products.forEach { product ->
-                product.information!!.removeAll { info ->
+            products.forEach { (information) ->
+                information!!.removeAll { (retailer, id, _, _, _, _, _, _, _, _, _, _, _) ->
                     products.flatMap { it.information!! }
-                        .count { it.id == info.id && it.retailer == info.retailer } > 1
+                        .count { it.id == id && it.retailer == retailer } > 1
                 }
             }
             products.removeAll { it.information.isNullOrEmpty() }
@@ -168,8 +168,8 @@ class Matcher {
         val products = productMap.values.toMutableList()
 
         val time = measureTime {
-            val productWithMatcherGroup = products.associateWith { product ->
-                product.information!!.map { MatcherGrouping(it) }.toMutableSet()
+            val productWithMatcherGroup = products.associateWith { (information) ->
+                information!!.map { MatcherGrouping(it) }.toMutableSet()
             }
 
             productWithMatcherGroup.forEach { map ->
@@ -188,7 +188,7 @@ class Matcher {
                         val firstMatch = matches.keys.first()
                         val firstMatchValues = matches[firstMatch]
                         matches.keys.forEachIndexed { index, product ->
-                            if (index != 0 && product.information!!.none { retailerInfo -> firstMatch.information!!.any { retailerInfo.retailer == it.retailer } }) {
+                            if (index != 0 && product.information!!.none { (retailer, _, _, _, _, _, _, _, _, _, _, _, _) -> firstMatch.information!!.any { retailer == it.retailer } }) {
                                 firstMatch.information!!.addAll(product.information!!)
                                 products.remove(product)
                                 val value = matches.filterKeys { it == product }.values.first()
@@ -218,16 +218,16 @@ class Matcher {
     }
 
     private fun mapProducts(products: List<Product>): Map<String, Product> {
-        return products.associateBy { product ->
+        return products.associateBy { (information) ->
             val barcodes =
-                product.information!!.filter { it.barcodes != null }.flatMap { it.barcodes!! }
+                information!!.filter { it.barcodes != null }.flatMap { it.barcodes!! }
 
             if (barcodes.isNotEmpty()) {
                 val barcodeUsage = barcodes.groupingBy { it }.eachCount()
 
                 barcodeUsage.maxBy { it.value }.key
             } else {
-                val info = product.information!!.first()
+                val info = information.first()
                 "${info.id!!.replace(Regex("[/.#$\\[\\]]"), "")}-${info.retailer!!}"
             }
         }
@@ -241,19 +241,19 @@ class Matcher {
         }
 
         val groceryProducts =
-            products.filter { product -> product.information!!.all { it.saleType == SaleType.EACH } }
+            products.filter { (information) -> information!!.all { it.saleType == SaleType.EACH } }
         println("${
             groceryProducts.count { it.information!!.size > 1 }
                 .toDouble() / groceryProducts.size.toDouble() * 100
         }% of products sold by unit matched.")
 
-        retailers.forEach { retailer ->
+        retailers.forEach { (key, value) ->
             val total =
-                products.count { product -> product.information?.any { it.retailer == retailer.key } == true }
+                products.count { (information) -> information?.any { it.retailer == key } == true }
             val totalMatched =
-                products.count { product -> product.information?.any { it.retailer == retailer.key } == true && product.information?.size!! > 1 }
+                products.count { (information) -> information?.any { it.retailer == key } == true && information.size > 1 }
 
-            println("For ${retailer.value.name} ${totalMatched.toDouble() / total.toDouble() * 100}% matched.")
+            println("For ${value.name} ${totalMatched.toDouble() / total.toDouble() * 100}% matched.")
         }
 
         println(

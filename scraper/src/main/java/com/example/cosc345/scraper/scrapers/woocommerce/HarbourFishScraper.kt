@@ -33,5 +33,5 @@ class HarbourFishScraper : WooCommerceScraper(
         onColourDark = 0xFFdee0ff,
         initialism = "HF",
         local = true
-    ),"https://harbourfish.co.nz"
+    ), "https://harbourfish.co.nz"
 )

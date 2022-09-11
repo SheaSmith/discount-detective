@@ -4,6 +4,7 @@ import com.example.cosc345.scraper.scrapers.generic.WooCommerceScraper
 import com.example.cosc345.shared.models.Region
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.Store
+
 /**
  * The Deep Creek Deli specific implementation of the [WooCommerceScraper], which essentially just passes information through to it.
  *
@@ -32,5 +33,5 @@ class DeepCreekDeliScraper : WooCommerceScraper(
         onColourDark = 0xFFffe164,
         initialism = "DC",
         local = true
-    ),"https://www.deepcreekdeli.co.nz"
+    ), "https://www.deepcreekdeli.co.nz"
 )

@@ -43,5 +43,5 @@ data class FoodStuffsStore(
     /**
      * Get a version of the ID that doesn't include dashes, for getting the prices.
      */
-    val idWithoutDashes get() = id.replace("-", "")
+    val idWithoutDashes: String get() = id.replace("-", "")
 }

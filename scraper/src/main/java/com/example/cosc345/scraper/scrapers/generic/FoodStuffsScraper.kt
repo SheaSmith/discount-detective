@@ -100,17 +100,17 @@ abstract class FoodStuffsScraper(
             val productDiscountsToCheck = mutableMapOf<String, MutableList<String>>()
 
             response.products.filter { foodStuffsProduct -> products.none { it.id == foodStuffsProduct.productId } }
-                .forEach { foodStuffsProduct ->
+                .forEach { (barcodes1, brand, _, netContent, netContentDisplay, netContentUnit, prices1, _, productId, promotionStart, _, saleType, name) ->
                     val product = RetailerProductInformation(
                         retailer = id,
-                        id = foodStuffsProduct.productId,
-                        name = foodStuffsProduct.name,
-                        brandName = foodStuffsProduct.brand,
-                        saleType = if (foodStuffsProduct.saleType != "UNITS") SaleType.WEIGHT else SaleType.EACH,
-                        weight = if (foodStuffsProduct.saleType != "UNITS") 1000 else null,
-                        quantity = if (foodStuffsProduct.saleType == "UNITS") foodStuffsProduct.netContentDisplay else null,
+                        id = productId,
+                        name = name,
+                        brandName = brand,
+                        saleType = if (saleType != "UNITS") SaleType.WEIGHT else SaleType.EACH,
+                        weight = if (saleType != "UNITS") 1000 else null,
+                        quantity = if (saleType == "UNITS") netContentDisplay else null,
                         image = "https://a.fsimg.co.nz/product/retail/fan/image/500x500/${
-                            foodStuffsProduct.productId.split(
+                            productId.split(
                                 "-"
                             )[0]
                         }.png",
@@ -118,41 +118,41 @@ abstract class FoodStuffsScraper(
                         verified = false
                     )
 
-                    if (foodStuffsProduct.barcodes.isNotBlank()) {
+                    if (barcodes1.isNotBlank()) {
                         val barcodes =
-                            foodStuffsProduct.barcodes.split(",").filter { it.length > 7 }
+                            barcodes1.split(",").filter { it.length > 7 }
                         product.barcodes = barcodes
                     }
 
                     if (product.weight == null) {
-                        var weight = foodStuffsProduct.netContent?.toDouble()
+                        var weight = netContent?.toDouble()
 
-                        if (foodStuffsProduct.netContentUnit == Units.KILOGRAMS.toString()) {
+                        if (netContentUnit == Units.KILOGRAMS.toString()) {
                             weight = weight?.times(1000)
                             product.weight = weight?.toInt()
-                        } else if (foodStuffsProduct.netContentUnit == Units.GRAMS.toString()) {
+                        } else if (netContentUnit == Units.GRAMS.toString()) {
                             product.weight = weight?.toInt()
                         }
                     }
 
                     val prices =
-                        foodStuffsProduct.prices.filter { price -> foodStuffsStores.any { it.idWithoutDashes == price.key } }
+                        prices1.filter { (key) -> foodStuffsStores.any { it.idWithoutDashes == key } }
 
                     if (prices.isNotEmpty()) {
                         val discountsToCheck =
-                            foodStuffsProduct.promotionStart.keys.filter { discountStore -> foodStuffsStores.any { it.id == discountStore } }
+                            promotionStart.keys.filter { discountStore -> foodStuffsStores.any { it.id == discountStore } }
 
                         discountsToCheck.forEach {
                             if (!productDiscountsToCheck.containsKey(it))
                                 productDiscountsToCheck[it] = mutableListOf()
 
-                            productDiscountsToCheck[it]?.add(foodStuffsProduct.productId)
+                            productDiscountsToCheck[it]?.add(productId)
                         }
 
-                        product.pricing = prices.map { priceMap ->
+                        product.pricing = prices.map { (key, value) ->
                             StorePricingInformation(
-                                store = foodStuffsStores.first { it.idWithoutDashes == priceMap.key }.id,
-                                price = priceMap.value.toDouble().times(100).toInt(),
+                                store = foodStuffsStores.first { it.idWithoutDashes == key }.id,
+                                price = value.toDouble().times(100).toInt(),
                                 automated = true,
                                 verified = false
                             )
@@ -163,14 +163,14 @@ abstract class FoodStuffsScraper(
                         products.add(product)
                 }
 
-            productDiscountsToCheck.forEach { discountMap ->
+            productDiscountsToCheck.forEach { (key, value) ->
                 foodStuffsService.getPromotions(
-                    discountMap.key,
-                    discountMap.value.joinToString(",")
+                    key,
+                    value.joinToString(",")
                 ).promotions.forEach { foodStuffsPromotion ->
 
                     val price =
-                        products.first { it.id == foodStuffsPromotion.productId || it.id == foodStuffsPromotion.loyaltyPromotion?.productId }.pricing!!.first { it.store == discountMap.key }
+                        products.first { it.id == foodStuffsPromotion.productId || it.id == foodStuffsPromotion.loyaltyPromotion?.productId }.pricing!!.first { it.store == key }
 
                     parsePromotion(foodStuffsPromotion, price, false)
                 }
