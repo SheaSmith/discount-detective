@@ -34,7 +34,9 @@ class BarcodeViewModel
     (application: Application) : AndroidViewModel(application) {
     private var cameraProviderLiveData: MutableLiveData<ProcessCameraProvider>? = null
 
-    // Handle any errors (including cancellation) here.
+    /**
+     * The camera provider for the scanner.
+     */
     val processCameraProvider: LiveData<ProcessCameraProvider>
         get() {
             if (cameraProviderLiveData == null) {
@@ -65,16 +67,29 @@ class BarcodeViewModel
             return cameraProviderLiveData!!
         }
 
-    val workflowState = MutableLiveData<WorkflowState>()
-    val detectedBarcode = MutableLiveData<Barcode>()
+    /**
+     * The current state of the scanner.
+     */
+    val workflowState: MutableLiveData<WorkflowState> = MutableLiveData<WorkflowState>()
+
+    /**
+     * The current detected barcode
+     */
+    val detectedBarcode: MutableLiveData<Barcode> = MutableLiveData<Barcode>()
 
     /**
      * State set of the application workflow.
      */
     enum class WorkflowState {
+        /**
+         * A barcode has been detected.
+         */
         DETECTED
     }
 
+    /**
+     * Set the current state of the workflow.
+     */
     @MainThread
     fun setWorkflowState(workflowState: WorkflowState) {
         this.workflowState.value = workflowState

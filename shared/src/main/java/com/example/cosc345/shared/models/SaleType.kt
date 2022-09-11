@@ -2,7 +2,6 @@ package com.example.cosc345.shared.models
 
 /**
  * An enum which determines how the product is measured for the purposes of determining a price.
- *
  */
 object SaleType {
     /**

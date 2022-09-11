@@ -9,26 +9,46 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.sheasmith.discountdetective.R
 
 /**
- * Navigation class
+ * The enum which defines all of the navigable screens in the app.
  *
- * todo
- *
- * @param route
- * @param nameResource
- * @param icon
+ * @param route The route to use for navigation.
+ * @param nameResource Optional, the string resource to use for the screen's name in the top level navigation
+ * @param icon Optional, the icon to use in the top level navigation.
  */
 enum class Navigation(
     val route: String,
     @StringRes val nameResource: Int?,
     val icon: ImageVector?
 ) {
+    /**
+     * The [com.example.cosc345project.ui.screens.SearchScreen].
+     */
     SEARCH("search", R.string.search, Icons.Rounded.Search),
+
+    /**
+     * The [com.example.cosc345project.ui.screens.ProductScreen].
+     */
     PRODUCT("products/{productId}", null, null),
+
+    /**
+     * The [com.example.cosc345project.ui.screens.ShoppingListScreen].
+     */
     SHOPPING_LIST("list", R.string.shopping_list, Icons.Rounded.List),
+
+    /**
+     * The [com.example.cosc345project.ui.screens.SettingsScreen].
+     */
     SETTINGS("settings", R.string.settings, Icons.Rounded.Settings),
+
+    /**
+     * The [com.example.cosc345project.ui.screens.BarcodeScreen].
+     */
     BARCODE_SCANNER("barcode_scanner", null, null);
 
     companion object {
+        /**
+         * The array which defines the top level navigation items.
+         */
         val topLevel = arrayOf(SEARCH, SHOPPING_LIST, SETTINGS)
     }
 }

@@ -1,19 +1,18 @@
 package io.github.sheasmith.discountdetective.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import io.github.sheasmith.discountdetective.dao.ProductDao
-import io.github.sheasmith.discountdetective.models.RetailerProductInfo
+import io.github.sheasmith.discountdetective.dao.ShoppingListDao
+import io.github.sheasmith.discountdetective.models.ShoppingListItem
 
 
 /**
- * Room database
- * - Top layer of SQLite database
+ * The database responsible for storing shopping list items.
  */
-@Database(entities = [RetailerProductInfo::class], version = 2)
+@Database(entities = [ShoppingListItem::class], version = 3)
 abstract class ShoppingListDatabase : RoomDatabase() {
 
     /**
      * Get the dao for manipulating the shopping list.
      */
-    abstract fun productDao(): ProductDao
+    abstract fun productDao(): ShoppingListDao
 }

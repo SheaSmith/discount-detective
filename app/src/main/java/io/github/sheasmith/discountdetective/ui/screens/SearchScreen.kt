@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -19,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -50,7 +52,7 @@ import kotlinx.coroutines.launch
  * @param viewModel Instance of the SearchViewModel class (see [SearchViewModel])
  * @param navController Instance of the nav controller for navigation class.
  */
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun SearchScreen(
@@ -122,7 +124,8 @@ fun SearchScreen(
                         },
                         onScanBarcode = {
                             navController.navigate(Navigation.BARCODE_SCANNER.route)
-                        }
+                        },
+                        hasAppSearchLoaded = hasIndexed
                     )
                 },
                 scrollBehavior = scrollBehavior
@@ -151,44 +154,13 @@ fun SearchScreen(
             loading = loadState == LoadState.Loading
 
             if (showSuggestions && suggestions.isNotEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(R.string.search_suggestions),
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-                items(
-                    items = suggestions
-                ) {
-                    ListItem(
-                        headlineText = { Text(text = it) },
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .clickable {
-                                viewModel.setQuery(it, true)
-                                focusManager.clearFocus()
-                            }
-                    )
-                }
+                suggestionsList(
+                    suggestions = suggestions,
+                    viewModel = viewModel,
+                    focusManager = focusManager
+                )
             } else {
-                item {
-                    AnimatedVisibility(visible = hasIndexed != true) {
-                        Card(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            Row(
-                                modifier = Modifier.padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Info,
-                                    contentDescription = null,
-                                    modifier = Modifier.padding(end = 8.dp)
-                                )
-                                Text(text = stringResource(R.string.still_indexing))
-                            }
-                        }
-                    }
-                }
+                indexingCard(hasIndexed)
 
                 if (loading) {
                     items(10) {
@@ -224,26 +196,81 @@ fun SearchScreen(
                         )
                     }
                 } else if (loadState !is LoadState.Error && retailers.isNotEmpty()) {
-                    item {
-                        SearchError(
-                            title = R.string.no_results,
-                            description = R.string.no_results_description,
-                            icon = Icons.Rounded.SearchOff
-                        )
-                    }
+                    noResultsError()
                 } else {
-                    item {
-                        SearchError(
-                            title = R.string.no_internet,
-                            description = R.string.no_internet_description,
-                            icon = Icons.Rounded.SignalWifiOff,
-                            onRetry = {
-                                viewModel.query()
-                            })
-                    }
+                    noInternetError(viewModel)
                 }
             }
         }
 
+    }
+}
+
+private fun LazyListScope.noInternetError(viewModel: SearchViewModel) {
+    item {
+        SearchError(
+            title = R.string.no_internet,
+            description = R.string.no_internet_description,
+            icon = Icons.Rounded.SignalWifiOff,
+            onRetry = {
+                viewModel.query()
+            })
+    }
+}
+
+private fun LazyListScope.suggestionsList(
+    suggestions: List<String>,
+    viewModel: SearchViewModel,
+    focusManager: FocusManager
+) {
+    item {
+        Text(
+            text = stringResource(R.string.search_suggestions),
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+    }
+    items(
+        items = suggestions
+    ) {
+        ListItem(
+            headlineText = { Text(text = it) },
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .clickable {
+                    viewModel.setQuery(it, true)
+                    focusManager.clearFocus()
+                }
+        )
+    }
+}
+
+private fun LazyListScope.indexingCard(hasIndexed: Boolean?) {
+    item {
+        AnimatedVisibility(visible = hasIndexed == false) {
+            Card(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Row(
+                    modifier = Modifier.padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Rounded.Info,
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(text = stringResource(R.string.still_indexing))
+                }
+            }
+        }
+    }
+}
+
+private fun LazyListScope.noResultsError() {
+    item {
+        SearchError(
+            title = R.string.no_results,
+            description = R.string.no_results_description,
+            icon = Icons.Rounded.SearchOff
+        )
     }
 }

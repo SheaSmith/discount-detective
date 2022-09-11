@@ -28,7 +28,9 @@ import io.github.sheasmith.discountdetective.barcode.camera.GraphicOverlay
 import io.github.sheasmith.discountdetective.barcode.camera.VisionProcessorBase
 import io.github.sheasmith.discountdetective.viewmodel.BarcodeViewModel
 
-/** Barcode Detector Demo.  */
+/**
+ * A processor responsible for scanning barcodes.
+ */
 class BarcodeScannerProcessor(
     context: Context,
     private val viewmodel: BarcodeViewModel,

@@ -83,35 +83,37 @@ data class StorePricingInformation(
     fun getDisplayPrice(productInformation: RetailerProductInformation): Pair<String, String> =
         getDisplayPrice(productInformation, getPrice(productInformation))
 
-    /**
-     * Get the display price for the specified price for this product.
-     *
-     * @param productInformation The parent product information for this pricing information.
-     * @param price The price to get the display price for.
-     * @return A pair, with the dollars component (e.g. "$10" for $10.00/kg) as the first value, and
-     * the cents component (for example, ".00/kg" for "$10.00/kg) as the second value.
-     */
-    fun getDisplayPrice(
-        productInformation: RetailerProductInformation,
-        price: Int
-    ): Pair<String, String> {
-        val salePrefix = if (productInformation.saleType == SaleType.WEIGHT) {
-            "kg"
-        } else {
-            "ea"
+    companion object {
+        /**
+         * Get the display price for the specified price for this product.
+         *
+         * @param productInformation The parent product information for this pricing information.
+         * @param price The price to get the display price for.
+         * @return A pair, with the dollars component (e.g. "$10" for $10.00/kg) as the first value, and
+         * the cents component (for example, ".00/kg" for "$10.00/kg) as the second value.
+         */
+        fun getDisplayPrice(
+            productInformation: RetailerProductInformation,
+            price: Int
+        ): Pair<String, String> {
+            val salePrefix = if (productInformation.saleType == SaleType.WEIGHT) {
+                "kg"
+            } else {
+                "ea"
+            }
+
+            val priceString = price.toString()
+
+            val dollarComponent = "$${priceString.substring(0, priceString.length - 2)}"
+            val centsComponent =
+                ".${
+                    priceString.substring(
+                        priceString.length - 2,
+                        priceString.length
+                    )
+                }/${salePrefix}"
+
+            return Pair(dollarComponent, centsComponent)
         }
-
-        val priceString = price.toString()
-
-        val dollarComponent = "$${priceString.substring(0, priceString.length - 2)}"
-        val centsComponent =
-            ".${
-                priceString.substring(
-                    priceString.length - 2,
-                    priceString.length
-                )
-            }/${salePrefix}"
-
-        return Pair(dollarComponent, centsComponent)
     }
 }

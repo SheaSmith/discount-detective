@@ -11,6 +11,9 @@ data class Product(
      */
     var information: MutableList<RetailerProductInformation>? = null,
 ) {
+    /**
+     * Get the best retailer product information that is attached to this product, based on pred
+     */
     fun getBestInformation(): RetailerProductInformation {
         return information!!.sortedWith(
             Comparator { t: RetailerProductInformation, t2: RetailerProductInformation ->

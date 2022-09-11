@@ -3,10 +3,7 @@ package io.github.sheasmith.discountdetective.ui.components.search
 import android.content.pm.PackageManager
 import android.view.KeyEvent.KEYCODE_ENTER
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -37,11 +34,11 @@ import androidx.compose.ui.unit.dp
  * @param onSearch The function called when the user selects a suggestion, or clicks the search button.
  * @param onClear The function called when the user clears the search.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTopAppBar(
     search: String,
     loading: Boolean,
+    hasAppSearchLoaded: Boolean?,
     onValueChange: (String) -> Unit,
     onFocusChanged: (FocusState) -> Unit,
     onSearch: (Any?) -> Unit,
@@ -61,61 +58,15 @@ fun SearchTopAppBar(
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Search,
-                    contentDescription = stringResource(id = R.string.search),
-                    modifier = Modifier.padding(start = 16.dp),
-                    tint = MaterialTheme.colorScheme.outline
-                )
-                TextField(
-                    value = search,
-                    placeholder = { Text(stringResource(id = R.string.search_products)) },
+                Contents(
+                    search = search,
+                    hasAppSearchLoaded = hasAppSearchLoaded,
                     onValueChange = onValueChange,
-                    singleLine = true,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(0.dp)
-                        .onFocusChanged(onFocusChanged)
-                        .onKeyEvent {
-                            if (it.nativeKeyEvent.keyCode == KEYCODE_ENTER) {
-                                onSearch(null)
-                                true
-                            } else {
-                                false
-                            }
-                        },
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(
-                        onSearch = onSearch
-                    ),
-                    colors = TextFieldDefaults.textFieldColors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                        containerColor = Color.Transparent
-                    )
+                    onFocusChanged = onFocusChanged,
+                    onSearch = onSearch,
+                    onClear = onClear,
+                    onScanBarcode = onScanBarcode
                 )
-                AnimatedVisibility(visible = search.isNotEmpty()) {
-                    IconButton(onClick = onClear) {
-                        Icon(
-                            Icons.Rounded.Close,
-                            stringResource(id = R.string.content_description_clear_search)
-                        )
-                    }
-                }
-                AnimatedVisibility(
-                    visible = search.isEmpty() && LocalContext.current.packageManager.hasSystemFeature(
-                        PackageManager.FEATURE_CAMERA
-                    )
-                ) {
-                    IconButton(onClick = onScanBarcode) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_barcode_scanner),
-                            stringResource(id = R.string.scan_barcode)
-                        )
-                    }
-                }
             }
 
             if (loading) {
@@ -125,6 +76,77 @@ fun SearchTopAppBar(
                         .fillMaxWidth()
                 )
             }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RowScope.Contents(
+    search: String,
+    hasAppSearchLoaded: Boolean?,
+    onValueChange: (String) -> Unit,
+    onFocusChanged: (FocusState) -> Unit,
+    onSearch: (Any?) -> Unit,
+    onClear: () -> Unit,
+    onScanBarcode: () -> Unit
+) {
+    Icon(
+        imageVector = Icons.Rounded.Search,
+        contentDescription = stringResource(id = R.string.search),
+        modifier = Modifier.padding(start = 16.dp),
+        tint = MaterialTheme.colorScheme.outline
+    )
+    TextField(
+        value = search,
+        placeholder = { Text(stringResource(id = R.string.search_products)) },
+        onValueChange = onValueChange,
+        singleLine = true,
+        modifier = Modifier
+            .weight(1f)
+            .padding(0.dp)
+            .onFocusChanged(onFocusChanged)
+            .onKeyEvent {
+                if (it.nativeKeyEvent.keyCode == KEYCODE_ENTER) {
+                    onSearch(null)
+                    true
+                } else {
+                    false
+                }
+            },
+        textStyle = MaterialTheme.typography.bodyMedium,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(
+            onSearch = onSearch
+        ),
+        colors = TextFieldDefaults.textFieldColors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            containerColor = Color.Transparent
+        )
+    )
+    AnimatedVisibility(visible = search.isNotEmpty()) {
+        IconButton(onClick = onClear) {
+            Icon(
+                Icons.Rounded.Close,
+                stringResource(id = R.string.content_description_clear_search)
+            )
+        }
+    }
+    AnimatedVisibility(
+        visible = search.isEmpty() &&
+                hasAppSearchLoaded == true &&
+                LocalContext.current.packageManager.hasSystemFeature(
+                    PackageManager.FEATURE_CAMERA
+                )
+    ) {
+        IconButton(onClick = onScanBarcode) {
+            Icon(
+                painterResource(id = R.drawable.ic_barcode_scanner),
+                stringResource(id = R.string.scan_barcode)
+            )
         }
     }
 }

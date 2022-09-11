@@ -16,9 +16,12 @@ import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.exceptions.NoInternetException
 import io.github.sheasmith.discountdetective.repository.SearchIndexRepository
 
+/**
+ * A worker that is responsible for indexing the products into app search.
+ */
 @HiltWorker
 class IndexingWorker @AssistedInject constructor(
-    @Assisted val appContext: Context,
+    @Assisted private val appContext: Context,
     @Assisted params: WorkerParameters,
     private val searchRepository: SearchIndexRepository
 ) : CoroutineWorker(appContext, params) {

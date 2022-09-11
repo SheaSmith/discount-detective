@@ -4,7 +4,6 @@ import java.util.*
 
 /**
  * A class containing locale constants for quick access.
- *
  */
 class LocaleConstants {
     companion object {

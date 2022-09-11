@@ -7,7 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.sheasmith.discountdetective.dao.ProductDao
+import io.github.sheasmith.discountdetective.dao.ShoppingListDao
 import io.github.sheasmith.discountdetective.database.ShoppingListDatabase
 import javax.inject.Singleton
 
@@ -41,7 +41,7 @@ object DatabaseModule {
      * @return The dao.
      */
     @Provides
-    fun provideProductDao(db: ShoppingListDatabase): ProductDao {
+    fun provideProductDao(db: ShoppingListDatabase): ShoppingListDao {
         return db.productDao()
     }
 }

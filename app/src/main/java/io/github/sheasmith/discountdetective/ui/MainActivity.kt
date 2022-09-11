@@ -30,6 +30,9 @@ import kotlinx.coroutines.flow.stateIn
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    /**
+     * The function called when the activity is created.
+     */
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @ExperimentalGetImage
     override fun onCreate(savedInstanceState: Bundle?) {

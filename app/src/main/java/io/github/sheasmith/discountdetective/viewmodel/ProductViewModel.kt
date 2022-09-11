@@ -5,21 +5,33 @@ import androidx.lifecycle.viewModelScope
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
+import io.github.sheasmith.discountdetective.models.ShoppingListItem
+import io.github.sheasmith.discountdetective.ShoppingListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sheasmith.discountdetective.models.RetailerProductInfo
 import io.github.sheasmith.discountdetective.repository.ProductRepository
 import io.github.sheasmith.discountdetective.repository.RetailersRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * The viewmodel for the product screen, which is responsible for connecting the UI and data layers.
+ */
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     retailersRepository: RetailersRepository,
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val shoppingListRepository: ShoppingListRepository
 ) : ViewModel() {
-    val product = MutableStateFlow<Pair<String, Product>?>(null)
-    val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
+    /**
+     * The currently opened product.
+     */
+    val product: MutableStateFlow<Pair<String, Product>?> = MutableStateFlow(null)
+
+    /**
+     * The current list of retailers.
+     */
+    val retailers: MutableStateFlow<Map<String, Retailer>> = MutableStateFlow(mapOf())
 
     init {
         viewModelScope.launch {
@@ -27,9 +39,23 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    val localRetailerInfo = MutableStateFlow(listOf<RetailerProductInformation>())
-    val nonLocalRetailerInfo = MutableStateFlow(listOf<RetailerProductInformation>())
+    /**
+     * The information for local retailers for this product.
+     */
+    val localRetailerInfo: MutableStateFlow<List<RetailerProductInformation>> =
+        MutableStateFlow(listOf())
 
+    /**
+     * The information for non-local retailers for this product.
+     */
+    val nonLocalRetailerInfo: MutableStateFlow<List<RetailerProductInformation>> =
+        MutableStateFlow(listOf())
+
+    /**
+     * Get a product based on its ID.
+     *
+     * @param productId The ID of the product to get.
+     */
     fun getProduct(productId: String) {
         viewModelScope.launch {
             val productInfo = productRepository.getProductFromID(productId)
@@ -48,6 +74,14 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Add this product to the shopping list.
+     *
+     * @param productId The ID of the product to add to the shopping list.
+     * @param retailerProductInfoId The ID of the retailer product info the user has selected.
+     * @param storeId The ID of the store whose pricing the user has selected.
+     * @param quantity The quantity the user has selected.
+     */
     fun addToShoppingList(
         productId: String,
         retailerProductInfoId: String,
@@ -55,8 +89,8 @@ class ProductViewModel @Inject constructor(
         quantity: Int
     ) {
         viewModelScope.launch {
-            productRepository.insert(
-                RetailerProductInfo(
+            shoppingListRepository.addToShoppingList(
+                ShoppingListItem(
                     productId,
                     retailerProductInfoId,
                     storeId,

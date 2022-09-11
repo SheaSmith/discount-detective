@@ -55,9 +55,6 @@ fun SearchProductCard(
     onAddToShoppingList: ((String, String, String, Int) -> Unit)? = null
 ) {
     val product = productPair?.second
-    val info = product?.getBestInformation()
-    val localPrice = product?.getBestLocalPrice(retailers)
-    val bestPrice = product?.getBestNonLocalPrice(retailers)
 
     Card(
         onClick = {
@@ -76,73 +73,11 @@ fun SearchProductCard(
         shape = CardDefaults.elevatedShape
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-
-            Row(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                if (info?.image != null || loading) {
-                    AsyncImage(
-                        model = info?.image,
-                        contentDescription = stringResource(id = R.string.content_description_product_image),
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .height(100.dp)
-                            .width(100.dp)
-                            .align(Alignment.Top)
-                            .placeholder(
-                                visible = loading,
-                                shape = RoundedCornerShape(4.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                highlight = PlaceholderHighlight.fade()
-                            )
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(Color.White)
-                    )
-                }
-
-                Column(
-                    modifier = Modifier.align(Alignment.Top)
-                ) {
-                    ProductTitle(info = info, loading = loading)
-
-                    FlowRow(
-                        modifier = Modifier
-                            .padding(vertical = 12.dp)
-                            .fillMaxWidth(),
-                        mainAxisAlignment = FlowMainAxisAlignment.SpaceBetween,
-                        mainAxisSpacing = 8.dp,
-                        crossAxisSpacing = 4.dp
-                    ) {
-
-                        val density = LocalDensity.current
-
-                        val minimumHeightState = remember { MinimumHeightState() }
-                        val minimumHeightStateModifier = Modifier.minimumHeightModifier(
-                            minimumHeightState,
-                            density
-                        )
-
-                        SearchProductPricingBlock(
-                            components = bestPrice,
-                            loading = loading,
-                            local = false,
-                            modifier = minimumHeightStateModifier
-                        )
-
-                        SearchProductPricingBlock(
-                            components = localPrice,
-                            loading = loading,
-                            local = true,
-                            modifier = minimumHeightStateModifier
-                        )
-                    }
-
-                }
-            }
+            Contents(
+                product = product,
+                retailers = retailers,
+                loading = loading
+            )
 
             AddToShoppingListBlock(
                 snackbarHostState,
@@ -152,6 +87,84 @@ fun SearchProductCard(
                 onAddToShoppingList,
                 coroutineScope
             )
+
+        }
+    }
+}
+
+@Composable
+private fun Contents(
+    product: Product?,
+    retailers: Map<String, Retailer>,
+    loading: Boolean
+) {
+    val info = product?.getBestInformation()
+    val bestLocalPrice = product?.getBestLocalPrice(retailers)
+    val bestNonLocalPrice = product?.getBestNonLocalPrice(retailers)
+
+    Row(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        if (info?.image != null || loading) {
+            AsyncImage(
+                model = info?.image,
+                contentDescription = stringResource(id = R.string.content_description_product_image),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .height(100.dp)
+                    .width(100.dp)
+                    .align(Alignment.Top)
+                    .placeholder(
+                        visible = loading,
+                        shape = RoundedCornerShape(4.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        highlight = PlaceholderHighlight.fade()
+                    )
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.White)
+            )
+        }
+
+        Column(
+            modifier = Modifier.align(Alignment.Top)
+        ) {
+            ProductTitle(info = info, loading = loading)
+
+            FlowRow(
+                modifier = Modifier
+                    .padding(vertical = 12.dp)
+                    .fillMaxWidth(),
+                mainAxisAlignment = FlowMainAxisAlignment.SpaceBetween,
+                mainAxisSpacing = 8.dp,
+                crossAxisSpacing = 4.dp
+            ) {
+
+                val density = LocalDensity.current
+
+                val minimumHeightState = remember { MinimumHeightState() }
+                val minimumHeightStateModifier = Modifier.minimumHeightModifier(
+                    minimumHeightState,
+                    density
+                )
+
+                SearchProductPricingBlock(
+                    components = bestNonLocalPrice,
+                    loading = loading,
+                    local = false,
+                    modifier = minimumHeightStateModifier
+                )
+
+                SearchProductPricingBlock(
+                    components = bestLocalPrice,
+                    loading = loading,
+                    local = true,
+                    modifier = minimumHeightStateModifier
+                )
+            }
 
         }
     }

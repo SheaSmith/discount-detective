@@ -6,9 +6,10 @@ import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.StorePricingInformation
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sheasmith.discountdetective.models.RetailerProductInfo
+import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.repository.ProductRepository
 import io.github.sheasmith.discountdetective.repository.RetailersRepository
+import io.github.sheasmith.discountdetective.repository.ShoppingListRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -32,16 +33,23 @@ import javax.inject.Inject
 @HiltViewModel
 class ShoppingListViewModel @Inject constructor(
     private val productRepository: ProductRepository,
+    private val shoppingListRepository: ShoppingListRepository,
     private val retailersRepository: RetailersRepository
 ) : ViewModel() {
 
-    private val allProducts: Flow<List<RetailerProductInfo>> =
-        productRepository.allProducts
+    private val allProducts: Flow<List<ShoppingListItem>> =
+        shoppingListRepository.shoppingList
 
-    val products: MutableStateFlow<List<Triple<RetailerProductInformation, StorePricingInformation, Int>>?> =
+    /**
+     * The current shopping list items
+     */
+    val shoppingList: MutableStateFlow<List<Triple<RetailerProductInformation, StorePricingInformation, Int>>?> =
         MutableStateFlow(null)
 
-    val retailers = MutableStateFlow<Map<String, Retailer>>(mapOf())
+    /**
+     * The current retailers from Firebase.
+     */
+    val retailers: MutableStateFlow<Map<String, Retailer>> = MutableStateFlow(mapOf())
 
     init {
         viewModelScope.launch {
@@ -50,18 +58,18 @@ class ShoppingListViewModel @Inject constructor(
 
         viewModelScope.launch {
             allProducts.collect { shoppingListItems ->
-                products.value = shoppingListItems.mapNotNull { shoppingListInfo ->
-                    val product = productRepository.getProductFromID(shoppingListInfo.productID)
+                shoppingList.value = shoppingListItems.mapNotNull { shoppingListInfo ->
+                    val product = productRepository.getProductFromID(shoppingListInfo.productId)
 
                     if (product != null) {
                         val key =
-                            product.information!!.first { info -> info.id == shoppingListInfo.retailerProductInformationID && info.pricing!!.any { it.store == shoppingListInfo.storePricingInformationID } }
+                            product.information!!.first { info -> info.id == shoppingListInfo.retailerProductInformationId && info.pricing!!.any { it.store == shoppingListInfo.storeId } }
                         val value =
-                            key.pricing!!.first { it.store == shoppingListInfo.storePricingInformationID }
+                            key.pricing!!.first { it.store == shoppingListInfo.storeId }
 
                         Triple(key, value, shoppingListInfo.quantity)
                     } else {
-                        productRepository.delete(shoppingListInfo)
+                        shoppingListRepository.deleteFromShoppingList(shoppingListInfo)
 
                         null
                     }
@@ -71,12 +79,12 @@ class ShoppingListViewModel @Inject constructor(
     }
 
     /**
-     * For a given RetailerProductInfo in dao
-     * Return the associated store namze
+     * Get the name of the store based on the retailer and store IDs, including deciding whether to include the store name or not.
      *
-     * have retailer ID
-     *
-     * If store name and retailer name same just return store
+     * @param retailerId The ID of the retailer to display.
+     * @param storeId The ID of the store to display.
+     * @param retailers All of the retailers to search from.
+     * @return The store name to display.
      */
     fun getStoreName(
         retailerId: String,
@@ -98,10 +106,14 @@ class ShoppingListViewModel @Inject constructor(
     }
 
     /**
-     * Insert data in non-blocking fashion
+     * Add a new item to the shopping list.
+     *
+     * @param shoppingListItem The shopping list item to add to the database.
      */
-    fun insert(shoppingListRetailerProductInfo: RetailerProductInfo) = viewModelScope.launch {
-        productRepository.insert(shoppingListRetailerProductInfo)
+    fun insert(shoppingListItem: ShoppingListItem) {
+        viewModelScope.launch {
+            shoppingListRepository.addToShoppingList(shoppingListItem)
+        }
     }
 
 
