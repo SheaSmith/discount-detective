@@ -8,7 +8,6 @@ import com.example.cosc345.shared.models.Store
 /**
  * The Leckies Butchery specific implementation of the [ShopifyScraper] that just passes through some information to it.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class LeckiesButcheryScraper : ShopifyScraper(

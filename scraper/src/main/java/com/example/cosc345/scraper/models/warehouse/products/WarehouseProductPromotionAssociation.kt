@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * An associated promotion. This can either be standard, or it can be multi-buy.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)

@@ -6,8 +6,6 @@ import retrofit2.http.Query
 
 /**
  * Defines how to get information from WooCommerce based shops.
- *
- * @author William Hadden
  */
 interface WooComAPI {
     /**

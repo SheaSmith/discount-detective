@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * Object to hold category metadata.
  *
- * @author William Hadden
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)

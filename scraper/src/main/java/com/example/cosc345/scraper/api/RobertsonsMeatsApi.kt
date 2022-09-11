@@ -7,8 +7,6 @@ import retrofit2.http.Path
 
 /**
  * Defines how to get information from Robertsons Meats bespoke ecommerce software.
- *
- * @author Shea Smith
  */
 interface RobertsonsMeatsApi {
     /**

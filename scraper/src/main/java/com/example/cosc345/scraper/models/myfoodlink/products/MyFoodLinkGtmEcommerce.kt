@@ -6,11 +6,13 @@ import com.squareup.moshi.JsonClass
 /**
  * The wrapper object for the individual products in the analytics data.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)
 data class MyFoodLinkGtmEcommerce(
+    /**
+     * The GTM impressions information.
+     */
     @Json(name = "impressions")
     val impressions: Array<MyFoodLinkGtmImpression>?
 ) {

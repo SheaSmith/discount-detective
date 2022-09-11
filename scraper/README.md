@@ -222,3 +222,7 @@ The retailer-specific implementations for Shopify based scrapers.
 # Package com.example.cosc345.scraper.scrapers.woocommerce
 
 The retailer-specific implementations for WooCommerce based scrapers.
+
+# Package com.example.cosc345.scraper
+
+The package which contains classes for the entire app.

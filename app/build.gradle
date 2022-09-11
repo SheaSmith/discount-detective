@@ -14,7 +14,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.cosc345project"
+        applicationId "io.github.sheasmith.discountdetective"
         minSdk 21
         targetSdk 33
         versionCode 1

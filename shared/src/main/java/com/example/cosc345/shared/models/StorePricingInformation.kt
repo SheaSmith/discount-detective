@@ -16,14 +16,14 @@ data class StorePricingInformation(
     var store: String? = null,
 
     /**
-     * The price of the product, multiplied by 100.
+     * The price of the product, in cents.
      *
      * Not nullable in practice, but Firebase requires an object with no arguments for the database.
      */
     var price: Int? = null,
 
     /**
-     * The discounted price, even if the promotion is yet to begin. Again this is multiplied by 100.
+     * The discounted price, even if the promotion is yet to begin. Again this is in cents.
      */
     var discountPrice: Int? = null,
 

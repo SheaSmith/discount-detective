@@ -6,7 +6,6 @@ import com.example.cosc345.shared.models.SaleType
 /**
  * A special class which aids in matching products based on their name, irrespective of the order of the words in the product name.
  *
- * @author Shea Smith
  * @constructor Create an instance of the class without needing to supply a product.
  */
 data class MatcherGrouping(

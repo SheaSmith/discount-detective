@@ -7,7 +7,6 @@ import com.example.cosc345.shared.models.*
 /**
  * The Couplands specific implementation of the [WooCommerceScraper], which essentially just passes information through to it.
  *
- * @author William Hadden
  * @constructor Create a new instance of this scraper.
  */
 class CouplandsScraper : WooCommerceScraper(
