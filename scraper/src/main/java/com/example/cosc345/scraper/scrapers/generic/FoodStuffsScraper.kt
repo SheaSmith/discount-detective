@@ -101,14 +101,16 @@ abstract class FoodStuffsScraper(
 
             response.products.filter { foodStuffsProduct -> products.none { it.id == foodStuffsProduct.productId } }
                 .forEach { (barcodes1, brand, _, netContent, netContentDisplay, netContentUnit, prices1, _, productId, promotionStart, _, saleType, name) ->
+                    val isSoldByUnit = saleType == "UNITS"
+
                     val product = RetailerProductInformation(
                         retailer = id,
                         id = productId,
                         name = name,
                         brandName = brand,
-                        saleType = if (saleType != "UNITS") SaleType.WEIGHT else SaleType.EACH,
-                        weight = if (saleType != "UNITS") 1000 else null,
-                        quantity = if (saleType == "UNITS") netContentDisplay else null,
+                        saleType = if (!isSoldByUnit) SaleType.WEIGHT else SaleType.EACH,
+                        weight = if (!isSoldByUnit) 1000 else null,
+                        quantity = if (isSoldByUnit) netContentDisplay else null,
                         image = "https://a.fsimg.co.nz/product/retail/fan/image/500x500/${
                             productId.split(
                                 "-"
