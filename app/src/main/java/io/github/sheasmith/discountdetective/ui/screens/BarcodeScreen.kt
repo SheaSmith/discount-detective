@@ -31,15 +31,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.*
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.mlkit.common.MlKitException
 import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.barcode.BarcodeScannerProcessor
 import io.github.sheasmith.discountdetective.barcode.camera.GraphicOverlay
+import io.github.sheasmith.discountdetective.ui.components.barcode.BarcodeTopBar
 import io.github.sheasmith.discountdetective.ui.theme.DiscountDetectiveTheme
 import io.github.sheasmith.discountdetective.viewmodel.BarcodeViewModel
 

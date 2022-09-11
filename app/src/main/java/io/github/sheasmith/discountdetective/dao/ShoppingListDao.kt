@@ -1,7 +1,7 @@
-package com.example.cosc345project.dao
+package io.github.sheasmith.discountdetective.dao
 
 import androidx.room.*
-import com.example.cosc345project.models.ShoppingListItem
+import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -26,14 +26,13 @@ import coil.compose.AsyncImage
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
-import com.example.cosc345.shared.models.StorePricingInformation
 import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.ui.components.StatusBarLargeTopAppBar
 import io.github.sheasmith.discountdetective.ui.components.product.AddToShoppingListBlock
 import io.github.sheasmith.discountdetective.ui.components.product.ProductTitle
-import io.github.sheasmith.discountdetective.viewmodel.ProductViewModel
 import io.github.sheasmith.discountdetective.ui.components.shoppinglist.RetailerSlot
 import io.github.sheasmith.discountdetective.ui.components.shoppinglist.TableHeader
+import io.github.sheasmith.discountdetective.viewmodel.ProductViewModel
 
 /**
  * Function used to create the image for the Product on the Product Screen.

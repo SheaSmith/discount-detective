@@ -5,8 +5,6 @@ import android.util.Log
 import com.example.cosc345.shared.models.Product
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
-import io.github.sheasmith.discountdetective.dao.ProductDao
-import io.github.sheasmith.discountdetective.models.RetailerProductInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject

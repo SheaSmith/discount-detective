@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
-import io.github.sheasmith.discountdetective.models.ShoppingListItem
-import io.github.sheasmith.discountdetective.ShoppingListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.repository.ProductRepository
 import io.github.sheasmith.discountdetective.repository.RetailersRepository
+import io.github.sheasmith.discountdetective.repository.ShoppingListRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject

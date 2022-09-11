@@ -1,7 +1,7 @@
-package com.example.cosc345project.repository
+package io.github.sheasmith.discountdetective.repository
 
-import com.example.cosc345project.dao.ShoppingListDao
-import com.example.cosc345project.models.ShoppingListItem
+import io.github.sheasmith.discountdetective.dao.ShoppingListDao
+import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton

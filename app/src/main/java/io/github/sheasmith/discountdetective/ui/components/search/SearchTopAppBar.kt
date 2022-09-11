@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import io.github.sheasmith.discountdetective.R
 
 /**
  * A modified version of the top app bar that contains a search form.

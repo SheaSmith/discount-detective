@@ -25,7 +25,7 @@ class DiscountDetectorApp : Application(), Configuration.Provider {
     /**
      * Get the AndroidX work configuration for working with hilt.
      */
-    override fun getWorkManagerConfiguration() =
+    override fun getWorkManagerConfiguration(): Configuration =
         Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()

@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.ui.Navigation
 
 /**

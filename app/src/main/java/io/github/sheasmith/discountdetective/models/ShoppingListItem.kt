@@ -1,4 +1,4 @@
-package com.example.cosc345project.models
+package io.github.sheasmith.discountdetective.models
 
 import androidx.room.Entity
 

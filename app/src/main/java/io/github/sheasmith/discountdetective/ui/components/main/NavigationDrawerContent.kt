@@ -13,10 +13,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
-import io.github.sheasmith.discountdetective.ui.utils.NavigationType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import io.github.sheasmith.discountdetective.R
-import io.github.sheasmith.discountdetective.Navigation
+import io.github.sheasmith.discountdetective.ui.Navigation
+import io.github.sheasmith.discountdetective.ui.utils.NavigationType
 
 /**
  * The content of the navigation drawer.

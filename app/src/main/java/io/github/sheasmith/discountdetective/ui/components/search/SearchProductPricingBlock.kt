@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.placeholder
+import io.github.sheasmith.discountdetective.R
 
 /**
  * PricingBlock function displays the pricing information for a specified price.

@@ -1,4 +1,4 @@
-package com.example.cosc345project.ui.components.shoppinglist
+package io.github.sheasmith.discountdetective.ui.components.shoppinglist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.StorePricingInformation
-import com.example.cosc345project.R
+import io.github.sheasmith.discountdetective.R
 
 /**
  * Function used to create the retailer slot which shows the prices for the products.

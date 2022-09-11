@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import io.github.sheasmith.discountdetective.R
 
 /**
  * A component that shows whenever there is an error with the search (for example, no internet or
