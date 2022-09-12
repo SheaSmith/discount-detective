@@ -3,7 +3,6 @@ package com.example.cosc345.shared.models
 /**
  * The grouping object which contains the retailer specific product information.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. Some of the nullable parameters are not nullable in practice, but are required to be for Firebase.
  */
 data class Product(
@@ -12,6 +11,9 @@ data class Product(
      */
     var information: MutableList<RetailerProductInformation>? = null,
 ) {
+    /**
+     * Get the best retailer product information that is attached to this product, based on pred
+     */
     fun getBestInformation(): RetailerProductInformation {
         return information!!.sortedWith(
             Comparator { t: RetailerProductInformation, t2: RetailerProductInformation ->

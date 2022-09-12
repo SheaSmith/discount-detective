@@ -7,7 +7,6 @@ import com.example.cosc345.shared.models.Retailer
 /**
  * The New World specific implementation of the generic [FoodStuffsScraper], which basically just passes some basic information to the generic scraper.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class NewWorldScraper : FoodStuffsScraper(

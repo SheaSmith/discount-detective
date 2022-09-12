@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * A variant for this product, basically a different version of it that can be selected.
  *
- * @author William Hadden
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)

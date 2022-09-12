@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * A particular product on a WooCommerce store.
  *
- * @author William Hadden
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)

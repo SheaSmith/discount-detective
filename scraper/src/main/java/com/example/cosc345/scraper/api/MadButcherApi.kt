@@ -6,8 +6,6 @@ import retrofit2.http.Query
 
 /**
  * Defines the supplemental Mad Butcher API, which despite using WooCommerce, needs extra information around the sale type of the product (for example, whether it is sold by weight, or individually).
- *
- * @author Shea Smith
  */
 interface MadButcherApi {
     /**

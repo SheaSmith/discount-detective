@@ -11,6 +11,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.time.Duration
 
+/**
+ * The worker responsible for merging products based on their names.
+ */
 @HiltWorker
 class ValuesMergeWorker @AssistedInject constructor(
     @Assisted context: Context,

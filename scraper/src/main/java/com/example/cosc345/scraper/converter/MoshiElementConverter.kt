@@ -10,7 +10,6 @@ import pl.droidsonroids.jspoon.annotation.Selector
  * An element converter specifically for `<script>` classes to convert JSON text from HTML into Kotlin objects.
  *
  * @param T The type you wish to transform the JSON into.
- * @author Shea Smith
  * @constructor Create a new instance of this converter, specifying the conversion types.
  */
 abstract class MoshiElementConverter<T>(

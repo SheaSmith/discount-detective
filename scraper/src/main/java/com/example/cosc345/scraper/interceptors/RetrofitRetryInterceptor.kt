@@ -5,8 +5,6 @@ import okhttp3.Response
 
 /**
  * An interceptor which automatically retries a request in case of transient server errors.
- *
- * @author Shea Smith
  */
 class RetrofitRetryInterceptor : Interceptor {
     /**

@@ -13,7 +13,6 @@ import com.example.cosc345.shared.models.*
  *
  * Then each category is iterated, and the products for each is requested. This data is then scraped, processed and cleaned up.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class RobertsonsMeatsScraper : Scraper() {
@@ -36,24 +35,24 @@ class RobertsonsMeatsScraper : Scraper() {
 
         val products = mutableListOf<RetailerProductInformation>()
 
-        robertsonsMeatsService.getCategories().categories!!.forEach { robertsonsMeatsCategory ->
-            robertsonsMeatsService.getProducts(robertsonsMeatsCategory.href!!).products?.forEach { robertsonsMeatsProduct ->
+        robertsonsMeatsService.getCategories().categories!!.forEach { (href) ->
+            robertsonsMeatsService.getProducts(href!!).products?.forEach { (productName, imagePath, price, weight) ->
                 val product = RetailerProductInformation(
                     retailer = retailerId,
-                    id = robertsonsMeatsProduct.name,
-                    saleType = if (robertsonsMeatsProduct.weight == null) SaleType.EACH else SaleType.WEIGHT,
-                    weight = if (robertsonsMeatsProduct.weight != null) 1000 else null,
-                    image = "${baseUrl}${robertsonsMeatsProduct.imagePath}",
+                    id = productName,
+                    saleType = if (weight == null) SaleType.EACH else SaleType.WEIGHT,
+                    weight = if (weight != null) 1000 else null,
+                    image = "${baseUrl}${imagePath}",
                     automated = true,
                     verified = false
                 )
 
-                var name = robertsonsMeatsProduct.name!!
+                var name = productName!!
                 Units.all.forEach {
                     val result = extractAndRemoveQuantity(name, it)
 
                     name = result.first
-                    if (result.second != null && robertsonsMeatsProduct.weight != null) {
+                    if (result.second != null && weight != null) {
                         product.quantity = "${result.second}${it}"
 
                         if (it == Units.GRAMS) {
@@ -69,7 +68,7 @@ class RobertsonsMeatsScraper : Scraper() {
                 product.pricing = mutableListOf(
                     StorePricingInformation(
                         retailerId,
-                        robertsonsMeatsProduct.price!!.times(100).toInt(),
+                        price!!.times(100).toInt(),
                         automated = true,
                         verified = false
                     )

@@ -13,10 +13,16 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.example.cosc345.scraperapp.R
 
+/**
+ * The base worker for the scraper workers.
+ */
 abstract class BaseWorker(appContext: Context, workerParameters: WorkerParameters) :
     CoroutineWorker(appContext, workerParameters) {
     private lateinit var wakeLock: PowerManager.WakeLock
 
+    /**
+     * Called when the worker starts. This sets up the wake lock and notification.
+     */
     protected suspend fun workStart(@StringRes text: Int) {
         wakeLock =
             (ContextCompat.getSystemService(
@@ -32,6 +38,9 @@ abstract class BaseWorker(appContext: Context, workerParameters: WorkerParameter
         setForeground(createForegroundInfo(text))
     }
 
+    /**
+     * Called when the worker stops. This releases the wakelock.
+     */
     protected fun workStop() {
         wakeLock.release()
     }

@@ -7,8 +7,6 @@ import retrofit2.http.Path
 
 /**
  * Defines how to get information from Veggie Boys' bespoke store.
- *
- * @author Shea Smith
  */
 interface VeggieBoysApi {
     /**

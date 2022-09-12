@@ -7,20 +7,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.cosc345.scraperapp.repositories.TemporaryDatabaseRepository
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+/**
+ * The view model for the main screen.
+ */
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
-    private val temporaryDatabaseRepository: TemporaryDatabaseRepository
+    private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
-    var showLogin by mutableStateOf(firebaseAuth.currentUser == null)
+    /**
+     * Whether the login should be shown or not.
+     */
+    var showLogin: Boolean by mutableStateOf(firebaseAuth.currentUser == null)
 
+    /**
+     * Handle a login to Firebase.
+     *
+     * @param result The result from Firebase.
+     */
     fun handleLogin(result: FirebaseAuthUIAuthenticationResult) {
         if (result.resultCode == RESULT_OK) {
             val user = firebaseAuth.currentUser
@@ -28,6 +37,11 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Launch the login if requested.
+     *
+     * @param signInLauncher The activity launcher for the login screen.
+     */
     fun launchLogin(signInLauncher: ActivityResultLauncher<Intent>) {
         // Choose authentication providers
         val providers = arrayListOf(

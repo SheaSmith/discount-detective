@@ -8,8 +8,6 @@ import retrofit2.http.*
 
 /**
  * The definition for the Countdown API for retrieving information from Countdown's online shopping system.
- *
- * @author Shea Smith
  */
 interface CountdownApi {
     /**
