@@ -2,6 +2,8 @@
 
 package com.example.cosc345project.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -19,10 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -35,6 +39,7 @@ import com.example.cosc345project.ui.components.StatusBarLargeTopAppBar
 import com.example.cosc345project.ui.components.product.AddToShoppingListBlock
 import com.example.cosc345project.ui.components.product.ProductTitle
 import com.example.cosc345project.viewmodel.ProductViewModel
+
 
 /**
  * Function used to create the image for the Product on the Product Screen.
@@ -75,6 +80,7 @@ fun RetailerSlot(
     productInformation: RetailerProductInformation
 ) {
     val store = retailer.stores!!.first { it.id == pricingInformation.store }
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier
@@ -117,9 +123,29 @@ fun RetailerSlot(
                     DropdownMenuItem(
                         text = { Text(retailer.name!!) },
                         onClick = { },
-                        colors = MenuDefaults.itemColors(disabledTextColor = MaterialTheme.colorScheme.onSurface),
+                        //colors = MenuDefaults.itemColors(disabledTextColor = MaterialTheme.colorScheme.onSurface),
                         enabled = false
                     )
+
+                    if (store.latitude != null && store.longitude != null) {
+                        DropdownMenuItem(
+                            text = {
+                                Text("Show on Map")
+                            },
+                            onClick = {
+                                val geoLocation =
+                                    Uri.parse("geo:0,0?q=" + store.latitude!! + "," + store.longitude!! + "(" + retailer.name!! + ")&z=12")
+
+                                val intent = Intent(Intent.ACTION_VIEW).apply {
+                                    data = geoLocation
+                                }
+
+    //                            if (intent.resolveActivity(context.packageManager) != null) {
+                                    startActivity(context, intent, null)
+    //                            }
+                            },
+                        )
+                    }
                 }
             }
 
@@ -353,7 +379,6 @@ fun ProductScreen(
                 }.sortedBy {
                     it.second.getPrice(it.first)
                 }
-
 
                 if (nonLocalRetailerProductInformation.isNotEmpty() && retailers.isNotEmpty()) {
                     item {
