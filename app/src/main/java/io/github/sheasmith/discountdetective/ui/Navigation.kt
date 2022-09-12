@@ -21,27 +21,27 @@ enum class Navigation(
     val icon: ImageVector?
 ) {
     /**
-     * The [com.example.cosc345project.ui.screens.SearchScreen].
+     * The [io.github.sheasmith.discountdetective.ui.screens.SearchScreen].
      */
     SEARCH("search", R.string.search, Icons.Rounded.Search),
 
     /**
-     * The [com.example.cosc345project.ui.screens.ProductScreen].
+     * The [io.github.sheasmith.discountdetective.ui.screens.ProductScreen].
      */
     PRODUCT("products/{productId}", null, null),
 
     /**
-     * The [com.example.cosc345project.ui.screens.ShoppingListScreen].
+     * The [io.github.sheasmith.discountdetective.ui.screens.ShoppingListScreen].
      */
     SHOPPING_LIST("list", R.string.shopping_list, Icons.Rounded.List),
 
     /**
-     * The [com.example.cosc345project.ui.screens.SettingsScreen].
+     * The [io.github.sheasmith.discountdetective.ui.screens.SettingsScreen].
      */
     SETTINGS("settings", R.string.settings, Icons.Rounded.Settings),
 
     /**
-     * The [com.example.cosc345project.ui.screens.BarcodeScreen].
+     * The [io.github.sheasmith.discountdetective.ui.screens.BarcodeScreen].
      */
     BARCODE_SCANNER("barcode_scanner", null, null);
 

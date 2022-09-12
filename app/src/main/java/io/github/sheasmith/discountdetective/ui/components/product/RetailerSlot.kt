@@ -1,21 +1,29 @@
-package io.github.sheasmith.discountdetective.ui.components.shoppinglist
+package io.github.sheasmith.discountdetective.ui.components.product
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
+import com.example.cosc345.shared.models.Store
 import com.example.cosc345.shared.models.StorePricingInformation
 import io.github.sheasmith.discountdetective.R
 
@@ -38,8 +46,7 @@ fun RetailerSlot(
             .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
             .fillMaxWidth(),
 
-        shape = RoundedCornerShape(8.dp),
-        tonalElevation = 2.dp
+        shape = RoundedCornerShape(8.dp), tonalElevation = 2.dp
     ) {
         Row {
 
@@ -48,18 +55,14 @@ fun RetailerSlot(
                 modifier = Modifier
                     .weight(1.0f)
                     .align(Alignment.CenterVertically)
-                    .padding(end = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(end = 10.dp), verticalAlignment = Alignment.CenterVertically
             ) {
-                RetailerIcon(retailer = retailer)
+                RetailerIcon(retailer = retailer, store = store)
 
                 Spacer(Modifier.width(10.0.dp))
 
                 Text(
-                    text = store.name!!,
-                    fontSize = 14.sp,
-                    lineHeight = 16.sp,
-                    maxLines = 3
+                    text = store.name!!, fontSize = 14.sp, lineHeight = 16.sp, maxLines = 3
                 )
 
             }
@@ -71,15 +74,11 @@ fun RetailerSlot(
             ) {
                 val price = pricingInformation.price?.let {
                     StorePricingInformation.getDisplayPrice(
-                        productInformation,
-                        it
+                        productInformation, it
                     )
                 }
 
-                Text(
-                    text = price?.let { "${price.first}${price.second}" } ?: "",
-                    fontSize = 14.sp
-                )
+                Text(text = price?.let { "${price.first}${price.second}" } ?: "", fontSize = 14.sp)
             }
 
             Column(
@@ -89,20 +88,17 @@ fun RetailerSlot(
             ) {
                 if (pricingInformation.discountPrice != null) {
                     val price = StorePricingInformation.getDisplayPrice(
-                        productInformation,
-                        pricingInformation.discountPrice!!
+                        productInformation, pricingInformation.discountPrice!!
                     )
 
                     Text(
-                        text = "${price.first}${price.second}",
-                        fontSize = 14.sp
+                        text = "${price.first}${price.second}", fontSize = 14.sp
                     )
                 }
 
                 if (pricingInformation.multiBuyPrice != null && pricingInformation.multiBuyQuantity != null) {
                     val price = StorePricingInformation.getDisplayPrice(
-                        productInformation,
-                        pricingInformation.multiBuyPrice!!
+                        productInformation, pricingInformation.multiBuyPrice!!
                     )
 
                     Text(
@@ -111,8 +107,7 @@ fun RetailerSlot(
                             pricingInformation.multiBuyQuantity!!,
                             price.first,
                             price.second
-                        ),
-                        fontSize = 14.sp
+                        ), fontSize = 14.sp
                     )
                 }
 
@@ -122,8 +117,7 @@ fun RetailerSlot(
                             id = R.string.club_only,
                         ),
 
-                        lineHeight = 14.sp,
-                        fontSize = 10.sp
+                        lineHeight = 14.sp, fontSize = 10.sp
                     )
                 }
             }
@@ -133,9 +127,10 @@ fun RetailerSlot(
 
 @Composable
 private fun RowScope.RetailerIcon(
-    retailer: Retailer
+    retailer: Retailer, store: Store
 ) {
     var showRetailer by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier
@@ -151,8 +146,7 @@ private fun RowScope.RetailerIcon(
     ) {
 
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
             Text(
                 text = retailer.initialism!!,
@@ -163,12 +157,31 @@ private fun RowScope.RetailerIcon(
         }
 
         DropdownMenu(expanded = showRetailer, onDismissRequest = { showRetailer = false }) {
-            DropdownMenuItem(
-                text = { Text(retailer.name!!) },
-                onClick = { },
-                colors = MenuDefaults.itemColors(disabledTextColor = MaterialTheme.colorScheme.onSurface),
-                enabled = false
+            DropdownMenuItem(text = { Text(retailer.name!!) }, onClick = { }, enabled = false
             )
+
+            if (store.latitude != null && store.longitude != null) {
+                DropdownMenuItem(
+                    text = {
+                        Text("Show on Map")
+                    },
+                    onClick = {
+                        val storeName =
+                            if (retailer.name == store.name) retailer.name else "${retailer.name} ${store.name}"
+
+                        val geoLocation =
+                            Uri.parse("geo:0,0?q=${store.latitude!!},${store.longitude!!}(${storeName})&z=12")
+
+                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                            data = geoLocation
+                        }
+
+                        if (intent.resolveActivity(context.packageManager) != null) {
+                            ContextCompat.startActivity(context, intent, null)
+                        }
+                    },
+                )
+            }
         }
     }
 }
