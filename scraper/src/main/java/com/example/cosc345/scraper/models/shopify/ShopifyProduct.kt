@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * The individual product from the Shopify store.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)

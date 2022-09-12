@@ -11,6 +11,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.time.Duration
 
+/**
+ * The background worker responsible for scraping data from retailer websites.
+ */
 @HiltWorker
 class ScraperWorker @AssistedInject constructor(
     @Assisted context: Context,

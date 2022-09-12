@@ -5,7 +5,6 @@ import kotlin.math.roundToInt
 /**
  * Specifies the pricing for a particular product in a particular store, including discounts and multi-buy pricing.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. Some of the nullable parameters are not nullable in practice, but are required to be for Firebase.
  */
 data class StorePricingInformation(
@@ -17,14 +16,14 @@ data class StorePricingInformation(
     var store: String? = null,
 
     /**
-     * The price of the product, multiplied by 100.
+     * The price of the product, in cents.
      *
      * Not nullable in practice, but Firebase requires an object with no arguments for the database.
      */
     var price: Int? = null,
 
     /**
-     * The discounted price, even if the promotion is yet to begin. Again this is multiplied by 100.
+     * The discounted price, even if the promotion is yet to begin. Again this is in cents.
      */
     var discountPrice: Int? = null,
 
@@ -84,35 +83,37 @@ data class StorePricingInformation(
     fun getDisplayPrice(productInformation: RetailerProductInformation): Pair<String, String> =
         getDisplayPrice(productInformation, getPrice(productInformation))
 
-    /**
-     * Get the display price for the specified price for this product.
-     *
-     * @param productInformation The parent product information for this pricing information.
-     * @param price The price to get the display price for.
-     * @return A pair, with the dollars component (e.g. "$10" for $10.00/kg) as the first value, and
-     * the cents component (for example, ".00/kg" for "$10.00/kg) as the second value.
-     */
-    fun getDisplayPrice(
-        productInformation: RetailerProductInformation,
-        price: Int
-    ): Pair<String, String> {
-        val salePrefix = if (productInformation.saleType == SaleType.WEIGHT) {
-            "kg"
-        } else {
-            "ea"
+    companion object {
+        /**
+         * Get the display price for the specified price for this product.
+         *
+         * @param productInformation The parent product information for this pricing information.
+         * @param price The price to get the display price for.
+         * @return A pair, with the dollars component (e.g. "$10" for $10.00/kg) as the first value, and
+         * the cents component (for example, ".00/kg" for "$10.00/kg) as the second value.
+         */
+        fun getDisplayPrice(
+            productInformation: RetailerProductInformation,
+            price: Int
+        ): Pair<String, String> {
+            val salePrefix = if (productInformation.saleType == SaleType.WEIGHT) {
+                "kg"
+            } else {
+                "ea"
+            }
+
+            val priceString = price.toString()
+
+            val dollarComponent = "$${priceString.substring(0, priceString.length - 2)}"
+            val centsComponent =
+                ".${
+                    priceString.substring(
+                        priceString.length - 2,
+                        priceString.length
+                    )
+                }/${salePrefix}"
+
+            return Pair(dollarComponent, centsComponent)
         }
-
-        val priceString = price.toString()
-
-        val dollarComponent = "$${priceString.substring(0, priceString.length - 2)}"
-        val centsComponent =
-            ".${
-                priceString.substring(
-                    priceString.length - 2,
-                    priceString.length
-                )
-            }/${salePrefix}"
-
-        return Pair(dollarComponent, centsComponent)
     }
 }

@@ -5,54 +5,45 @@ import androidx.room.Entity
 import com.example.cosc345.shared.models.Store
 
 /**
- * This StorageStore class allows us to store information about particular stores. Not that there
- * may be more than one store, in different locations, attributed to each retailer.
- *
+ * A version of the normal [Store] that can be saved in a local Room database.
  */
 @Entity(
     tableName = "Stores",
     primaryKeys = ["storeRetailer", "storeId"]
 )
 data class StorageStore(
+    /**
+     * The ID of the retailer associated with this store.
+     */
     @ColumnInfo(name = "storeRetailer")
     val retailer: String,
 
     /**
      * The unique ID for this store.
-     *
-     * Required.
      */
     @ColumnInfo(name = "storeId")
     val id: String,
 
     /**
      * The name of the store, for example, Centre City.
-     *
-     * Required.
      */
     @ColumnInfo(name = "storeName")
     val name: String,
 
     /**
      * The address of the store.
-     *
-     * Required.
      */
     @ColumnInfo(name = "storeAddress")
     val address: String?,
 
     /**
      * The latitude of the store.
-     *
-     * Required.
      */
     @ColumnInfo(name = "storeLatitude")
     val latitude: Double?,
 
     /**
      * The longitude of the store.
-     *
-     * Required.
      */
     @ColumnInfo(name = "storeLongitude")
     val longitude: Double?,
@@ -60,8 +51,6 @@ data class StorageStore(
     /**
      * Whether the store was automatically added by the scraper, rather than by the retailer
      * themselves, or a user.
-     *
-     * Required.
      */
     @ColumnInfo(name = "storeAutomated")
     val automated: Boolean,
@@ -82,6 +71,11 @@ data class StorageStore(
         store.region!!
     )
 
+    /**
+     * Convert this back to a normal [Store] for saving in Firebase, or for processing.
+     *
+     * @return An instance of the shared [Store] class, with the same information as this object.
+     */
     fun toStore(): Store {
         return Store(
             id,

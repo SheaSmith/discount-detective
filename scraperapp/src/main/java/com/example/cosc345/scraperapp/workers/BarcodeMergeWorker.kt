@@ -11,6 +11,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.time.Duration
 
+/**
+ * The worker responsible for grouping products based on their barcodes.
+ */
 @HiltWorker
 class BarcodeMergeWorker @AssistedInject constructor(
     @Assisted context: Context,

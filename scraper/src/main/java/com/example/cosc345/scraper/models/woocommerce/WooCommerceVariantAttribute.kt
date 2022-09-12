@@ -5,7 +5,6 @@ import com.squareup.moshi.Json
 /**
  * A variant attribute, which specifies a particular customisable attribute for a product.
  *
- * @author William Hadden
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 data class WooCommerceVariantAttribute(

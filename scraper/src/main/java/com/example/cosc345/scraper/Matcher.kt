@@ -5,6 +5,7 @@ import com.example.cosc345.scraper.scrapers.*
 import com.example.cosc345.scraper.scrapers.foodstuffs.NewWorldScraper
 import com.example.cosc345.scraper.scrapers.foodstuffs.PakNSaveScraper
 import com.example.cosc345.scraper.scrapers.myfoodlink.FreshChoiceScraper
+import com.example.cosc345.scraper.scrapers.myfoodlink.SuperValueScraper
 import com.example.cosc345.scraper.scrapers.shopify.LeckiesButcheryScraper
 import com.example.cosc345.scraper.scrapers.shopify.PrincesStreetButcherScraper
 import com.example.cosc345.scraper.scrapers.shopify.YogijisFoodMartScraper
@@ -19,20 +20,22 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 /**
- * Matcher class
- *
- *
+ * The matcher is responsible for running all of the scrapers, and then merging the products together.
  */
 @OptIn(ExperimentalTime::class)
 class Matcher {
+    /**
+     * Run all scrapers.
+     *
+     * @return A pair, with the first item being the retailers map (key: ID, value: retailer) and the second item being the list of retailer product info.
+     */
     suspend fun runScrapers(): Pair<Map<String, Retailer>, List<RetailerProductInformation>> {
         val scrapers = setOf(
             CountdownScraper(),
             NewWorldScraper(),
             PakNSaveScraper(),
             FreshChoiceScraper(),
-            // SuperValue disabled for now, as there aren't any in the Dunedin area.
-            //SuperValueScraper(),
+            SuperValueScraper(),
             LeckiesButcheryScraper(),
             PrincesStreetButcherScraper(),
             YogijisFoodMartScraper(),
@@ -74,11 +77,16 @@ class Matcher {
     }
 
     /**
-     * matchBarcodes method
+     * Merge products based on their barcode.
      *
+     * # Process
+     * All products with matching barcodes are merged, even if there is only a two-degree match (i.e. a set of products with the barcodes (1234), (1234, 5678) and (5678) will be merged.
      *
-     * @param retailerProductInfo
-     * @param retailers
+     * However, the exception to this is that each product cannot have more than one product from the same retailer as a match. So they will be split off into their own products.
+     *
+     * @param retailerProductInfo The product information that should be merged.
+     * @param retailers The retailer to return back.
+     * @return A pair with the retailers being the first item (key: ID, value: retailer), and the list of product as the second item (key: product ID, value: product).
      */
     fun matchBarcodes(
         retailerProductInfo: MutableList<RetailerProductInformation>,
@@ -86,35 +94,47 @@ class Matcher {
     ): Pair<Map<String, Retailer>, Map<String, Product>> {
         val products = mutableListOf<Product>()
         val time = measureTime {
-            val infoWithBarcodes = retailerProductInfo.filter { it.barcodes != null }
-            retailerProductInfo.removeAll(infoWithBarcodes)
-            infoWithBarcodes.forEach { info ->
-                val barcodes = info.barcodes!!.toSet()
-                val productMatches = products.filter { product ->
-                    product.information!!.any {
-                        it.barcodes?.intersect(barcodes)?.isNotEmpty() == true
-                    } && product.information!!.none { it.retailer == info.retailer }
-                }
+            val infoWithBarcodes = retailerProductInfo.filter { it.barcodes?.isNotEmpty() == true }
+            retailerProductInfo.removeAll(infoWithBarcodes.toSet())
 
-                if (productMatches.isEmpty()) {
-                    products.add(Product(arrayListOf(info)))
-                } else if (productMatches.size == 1) {
-                    productMatches.first().information!!.add(info)
-                } else if (productMatches.size >= 2) {
-                    val firstMatch = productMatches.first()
-                    productMatches.forEachIndexed { index, product ->
-                        if (index != 0 && product.information!!.none { retailerInfo -> firstMatch.information!!.any { retailerInfo.retailer == it.retailer } }) {
-                            firstMatch.information!!.addAll(product.information!!)
-                            products.remove(product)
-                        }
-                    }
+            val infoGroupedByBarcode =
+                infoWithBarcodes.flatMap { product -> product.barcodes!!.map { it to product } }
+                    .groupBy({ it.first }, { it.second }).mapValues { it.value.toMutableList() }
+                    .toMutableMap()
 
-                    productMatches.first().information!!.add(info)
+            val skipBarcodes = mutableListOf<String>()
+
+            infoGroupedByBarcode.forEach { (key, value) ->
+                if (key !in skipBarcodes) {
+                    val barcodes = value.flatMap { it.barcodes!! }.distinct().toMutableList()
+                    val allRetailers = value.map { it.retailer }.toSet()
+                    barcodes.remove(key)
+
+                    val productsInOtherBarcodes =
+                        infoGroupedByBarcode.filter {
+                            it.key in barcodes
+                        }.values.flatten()
+                            .distinct()
+                            .filter { it !in value && it.retailer !in allRetailers }
+                    value.addAll(productsInOtherBarcodes)
+
+                    skipBarcodes.addAll(productsInOtherBarcodes.flatMap { it.barcodes!! }
+                        .distinct())
                 }
             }
 
-            products.addAll(retailerProductInfo.map { Product(arrayListOf(it)) })
+            skipBarcodes.forEach { infoGroupedByBarcode.remove(it) }
 
+            products.addAll(infoGroupedByBarcode.values.map { Product(it) })
+            products.addAll(retailerProductInfo.map { Product(mutableListOf(it)) })
+
+            products.forEach { (information) ->
+                information!!.removeAll { (retailer, id, _, _, _, _, _, _, _, _, _, _, _) ->
+                    products.flatMap { it.information!! }
+                        .count { it.id == id && it.retailer == retailer } > 1
+                }
+            }
+            products.removeAll { it.information.isNullOrEmpty() }
         }
 
         printStatus(products, retailers)
@@ -126,11 +146,20 @@ class Matcher {
     }
 
     /**
-     * matchNames function
+     * Merge products based on their names (including brand name and variant).
      *
+     * # Process
+     * Essentially each value (name, brand name and variant) is stripped of plurals and symbols, split into the individual words and they are checked to see if they match.
      *
-     * @param productMap
-     * @param retailers
+     * The variant is an optional match, but the brand name and name must match.
+     *
+     * Some "generic", store-name brands are excluded from the match (so Pams xyz will match Countdown xyz).
+     *
+     * Additionally, both products must have the same sale type, and the same quantity.
+     *
+     * @param productMap The product information that should be merged.
+     * @param retailers The retailer to return back.
+     * @return A pair with the retailers being the first item (key: ID, value: retailer), and the list of product as the second item (key: product ID, value: product).
      */
     fun matchNames(
         productMap: Map<String, Product>,
@@ -139,8 +168,8 @@ class Matcher {
         val products = productMap.values.toMutableList()
 
         val time = measureTime {
-            val productWithMatcherGroup = products.associateWith { product ->
-                product.information!!.map { MatcherGrouping(it) }.toMutableSet()
+            val productWithMatcherGroup = products.associateWith { (information) ->
+                information!!.map { MatcherGrouping(it) }.toMutableSet()
             }
 
             productWithMatcherGroup.forEach { map ->
@@ -159,7 +188,7 @@ class Matcher {
                         val firstMatch = matches.keys.first()
                         val firstMatchValues = matches[firstMatch]
                         matches.keys.forEachIndexed { index, product ->
-                            if (index != 0 && product.information!!.none { retailerInfo -> firstMatch.information!!.any { retailerInfo.retailer == it.retailer } }) {
+                            if (index != 0 && product.information!!.none { (retailer, _, _, _, _, _, _, _, _, _, _, _, _) -> firstMatch.information!!.any { retailer == it.retailer } }) {
                                 firstMatch.information!!.addAll(product.information!!)
                                 products.remove(product)
                                 val value = matches.filterKeys { it == product }.values.first()
@@ -188,56 +217,43 @@ class Matcher {
         return Pair(retailers, mappedProducts)
     }
 
-    /**
-     * mapProducts function
-     *
-     *
-     * @param products
-     */
     private fun mapProducts(products: List<Product>): Map<String, Product> {
-        return products.associateBy { product ->
+        return products.associateBy { (information) ->
             val barcodes =
-                product.information!!.filter { it.barcodes != null }.flatMap { it.barcodes!! }
+                information!!.filter { it.barcodes != null }.flatMap { it.barcodes!! }
 
             if (barcodes.isNotEmpty()) {
                 val barcodeUsage = barcodes.groupingBy { it }.eachCount()
 
                 barcodeUsage.maxBy { it.value }.key
             } else {
-                val info = product.information!!.first()
+                val info = information.first()
                 "${info.id!!.replace(Regex("[/.#$\\[\\]]"), "")}-${info.retailer!!}"
             }
         }
     }
 
-    /**
-     * printStatus method
-     *
-     *
-     * @param products
-     * @param retailers
-     */
     private fun printStatus(products: List<Product>, retailers: Map<String, Retailer>) {
         println("Number of retailer items per product")
         val count = products.groupBy { it.information!!.size }
         count.forEach {
-            println("{${it.key}: ${it.value.size}")
+            println("${it.key}: ${it.value.size}")
         }
 
         val groceryProducts =
-            products.filter { product -> product.information!!.all { it.saleType == SaleType.EACH } }
+            products.filter { (information) -> information!!.all { it.saleType == SaleType.EACH } }
         println("${
             groceryProducts.count { it.information!!.size > 1 }
                 .toDouble() / groceryProducts.size.toDouble() * 100
-        }$ of products sold by unit matched.")
+        }% of products sold by unit matched.")
 
-        retailers.forEach { retailer ->
+        retailers.forEach { (key, value) ->
             val total =
-                products.count { product -> product.information?.any { it.retailer == retailer.key } == true }
+                products.count { (information) -> information?.any { it.retailer == key } == true }
             val totalMatched =
-                products.count { product -> product.information?.any { it.retailer == retailer.key } == true && product.information?.size!! > 1 }
+                products.count { (information) -> information?.any { it.retailer == key } == true && information.size > 1 }
 
-            println("For ${retailer.value.name} ${totalMatched.toDouble() / total.toDouble() * 100}% matched.")
+            println("For ${value.name} ${totalMatched.toDouble() / total.toDouble() * 100}% matched.")
         }
 
         println(

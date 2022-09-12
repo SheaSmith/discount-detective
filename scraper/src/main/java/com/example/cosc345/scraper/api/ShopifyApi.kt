@@ -6,8 +6,6 @@ import retrofit2.http.Query
 
 /**
  * Defines how to get products from Shopify based stores.
- *
- * @author Shea Smith
  */
 interface ShopifyApi {
     /**

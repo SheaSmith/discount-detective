@@ -10,8 +10,6 @@ import retrofit2.http.POST
 
 /**
  * Defines how to get information from WixStores based stores.
- *
- * @author Shea Smith
  */
 interface WixStoresApi {
     /**

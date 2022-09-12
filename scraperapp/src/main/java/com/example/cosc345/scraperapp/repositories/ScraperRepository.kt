@@ -23,6 +23,9 @@ class ScraperRepository @Inject constructor(
     private val temporaryDatabaseRepository: TemporaryDatabaseRepository,
     private val matcher: Matcher
 ) {
+    /**
+     * Run all of the scrapers, and save the results.
+     */
     suspend fun runScrapers() {
         val result = matcher.runScrapers()
         temporaryDatabaseRepository.clearDatabase()
@@ -31,9 +34,7 @@ class ScraperRepository @Inject constructor(
     }
 
     /**
-     * matchBarcodes function
-     *
-     *
+     * Group retailer product info from the database by barcode and then save back to the database.
      */
     suspend fun matchBarcodes() {
         val retailers = temporaryDatabaseRepository.getRetailers()
@@ -45,9 +46,7 @@ class ScraperRepository @Inject constructor(
     }
 
     /**
-     * matchValues function
-     *
-     *
+     * Group all retailer product information from the database by the name values, and save it back to the database.
      */
     suspend fun matchValues() {
         val retailers = temporaryDatabaseRepository.getRetailers()
@@ -59,8 +58,7 @@ class ScraperRepository @Inject constructor(
     }
 
     /**
-     * saveToFirebase function
-     *
+     * Upload the contents of the database to Firebase.
      */
     suspend fun saveToFirebase() {
         val retailers = temporaryDatabaseRepository.getRetailers()
@@ -68,14 +66,6 @@ class ScraperRepository @Inject constructor(
         saveScrapers(retailers, products)
     }
 
-    /**
-     * saveScrapers function
-     *
-     * Is private because:
-     *
-     * @param retailers
-     * @param products
-     */
     private suspend fun saveScrapers(
         retailers: Map<String, Retailer>,
         products: Map<String, Product>
@@ -95,13 +85,6 @@ class ScraperRepository @Inject constructor(
         setLastUpdated()
     }
 
-    /**
-     * deleteProducts function
-     *
-     * Is private because:
-     *
-     * @param keys
-     */
     private suspend fun deleteProducts(keys: List<String>) {
         return suspendCancellableCoroutine { continuation ->
             firebaseDatabase.getReference("products").updateChildren(keys.associateWith { null })

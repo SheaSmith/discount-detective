@@ -28,6 +28,13 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+/**
+ * The theme for the app.
+ *
+ * @param darkTheme Whether the dark theme should be used or not.
+ * @param dynamicColor Whether dynamic colours should be used.
+ * @param content The content of the app.
+ */
 @Composable
 fun DiscountDetectiveTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

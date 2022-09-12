@@ -7,8 +7,6 @@ import retrofit2.http.Query
 
 /**
  * Defines how to retrieve data from MyFoodLink based stores (for example, FreshChoice or SuperValue).
- *
- * @author Shea Smith
  */
 interface MyFoodLinkApi {
     /**

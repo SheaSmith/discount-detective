@@ -10,6 +10,9 @@ import com.google.firebase.ktx.Firebase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
+/**
+ * The background worker responsible for saving product information to Firebase.
+ */
 @HiltWorker
 class SaveToFirebaseWorker @AssistedInject constructor(
     @Assisted context: Context,

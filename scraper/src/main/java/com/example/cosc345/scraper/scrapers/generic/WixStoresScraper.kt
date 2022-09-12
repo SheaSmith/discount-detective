@@ -19,7 +19,6 @@ import com.example.cosc345.shared.models.StorePricingInformation
  * @param retailer The retailer to return.
  * @param baseUrl The base URL all API requests are made relative to.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper, for the retailer specified in the constructor.
  */
 abstract class WixStoresScraper(
@@ -39,20 +38,20 @@ abstract class WixStoresScraper(
             WixStoresProductsRequest(
                 "query getProductList { products(limit: 400) { id name price isInStock media { fullUrl }, ribbon } }",
             ), token
-        ).data.products.filter { it.isInStock }.forEach { wixStoresProduct ->
+        ).data.products.filter { it.isInStock }.forEach { (wixId, name, price, _, media) ->
             products.add(
                 RetailerProductInformation(
                     retailer = id,
-                    id = wixStoresProduct.id,
-                    name = wixStoresProduct.name
+                    id = wixId,
+                    name = name
                         .replace(Regex("\\s+"), " ")
                         .replace(Regex("\\s([()])"), "$1")
                         .trim(),
-                    image = wixStoresProduct.media.first().imageUrl,
+                    image = media.first().imageUrl,
                     pricing = mutableListOf(
                         StorePricingInformation(
                             store = id,
-                            price = wixStoresProduct.price.times(100).toInt()
+                            price = price.times(100).toInt()
                         )
                     ),
                     saleType = SaleType.EACH,

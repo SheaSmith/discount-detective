@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * Multi-buy information about a product, for example 2 for $5.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)
