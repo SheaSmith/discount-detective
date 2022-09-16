@@ -5,8 +5,6 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 /**
  * Get the standard Moshi instance that we use across the project.
- *
- * @author Shea Smith
  */
 fun getMoshi(): Moshi {
     return Moshi.Builder()

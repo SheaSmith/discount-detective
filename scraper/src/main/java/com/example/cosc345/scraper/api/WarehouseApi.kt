@@ -8,8 +8,6 @@ import retrofit2.http.Query
 
 /**
  * Defines how to get information from The Warehouse.
- *
- * @author Shea Smith
  */
 interface WarehouseApi {
     /**

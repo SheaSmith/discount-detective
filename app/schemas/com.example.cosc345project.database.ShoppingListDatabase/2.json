@@ -2,27 +2,27 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "14b61185ba354d95f7552e8736a9cfb5",
+    "identityHash": "54257574c9368126427af923d3a070ec",
     "entities": [
       {
-        "tableName": "retailerProductInfo",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productID` TEXT NOT NULL, `retailerProductInformation` TEXT NOT NULL, `storePricingID` TEXT NOT NULL, `quantity` INTEGER NOT NULL, PRIMARY KEY(`productID`, `retailerProductInformation`, `storePricingID`))",
+        "tableName": "shopping_list",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` TEXT NOT NULL, `retailerProductInformationId` TEXT NOT NULL, `storeId` TEXT NOT NULL, `quantity` INTEGER NOT NULL, PRIMARY KEY(`productId`, `retailerProductInformationId`, `storeId`))",
         "fields": [
           {
-            "fieldPath": "productID",
-            "columnName": "productID",
+            "fieldPath": "productId",
+            "columnName": "productId",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "retailerProductInformationID",
-            "columnName": "retailerProductInformation",
+            "fieldPath": "retailerProductInformationId",
+            "columnName": "retailerProductInformationId",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "storePricingInformationID",
-            "columnName": "storePricingID",
+            "fieldPath": "storeId",
+            "columnName": "storeId",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -35,9 +35,9 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "productID",
-            "retailerProductInformation",
-            "storePricingID"
+            "productId",
+            "retailerProductInformationId",
+            "storeId"
           ],
           "autoGenerate": false
         },
@@ -48,7 +48,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '14b61185ba354d95f7552e8736a9cfb5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '54257574c9368126427af923d3a070ec')"
     ]
   }
 }

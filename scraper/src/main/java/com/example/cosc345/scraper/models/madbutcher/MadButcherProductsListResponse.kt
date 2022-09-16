@@ -5,7 +5,6 @@ import pl.droidsonroids.jspoon.annotation.Selector
 /**
  * The response to the request to get all Mad Butcher products, to verify if they are sold by weight or not.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Jspoon.
  */
 data class MadButcherProductsListResponse(

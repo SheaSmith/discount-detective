@@ -13,8 +13,6 @@ import java.time.Duration
 
 /**
  * The interface which defines the basic scraper framework.
- *
- * @author Shea Smith
  */
 abstract class Scraper {
     /**

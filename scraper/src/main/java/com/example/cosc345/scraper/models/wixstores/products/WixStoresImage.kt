@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * An object containing information about the product image.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)

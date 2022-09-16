@@ -6,7 +6,6 @@ import com.squareup.moshi.JsonClass
 /**
  * An object containing metadata about the price.
  *
- * @author William Hadden
  * @constructor Create a new instance of this object. This should only be used by Moshi.
  */
 @JsonClass(generateAdapter = true)

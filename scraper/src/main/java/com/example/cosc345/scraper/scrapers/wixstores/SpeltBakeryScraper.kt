@@ -8,7 +8,6 @@ import com.example.cosc345.shared.models.Store
 /**
  * The Spelt Bakery specific implementation of the generic [WixStoresScraper], which essentially just passes through information to it.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this scraper.
  */
 class SpeltBakeryScraper : WixStoresScraper(

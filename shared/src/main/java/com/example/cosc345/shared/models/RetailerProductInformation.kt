@@ -3,7 +3,6 @@ package com.example.cosc345.shared.models
 /**
  * The information about a product, specific to a particular retailer.
  *
- * @author Shea Smith
  * @constructor Create a new instance of this object. Some of the nullable parameters are not nullable in practice, but are required to be for Firebase.
  */
 data class RetailerProductInformation(
