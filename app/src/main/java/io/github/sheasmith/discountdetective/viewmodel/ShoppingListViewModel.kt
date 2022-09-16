@@ -43,7 +43,7 @@ class ShoppingListViewModel @Inject constructor(
     /**
      * The current shopping list items
      */
-    val shoppingList: MutableStateFlow<List<Triple<RetailerProductInformation, StorePricingInformation, Int>>?> =
+    val shoppingList: MutableStateFlow<List<Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>>?> =
         MutableStateFlow(null)
 
     /**
@@ -67,10 +67,9 @@ class ShoppingListViewModel @Inject constructor(
                         val value =
                             key.pricing!!.first { it.store == shoppingListInfo.storeId }
 
-                        Triple(key, value, shoppingListInfo.quantity)
+                        Triple(key, value, shoppingListInfo)
                     } else {
                         shoppingListRepository.deleteFromShoppingList(shoppingListInfo)
-
                         null
                     }
                 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -35,6 +36,7 @@ import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.StorePricingInformation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
+import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.ui.components.StatusBarLargeTopAppBar
 import io.github.sheasmith.discountdetective.viewmodel.ShoppingListViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
@@ -108,7 +110,7 @@ fun ShoppingListScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ProductList(
-    grouped: Map<Pair<String, String>, List<Triple<RetailerProductInformation, StorePricingInformation, Int>>>,
+    grouped: Map<Pair<String, String>, List<Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>>>,
     retailers: Map<String, Retailer>,
     viewModel: ShoppingListViewModel,
     innerPadding: PaddingValues,
@@ -150,7 +152,7 @@ private fun ProductList(
             val productsForStoreId = productsForStore.map { it.first.id }
             val intersectIds = productsForStoreId.intersect(dataIdList.toSet())
             val selection =
-                mutableListOf<Triple<RetailerProductInformation, StorePricingInformation, Int>>()
+                mutableListOf<Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>>()
             data.value.forEach {
                 if (it.first.id in intersectIds) {
                     selection.add(it)
@@ -176,7 +178,7 @@ private fun ProductList(
 
 @Composable
 private fun ProductCard(
-    product: Triple<RetailerProductInformation, StorePricingInformation, Int>,
+    product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
     elevation: State<Dp>
 ) {
     //checkbox Checked
@@ -214,6 +216,17 @@ private fun ProductCard(
 
             ProductInfo(product = product)
 
+            Button(
+                onClick = {}
+            ) {
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = "Delete",
+                    modifier = Modifier
+                        .size(ButtonDefaults.IconSize)
+                )
+            }
+
             Checkbox(
                 checked = isChecked.value,
                 onCheckedChange = {
@@ -227,7 +240,7 @@ private fun ProductCard(
 }
 
 @Composable
-private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricingInformation, Int>) {
+private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>) {
     AsyncImage(
         model = product.first.image,
         contentDescription = stringResource(id = R.string.content_description_product_image),
@@ -249,7 +262,7 @@ private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricing
         Text(
             // add the variant, quantity to title
             // productInfo?.name ?: stringResource(id = R.string.placeholder)
-            text = "${product.third}x ${
+            text = "${product.third.quantity}x ${
                 arrayOf(
                     product.first.brandName,
                     product.first.name,
