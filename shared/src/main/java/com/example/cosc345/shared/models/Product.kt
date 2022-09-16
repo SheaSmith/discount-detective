@@ -68,4 +68,36 @@ data class Product(
 
         return null
     }
+
+    fun getFilteredInformation(
+        region: String,
+        retailers: Map<String, Retailer>
+    ): List<RetailerProductInformation> {
+
+        val retailersInRegion =
+            retailers.filter {
+                it.value.stores!!.any { store ->
+                    store.region.equals(
+                        region,
+                        true
+                    )
+                }
+            }.keys
+
+        return information!!.filter { retailersInRegion.contains(it.retailer) }.map { info ->
+            info.pricing =
+                info.pricing!!.filter {
+                    retailers.any { (key, value) ->
+                        key == info.retailer && value.stores!!.any { store ->
+                            store.id == it.store && store.region.equals(
+                                region,
+                                true
+                            )
+                        }
+                    }
+                }
+                    .toMutableList()
+            info
+        }
+    }
 }

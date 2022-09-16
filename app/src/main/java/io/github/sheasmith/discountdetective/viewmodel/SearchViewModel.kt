@@ -17,9 +17,10 @@ import io.github.sheasmith.discountdetective.exceptions.NoInternetException
 import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.paging.AppSearchProductsPagingSource
 import io.github.sheasmith.discountdetective.paging.FirebaseProductsPagingSource
-import io.github.sheasmith.discountdetective.repository.ShoppingListRepository
+import io.github.sheasmith.discountdetective.repository.PreferencesRepository
 import io.github.sheasmith.discountdetective.repository.RetailersRepository
 import io.github.sheasmith.discountdetective.repository.SearchRepository
+import io.github.sheasmith.discountdetective.repository.ShoppingListRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -38,7 +39,8 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
     private val retailersRepository: RetailersRepository,
-    private val shoppingListRepository: ShoppingListRepository
+    private val shoppingListRepository: ShoppingListRepository,
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     /**
@@ -60,6 +62,11 @@ class SearchViewModel @Inject constructor(
      * The retailers currently stored in Firebase.
      */
     val retailers: MutableStateFlow<Map<String, Retailer>> = MutableStateFlow(mapOf())
+
+    /**
+     * Users current region.
+     */
+    val region = preferencesRepository.getRegion()
 
     /**
      * The live data for the paged search results.
@@ -93,7 +100,10 @@ class SearchViewModel @Inject constructor(
                     .first()
             ) {
                 searchLiveData.value = Pager(PagingConfig(pageSize = 10)) {
-                    AppSearchProductsPagingSource(searchRepository, searchQuery.value)
+                    AppSearchProductsPagingSource(
+                        searchRepository,
+                        "${searchQuery.value} \"${preferencesRepository.getRegion()}\""
+                    )
                 }
                     .flow
                     .cachedIn(viewModelScope)

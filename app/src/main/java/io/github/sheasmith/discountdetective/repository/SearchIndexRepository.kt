@@ -75,10 +75,10 @@ class SearchIndexRepository @Inject constructor(
             initialise(false)
 
             Log.d(TAG, "Initialised. Get retailers local map from Firebase.")
-            val retailers = getRetailersLocalMap()
+            val maps = getRetailersMaps()
 
             Log.d(TAG, "Insert products from Firebase into index.")
-            insertProducts(retailers)
+            insertProducts(maps.first, maps.second)
 
             Log.d(TAG, "Finished insertion, close search session.")
             finish()
@@ -99,7 +99,7 @@ class SearchIndexRepository @Inject constructor(
      */
     @Suppress("UNUSED_VALUE")
     private suspend fun insertProducts(
-        localMap: Map<String, Boolean>
+        localMap: Map<String, Boolean>, storeRegionsMap: Map<String, Map<String, String>>
     ) {
         Log.d(TAG, "Insert products from Firebase into AppSearch.")
         var lastSize = 10000
@@ -113,7 +113,7 @@ class SearchIndexRepository @Inject constructor(
             Log.d(TAG, "Mapped Data Snapshot.")
             firstKey = result.second
             Log.d(TAG, "Insert this set of products from Firebase into the AppSearch index.")
-            setProducts(result.first, localMap)
+            setProducts(result.first, localMap, storeRegionsMap)
             lastSize = result.first.size
         }
 
@@ -194,7 +194,7 @@ class SearchIndexRepository @Inject constructor(
      */
     private suspend fun setProducts(
         products: List<Pair<String, Product>>,
-        localMap: Map<String, Boolean>
+        localMap: Map<String, Boolean>, storeRegionsMap: Map<String, Map<String, String>>
     ): AppSearchBatchResult<String, Void> {
         Log.d(TAG, "Adding products to AppSearch database. Awaiting initialisation.")
         awaitInitialization()
@@ -202,7 +202,14 @@ class SearchIndexRepository @Inject constructor(
         Log.d(TAG, "Initialised. Start put documents request for AppSearch.")
 
         val request = PutDocumentsRequest.Builder()
-            .addDocuments(products.map { SearchableProduct(it.second, it.first, localMap) })
+            .addDocuments(products.map {
+                SearchableProduct(
+                    it.second,
+                    it.first,
+                    localMap,
+                    storeRegionsMap
+                )
+            })
             .build()
 
         Log.d(TAG, "Put documents into AppSearch index.")
@@ -219,10 +226,13 @@ class SearchIndexRepository @Inject constructor(
      *
      * @return The map.
      */
-    private suspend fun getRetailersLocalMap(): Map<String, Boolean> {
-        val localMap = retailersRepository.getRetailers().mapValues { it.value.local!! }
+    private suspend fun getRetailersMaps(): Pair<Map<String, Boolean>, Map<String, Map<String, String>>> {
+        val retailers = retailersRepository.getRetailers()
+        val storeRegionsMap =
+            retailers.mapValues { retailer -> retailer.value.stores!!.associate { it.id!! to it.region!! } }
+        val localMap = retailers.mapValues { it.value.local!! }
         Log.d(TAG, "Getting retailers local map. Retailer length ${localMap.size}.")
-        return localMap
+        return Pair(localMap, storeRegionsMap)
     }
 
     /**

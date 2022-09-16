@@ -26,14 +26,6 @@
             app:summary="%s"
             app:title="City/Town" />
 
-        <ListPreference
-            app:defaultValue="All stores"
-            app:entries="@array/array_local"
-            app:entryValues="@array/array_local_values"
-            app:key="locals"
-            app:summary="%s"
-            app:title="Local option" />
-
     </PreferenceCategory>
 
     <PreferenceCategory

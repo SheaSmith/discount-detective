@@ -50,6 +50,7 @@ fun AddToShoppingListBlock(
     loading: Boolean,
     onAddToShoppingList: ((String, String, String, Int) -> Unit)?,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    region: String
 ) {
     var quantity by remember {
         mutableStateOf<Int?>(1)
@@ -68,7 +69,8 @@ fun AddToShoppingListBlock(
             coroutineScope = coroutineScope,
             snackbarHostState = snackbarHostState,
             onAddToShoppingList = onAddToShoppingList,
-            quantity = quantity
+            quantity = quantity,
+            region = region
         )
 
         QuantitySelector(quantity = quantity, setQuantity = { quantity = it }, loading = loading)
@@ -109,7 +111,8 @@ private fun AddToShoppingListDialog(
     coroutineScope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     onAddToShoppingList: ((String, String, String, Int) -> Unit)?,
-    quantity: Int?
+    quantity: Int?,
+    region: String
 ) {
     var selectedPricingPair by remember {
         mutableStateOf<Pair<String, String>?>(null)
@@ -160,11 +163,12 @@ private fun AddToShoppingListDialog(
                     var lowestPrice = Int.MAX_VALUE
                     var lowestPriceIsLocal = false
 
-                    val sortedList = product.information!!.flatMap { info ->
-                        info.pricing!!.map { info to it }
-                    }.sortedBy {
-                        it.second.getPrice(it.first)
-                    }
+                    val sortedList =
+                        product.getFilteredInformation(region, retailers).flatMap { info ->
+                            info.pricing!!.map { info to it }
+                        }.sortedBy {
+                            it.second.getPrice(it.first)
+                        }
 
                     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                         //noinspection RememberReturnType

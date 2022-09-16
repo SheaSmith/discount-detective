@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -76,21 +77,25 @@ fun ProductInformation(
     viewModel: ProductViewModel
 ) {
     val loading = product == null
+    val region by viewModel.region.observeAsState()
 
-    Column(
-        modifier = Modifier
-            .padding(start = 10.dp, end = 10.dp)
-    )
-    {
-        AddToShoppingListBlock(
-            snackbarHostState = snackbarHostState,
-            productPair = product,
-            retailers = retailers,
-            loading = loading,
-            onAddToShoppingList = { productId, retailerProductInfoId, storeId, quantity ->
-                viewModel.addToShoppingList(productId, retailerProductInfoId, storeId, quantity)
-            }
+    if (region != null) {
+        Column(
+            modifier = Modifier
+                .padding(start = 10.dp, end = 10.dp)
         )
+        {
+            AddToShoppingListBlock(
+                snackbarHostState = snackbarHostState,
+                productPair = product,
+                retailers = retailers,
+                loading = loading,
+                onAddToShoppingList = { productId, retailerProductInfoId, storeId, quantity ->
+                    viewModel.addToShoppingList(productId, retailerProductInfoId, storeId, quantity)
+                },
+                region = region!!
+            )
+        }
     }
 }
 

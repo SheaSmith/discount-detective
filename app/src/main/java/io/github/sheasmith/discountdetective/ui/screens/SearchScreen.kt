@@ -78,6 +78,7 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val hasIndexed by viewModel.hasIndexed.observeAsState()
+    val region by viewModel.region.observeAsState()
 
     val barcodeResult = (navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
         "barcode"
@@ -170,7 +171,8 @@ fun SearchScreen(
                             navController,
                             retailers,
                             snackbarHostState,
-                            coroutineScope
+                            coroutineScope,
+                            region = region!!
                         )
                     }
                 } else if (retailers.isNotEmpty() && productResults.itemCount != 0) {
@@ -192,7 +194,9 @@ fun SearchScreen(
                                     storeId,
                                     quantity
                                 )
-                            }
+                            },
+                            region = region!!
+
                         )
                     }
                 } else if (loadState !is LoadState.Error && retailers.isNotEmpty()) {

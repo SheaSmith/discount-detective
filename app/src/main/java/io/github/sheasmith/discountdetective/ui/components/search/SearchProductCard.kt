@@ -52,7 +52,8 @@ fun SearchProductCard(
     retailers: Map<String, Retailer>,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope,
-    onAddToShoppingList: ((String, String, String, Int) -> Unit)? = null
+    onAddToShoppingList: ((String, String, String, Int) -> Unit)? = null,
+    region: String
 ) {
     val product = productPair?.second
 
@@ -85,7 +86,8 @@ fun SearchProductCard(
                 retailers,
                 loading,
                 onAddToShoppingList,
-                coroutineScope
+                coroutineScope,
+                region
             )
 
         }
