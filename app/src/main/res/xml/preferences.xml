@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory app:title="General">
 
         <ListPreference
-            app:icon="@drawable/dark_and_light_theme_icon"
             app:defaultValue="system"
             app:entries="@array/array_darkmode"
             app:entryValues="@array/array_darkmode_values"
+            app:icon="@drawable/dark_and_light_theme_icon"
             app:key="dark_mode"
             app:summary="%s"
             app:title="Dark/Light Mode" />
@@ -16,10 +17,10 @@
     <PreferenceCategory app:title="Location">
 
         <ListPreference
-            app:icon="@drawable/location_icon"
             app:defaultValue="dunedin"
             app:entries="@array/array_city"
             app:entryValues="@array/array_city_values"
+            app:icon="@drawable/location_icon"
             app:key="city"
             app:summary="%s"
             app:title="City/Town" />
@@ -32,7 +33,12 @@
             app:icon="@drawable/feedback_icon"
             app:key="feedback"
             app:summary="Report technical issues or suggest new features"
-            app:title="Send feedback" />
+            app:title="Send feedback">
+
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://docs.google.com/forms/d/e/1FAIpQLSeAdey1QgDmTWxm6fEGWHGSk25KAmCH3GfF1pA855A0kS3UQQ/viewform?usp=sf_link" />
+        </Preference>
 
     </PreferenceCategory>
 

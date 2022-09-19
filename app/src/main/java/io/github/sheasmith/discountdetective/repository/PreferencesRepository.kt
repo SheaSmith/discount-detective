@@ -20,4 +20,8 @@ class PreferencesRepository @Inject constructor(@ApplicationContext context: Con
 
         return sharedPreferences.stringLiveData("city", Region.DUNEDIN)
     }
+
+    fun getFeedback() {
+        // If "send feedback" is clicked, then open a chrome Custom Tab
+    }
 }

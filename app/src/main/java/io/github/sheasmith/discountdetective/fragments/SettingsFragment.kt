@@ -7,8 +7,8 @@ import android.view.*
 import androidx.core.view.updatePadding
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
-import io.github.sheasmith.discountdetective.R
 import com.google.android.material.appbar.AppBarLayout
+import io.github.sheasmith.discountdetective.R
 
 /**
  * The fragment responsible for inflating the settings page, which uses AndroidX preferences.
@@ -73,4 +73,5 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         return view
     }
+
 }
