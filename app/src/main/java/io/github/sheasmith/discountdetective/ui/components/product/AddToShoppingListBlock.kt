@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
  * @param retailers A map of all retailers, with the retailer ID as the key and the retailer as the value.
  * @param loading Whether the parent view is loading or not.
  * @param coroutineScope The coroutine scope for running suspend functions.
+ * @param region The region (city/town) that the user wants to compare products for.
  */
 @Composable
 fun AddToShoppingListBlock(
