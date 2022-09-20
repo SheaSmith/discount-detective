@@ -127,7 +127,16 @@ class SearchRepository @Inject constructor(
 
                 continuation.resume(
                     Pair(
-                        products?.filter { product -> product.value.information?.any { info -> info.pricing?.any { regionMap[info.retailer]!![it.store] == region } == true } == true }
+                        products?.filter { product ->
+                            product.value.information?.any { info ->
+                                info.pricing?.any {
+                                    regionMap[info.retailer]!![it.store].equals(
+                                        region,
+                                        true
+                                    )
+                                } == true
+                            } == true
+                        }
                             ?: mapOf(),
                         key
                     ),

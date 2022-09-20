@@ -85,6 +85,10 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             retailers.value = retailersRepository.getRetailers()
         }
+
+        region.observeForever {
+            query()
+        }
     }
 
     /**
