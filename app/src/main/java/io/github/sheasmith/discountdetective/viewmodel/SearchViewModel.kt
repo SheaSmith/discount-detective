@@ -41,7 +41,7 @@ class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
     private val retailersRepository: RetailersRepository,
     private val shoppingListRepository: ShoppingListRepository,
-    private val preferencesRepository: PreferencesRepository
+    preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     /**
@@ -67,7 +67,7 @@ class SearchViewModel @Inject constructor(
     /**
      * Users current region.
      */
-    val region = preferencesRepository.getRegion()
+    val region: LiveData<String> = preferencesRepository.getRegion()
 
     /**
      * The live data for the paged search results.
@@ -104,10 +104,11 @@ class SearchViewModel @Inject constructor(
             if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore()
                     .first()
             ) {
+                val query = "${searchQuery.value} \"${region.value}\""
                 searchLiveData.value = Pager(PagingConfig(pageSize = 10)) {
                     AppSearchProductsPagingSource(
                         searchRepository,
-                        "${searchQuery.value} \"${preferencesRepository.getRegion()}\""
+                        query
                     )
                 }
                     .flow
