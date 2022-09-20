@@ -15,13 +15,22 @@ import io.github.sheasmith.discountdetective.repository.SearchRepository
  */
 class FirebaseProductsPagingSource(
     private val repository: SearchRepository,
-    private val query: String
+    private val query: String,
+    private val region: String
 ) : PagingSource<String, Pair<String, Product>>() {
     override fun getRefreshKey(state: PagingState<String, Pair<String, Product>>): String? = null
 
     override suspend fun load(params: LoadParams<String>): LoadResult<String, Pair<String, Product>> {
         return try {
-            val result = repository.queryProductsFirebase(query, params.key, params.loadSize)
+            val regionMap = repository.getRetailersMaps()
+
+            val result = repository.queryProductsFirebase(
+                query,
+                params.key,
+                params.loadSize,
+                regionMap.second,
+                region
+            )
 
             LoadResult.Page(
                 data = result.first.toList(),

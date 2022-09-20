@@ -33,7 +33,7 @@ class SearchIndexRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val database: FirebaseDatabase,
     private val retailersRepository: RetailersRepository
-) : SearchBaseRepository(context) {
+) : SearchBaseRepository(context, retailersRepository) {
     companion object {
         private val TAG = SearchIndexRepository::class.simpleName
     }
@@ -218,21 +218,6 @@ class SearchIndexRepository @Inject constructor(
 
         Log.d(TAG, "Finished putting documents into the AppSearch index.")
         return result
-    }
-
-    /**
-     * Get a map with the retailer ID as the key and whether the retailer is local or not from
-     * Firebase.
-     *
-     * @return The map.
-     */
-    private suspend fun getRetailersMaps(): Pair<Map<String, Boolean>, Map<String, Map<String, String>>> {
-        val retailers = retailersRepository.getRetailers()
-        val storeRegionsMap =
-            retailers.mapValues { retailer -> retailer.value.stores!!.associate { it.id!! to it.region!! } }
-        val localMap = retailers.mapValues { it.value.local!! }
-        Log.d(TAG, "Getting retailers local map. Retailer length ${localMap.size}.")
-        return Pair(localMap, storeRegionsMap)
     }
 
     /**

@@ -11,6 +11,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.cosc345.shared.models.Product
+import com.example.cosc345.shared.models.Region
 import com.example.cosc345.shared.models.Retailer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sheasmith.discountdetective.exceptions.NoInternetException
@@ -123,7 +124,11 @@ class SearchViewModel @Inject constructor(
     private fun getFirebaseState(query: String = ""): Flow<PagingData<Pair<String, Product>>> {
         return try {
             Pager(PagingConfig(pageSize = 10)) {
-                FirebaseProductsPagingSource(searchRepository, query)
+                FirebaseProductsPagingSource(
+                    searchRepository,
+                    query,
+                    region.value ?: Region.DUNEDIN
+                )
             }
                 .flow
                 .cachedIn(viewModelScope)
