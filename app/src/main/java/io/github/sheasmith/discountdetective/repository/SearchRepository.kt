@@ -135,6 +135,7 @@ class SearchRepository @Inject constructor(
             var firebaseQuery = if (query.isEmpty()) {
                 database.reference
                     .child("products")
+                    
                     .orderByKey()
                     .limitToLast(count)
             } else {
