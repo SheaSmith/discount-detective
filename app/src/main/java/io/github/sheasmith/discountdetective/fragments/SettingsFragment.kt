@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.updatePadding
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +22,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener { preferences, key ->
+            if (key == "dark_mode") {
+                val value = preferences.getString(key, "system")
 
+                if (value == "system") {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                } else if (value == "dark") {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                } else if (value == "light") {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+            }
         }
     }
 
@@ -43,6 +54,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         return view
     }
+
 
     /**
      * Creates the overall view for the settings screen.

@@ -4,7 +4,8 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 
 /**
- * Code from StackOverflow.
+ * Code from StackOverflow for Live Data.
+ * Updated.
  * https://stackoverflow.com/questions/50649014/livedata-with-shared-preferences/53028546#53028546
  */
 

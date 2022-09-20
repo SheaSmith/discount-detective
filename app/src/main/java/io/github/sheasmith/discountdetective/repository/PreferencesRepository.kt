@@ -10,7 +10,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Comment todo
+ * Contains functions for getting the region preference and dark mode preference.
+ *
+ * @param context State of the app.
  */
 @Singleton
 class PreferencesRepository @Inject constructor(@ApplicationContext context: Context) {
@@ -21,7 +23,7 @@ class PreferencesRepository @Inject constructor(@ApplicationContext context: Con
         return sharedPreferences.stringLiveData("city", Region.DUNEDIN)
     }
 
-    fun getFeedback() {
-        // If "send feedback" is clicked, then open a chrome Custom Tab
+    fun getDarkMode(): LiveData<String> {
+        return sharedPreferences.stringLiveData("dark_mode", "system")
     }
 }

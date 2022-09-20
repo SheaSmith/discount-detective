@@ -69,6 +69,14 @@ data class Product(
         return null
     }
 
+
+    /**
+     * Get information which is filtered based on the users selected region.
+     *
+     * @param region The region (city/town) that the user wants to compare products for.
+     * @param retailers Contains information about the retailers are the region they are in.
+     * @return Information about what products are in each particular region.
+     */
     fun getFilteredInformation(
         region: String,
         retailers: Map<String, Retailer>

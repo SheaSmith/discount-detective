@@ -42,6 +42,7 @@ import kotlinx.coroutines.CoroutineScope
  * @param retailers A map of all retailers.
  * @param snackbarHostState The snackbar host for displaying snackbars.
  * @param coroutineScope The scope for launching suspend functions within the view.
+ * @param region The region (city/town) that the user wants to compare products for.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
