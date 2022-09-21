@@ -37,6 +37,9 @@ search, however, there is a fallback search technique that can be used during th
 Additionally, the app will be slower to run during this indexing. The indexing takes around 10
 minutes on a physical device, but only needs to run on the first run.
 
+## Code Review
+Pushes into master are disabled. In order to get your code included in the repository, you must open a pull request. Additionally, when opening a pull request, your changes must be reviewed by one of the members of this repository. This is mandatory for all pull requests.
+
 ## Technical Details
 
 This app is split into four modules, which are documented below (if you are viewing this on
