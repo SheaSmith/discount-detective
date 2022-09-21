@@ -93,6 +93,9 @@ fun ShoppingListScreen(
                 retailers = retailers,
                 onCheckedItem = { item, checked ->
                     viewModel.changeShoppingListChecked(item, checked)
+                },
+                onDeleteItem = { item ->
+                    viewModel.delete(item)
                 }
             )
         } else {
@@ -115,7 +118,8 @@ private fun ProductList(
     retailers: Map<String, Retailer>,
     viewModel: ShoppingListViewModel,
     innerPadding: PaddingValues,
-    onCheckedItem: (ShoppingListItem, Boolean) -> Unit
+    onCheckedItem: (ShoppingListItem, Boolean) -> Unit,
+    onDeleteItem: (ShoppingListItem) -> Unit
 ) {
     val data = remember { mutableStateOf(grouped.values.toList().flatten()) }
 
@@ -169,9 +173,9 @@ private fun ProductList(
                     ProductCard(
                         product = product,
                         elevation = elevation,
-                        viewModel = viewModel,
                         checked = product.third.checked,
-                        onCheckedChanged = { checked -> onCheckedItem(product.third, checked) }
+                        onCheckedChanged = { checked -> onCheckedItem(product.third, checked) },
+                        onDelete = { onDeleteItem(product.third) }
                     )
                 }
             }
@@ -184,13 +188,10 @@ private fun ProductList(
 private fun ProductCard(
     product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
     elevation: State<Dp>,
-    viewModel: ShoppingListViewModel,
     checked: Boolean,
-    onCheckedChanged: (Boolean) -> Unit
+    onCheckedChanged: (Boolean) -> Unit,
+    onDelete: () -> Unit
 ) {
-    //checkbox Checked (move to the view model)
-//    var isChecked by rememberSaveable { mutableStateOf(false) }
-
 
     Card(
         modifier = Modifier
@@ -223,7 +224,7 @@ private fun ProductCard(
 
             // delete button
             IconButton(
-                onClick = { viewModel.delete(product.third) },
+                onClick = onDelete,
                 modifier = Modifier
                     .size(
                         width = 30.dp,
