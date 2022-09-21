@@ -47,6 +47,31 @@ class ShoppingListViewModel @Inject constructor(
         MutableStateFlow(null)
 
     /**
+     * Update the state of the checkbox in the shoppingList
+     * by copy then delete and insert so compose tracks changes
+     */
+    fun changeShoppingListChecked(item: ShoppingListItem, checked: Boolean) {
+        viewModelScope.launch {
+            shoppingList.value?.find { it.third.productId == item.productId }?.let { it ->
+                it.third.checked = checked
+                shoppingListRepository.updateChecked(it.third)
+            }
+
+            val shoppingListItemCopy = ShoppingListItem(
+                productId = item.productId,
+                retailerProductInformationId = item.retailerProductInformationId,
+                storeId = item.storeId,
+                quantity = item.quantity,
+                checked = item.checked
+            )
+            // delete
+            shoppingListRepository.deleteFromShoppingList(item)
+            // insert
+            shoppingListRepository.addToShoppingList(shoppingListItemCopy)
+        }
+    }
+
+    /**
      * The current retailers from Firebase.
      */
     val retailers: MutableStateFlow<Map<String, Retailer>> = MutableStateFlow(mapOf())

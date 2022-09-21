@@ -9,14 +9,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -88,12 +86,14 @@ fun ShoppingListScreen(
                 Pair(it.first.retailer!!, it.second.store!!)
             }.mapValues { it.value }
 
-
             ProductList(
                 grouped = grouped,
                 viewModel = viewModel,
                 innerPadding = innerPadding,
-                retailers = retailers
+                retailers = retailers,
+                onCheckedItem = { item, checked ->
+                    viewModel.changeShoppingListChecked(item, checked)
+                }
             )
         } else {
             Text(
@@ -115,6 +115,7 @@ private fun ProductList(
     retailers: Map<String, Retailer>,
     viewModel: ShoppingListViewModel,
     innerPadding: PaddingValues,
+    onCheckedItem: (ShoppingListItem, Boolean) -> Unit
 ) {
     val data = remember { mutableStateOf(grouped.values.toList().flatten()) }
 
@@ -127,7 +128,6 @@ private fun ProductList(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         contentPadding = innerPadding,
-        state = rememberLazyListState(),
         modifier = Modifier
             .reorderable(state)
             .detectReorderAfterLongPress(state)
@@ -169,7 +169,9 @@ private fun ProductList(
                     ProductCard(
                         product = product,
                         elevation = elevation,
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        checked = product.third.checked,
+                        onCheckedChanged = { checked -> onCheckedItem(product.third, checked) }
                     )
                 }
             }
@@ -182,10 +184,12 @@ private fun ProductList(
 private fun ProductCard(
     product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
     elevation: State<Dp>,
-    viewModel: ShoppingListViewModel
+    viewModel: ShoppingListViewModel,
+    checked: Boolean,
+    onCheckedChanged: (Boolean) -> Unit
 ) {
     //checkbox Checked (move to the view model)
-    var isChecked by rememberSaveable { mutableStateOf(false) }
+//    var isChecked by rememberSaveable { mutableStateOf(false) }
 
 
     Card(
@@ -193,7 +197,7 @@ private fun ProductCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 5.dp) //this for padding
             .shadow(elevation.value)
-            .alpha(if (isChecked) 0.5f else 1f),
+            .alpha(if (checked) 0.5f else 1f),
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent
         ),
@@ -233,10 +237,8 @@ private fun ProductCard(
             }
 
             Checkbox(
-                checked = isChecked,
-                onCheckedChange = {
-                    isChecked = it
-                },
+                checked = checked,
+                onCheckedChange = onCheckedChanged,
                 modifier = Modifier
                     .fillMaxWidth()
             )

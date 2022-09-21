@@ -28,4 +28,21 @@ interface ShoppingListDao {
      */
     @Delete
     suspend fun delete(shoppingListItem: ShoppingListItem)
+
+    /**
+     * Update the checked state of an item
+     */
+    @Query(
+        "UPDATE shopping_list SET " +
+                "checked = :checked WHERE " +
+                "productId = :productId AND " +
+                "retailerProductInformationId = :retailerProductInformationId AND " +
+                "storeId = :storeId"
+    )
+    suspend fun updateChecked(
+        checked: Boolean,
+        productId: String,
+        retailerProductInformationId: String,
+        storeId: String
+    )
 }
