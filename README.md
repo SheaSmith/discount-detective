@@ -10,8 +10,7 @@
 Discount Detective is a price comparison app for food and other essential products.
 
 We compare prices from all of the major New Zealand supermarkets, along with a selection of local
-retailers in some areas. Currently the app is only available in Dunedin, although we plan to add
-support for the bigger supermarkets, and some local shops, in other regions soon.
+retailers in some areas. Currently the app is available in Dunedin, Whitianga, and Invercargill.
 
 You can search products, find the lowest prices, both at non-local and local stores and see what
 local stores have in stock, so you can shop local. We also have support for adding items to a
@@ -43,10 +42,14 @@ minutes on a physical device, but only needs to run on the first run.
 This app is split into four modules, which are documented below (if you are viewing this on
 the [documentation](https://sheasmith.github.io/discount-detective) page).
 
-For the app, we are using Jetpack Compose (a SwiftUI analogue for Android) for the UI, along with
+For most of the app, we are using Jetpack Compose (a SwiftUI analogue for Android) for the UI, along with
 the Google recommended clean architecture. This means we follow a reasonably strict MVVM (Model,
 View, ViewModel) pattern for the app, with all data retrieval code stores in repositories, which map
 to the models, which are then processed by the ViewModel for state management and to pass to the UI.
+
+For the setting screen, we are using fragments within a container, loaded into Jetpack Compose. There are
+three available settings for the user to change. These are 1. Dark/light mode 2. The region, and 3. A
+feeedback button which is linked to our user testing Google form.
 
 For the search, we are using Google's AndroidX AppSearch library. We pull down a list of all
 products from Firebase Realtime Database (our backend), which is then indexed by AppSearch to allow
