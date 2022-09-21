@@ -115,5 +115,11 @@ class ShoppingListViewModel @Inject constructor(
         }
     }
 
+    fun delete(shoppingListItem: ShoppingListItem) {
+        viewModelScope.launch {
+            shoppingListRepository.deleteFromShoppingList(shoppingListItem)
+        }
+    }
+
 
 }

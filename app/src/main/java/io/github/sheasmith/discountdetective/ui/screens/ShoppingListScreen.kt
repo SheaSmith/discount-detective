@@ -9,12 +9,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -60,7 +62,6 @@ fun ShoppingListScreen(
 
     val retailers by viewModel.retailers.collectAsState()
     //productIDs in the shopping list
-    //TODO: No duplicates possible as have same productID
     val products by viewModel.shoppingList.collectAsState(initial = null)
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
@@ -126,7 +127,7 @@ private fun ProductList(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         contentPadding = innerPadding,
-        state = state.listState,
+        state = rememberLazyListState(),
         modifier = Modifier
             .reorderable(state)
             .detectReorderAfterLongPress(state)
@@ -167,7 +168,8 @@ private fun ProductList(
                     val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
                     ProductCard(
                         product = product,
-                        elevation = elevation
+                        elevation = elevation,
+                        viewModel = viewModel
                     )
                 }
             }
@@ -179,20 +181,19 @@ private fun ProductList(
 @Composable
 private fun ProductCard(
     product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
-    elevation: State<Dp>
+    elevation: State<Dp>,
+    viewModel: ShoppingListViewModel
 ) {
-    //checkbox Checked
-    val isChecked = remember { mutableStateOf(false) }
+    //checkbox Checked (move to the view model)
+    var isChecked by rememberSaveable { mutableStateOf(false) }
 
 
-    //add this in for the correct colour
-    //tonalElevation = 2.dp
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 5.dp) //this for padding
             .shadow(elevation.value)
-            .alpha(if (isChecked.value) 0.5f else 1f),
+            .alpha(if (isChecked) 0.5f else 1f),
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent
         ),
@@ -213,24 +214,28 @@ private fun ProductCard(
                     .align(Alignment.CenterVertically)
                     .fillMaxSize(0.1f)
             )
-
+            // product info block
             ProductInfo(product = product)
 
-            Button(
-                onClick = {}
+            // delete button
+            IconButton(
+                onClick = { viewModel.delete(product.third) },
+                modifier = Modifier
+                    .size(
+                        width = 30.dp,
+                        height = 30.dp
+                    )
             ) {
                 Icon(
-                    Icons.Filled.Delete,
-                    contentDescription = "Delete",
-                    modifier = Modifier
-                        .size(ButtonDefaults.IconSize)
+                    Icons.Filled.Close,
+                    contentDescription = "Close"
                 )
             }
 
             Checkbox(
-                checked = isChecked.value,
+                checked = isChecked,
                 onCheckedChange = {
-                    isChecked.value = it
+                    isChecked = it
                 },
                 modifier = Modifier
                     .fillMaxWidth()
