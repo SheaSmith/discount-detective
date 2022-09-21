@@ -30,8 +30,8 @@ import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.ui.components.StatusBarLargeTopAppBar
 import io.github.sheasmith.discountdetective.ui.components.product.AddToShoppingListBlock
 import io.github.sheasmith.discountdetective.ui.components.product.ProductTitle
-import io.github.sheasmith.discountdetective.ui.components.shoppinglist.RetailerSlot
-import io.github.sheasmith.discountdetective.ui.components.shoppinglist.TableHeader
+import io.github.sheasmith.discountdetective.ui.components.product.RetailerSlot
+import io.github.sheasmith.discountdetective.ui.components.product.TableHeader
 import io.github.sheasmith.discountdetective.viewmodel.ProductViewModel
 
 /**

@@ -30,7 +30,7 @@ class IndexingWorker @AssistedInject constructor(
         setForeground(createForegroundInfo())
 
         try {
-            searchRepository.indexFromFirebase()
+//            searchRepository.indexFromFirebase()
         } catch (e: NoInternetException) {
             return Result.retry()
         }
