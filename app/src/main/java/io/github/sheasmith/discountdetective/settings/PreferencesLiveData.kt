@@ -4,11 +4,13 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 
 /**
- * Code from StackOverflow for Live Data.
- * Updated.
+ * Code from StackOverflow for live data - e.g. the settings screen region data.
  * https://stackoverflow.com/questions/50649014/livedata-with-shared-preferences/53028546#53028546
+ *
+ * @param sharedPrefs Shared preferences (from the settings screen).
+ * @param key  The key (name/identifier) for the live data type.
+ * @param defValue The default value for the live data.
  */
-
 abstract class SharedPreferenceLiveData<T>(
     val sharedPrefs: SharedPreferences,
     val key: String,
