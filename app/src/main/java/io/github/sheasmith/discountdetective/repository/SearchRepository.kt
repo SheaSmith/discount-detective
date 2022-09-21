@@ -35,8 +35,9 @@ import javax.inject.Singleton
 @Singleton
 class SearchRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val database: FirebaseDatabase
-) : SearchBaseRepository(context) {
+    private val database: FirebaseDatabase,
+    retailersRepository: RetailersRepository
+) : SearchBaseRepository(context, retailersRepository) {
     companion object {
         private val TAG = SearchRepository::class.simpleName
     }
@@ -104,7 +105,9 @@ class SearchRepository @Inject constructor(
     suspend fun queryProductsFirebase(
         query: String,
         startAt: String?,
-        count: Int
+        count: Int,
+        regionMap: Map<String, Map<String, String>>,
+        region: String
     ): Pair<Map<String, Product>, String?> {
         Log.d(TAG, "Get products from Firebase.")
 
@@ -124,7 +127,17 @@ class SearchRepository @Inject constructor(
 
                 continuation.resume(
                     Pair(
-                        products ?: mapOf(),
+                        products?.filter { product ->
+                            product.value.information?.any { info ->
+                                info.pricing?.any {
+                                    regionMap[info.retailer]!![it.store].equals(
+                                        region,
+                                        true
+                                    )
+                                } == true
+                            } == true
+                        }
+                            ?: mapOf(),
                         key
                     ),
                     null

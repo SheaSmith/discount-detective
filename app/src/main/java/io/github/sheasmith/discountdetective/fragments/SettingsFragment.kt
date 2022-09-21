@@ -4,11 +4,12 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.updatePadding
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
-import io.github.sheasmith.discountdetective.R
 import com.google.android.material.appbar.AppBarLayout
+import io.github.sheasmith.discountdetective.R
 
 /**
  * The fragment responsible for inflating the settings page, which uses AndroidX preferences.
@@ -19,6 +20,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
      */
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
+
+        preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener { preferences, key ->
+            if (key == "dark_mode") {
+                val value = preferences.getString(key, "system")
+
+                if (value == "system") {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                } else if (value == "dark") {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                } else if (value == "light") {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+            }
+        }
     }
 
     /**
@@ -39,6 +54,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         return view
     }
+
 
     /**
      * Creates the overall view for the settings screen.
@@ -73,4 +89,5 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         return view
     }
+
 }

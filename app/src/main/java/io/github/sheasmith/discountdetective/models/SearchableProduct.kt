@@ -42,13 +42,19 @@ data class SearchableProduct(
      * @param localMap A map, containing the ID of the retailer as a key and whether the store is
      * local or not as a value.
      */
-    constructor(product: Product, id: String, localMap: Map<String, Boolean>) : this(
+    constructor(
+        product: Product,
+        id: String,
+        localMap: Map<String, Boolean>,
+        storeRegionsMap: Map<String, Map<String, String>>
+    ) : this(
         id = id,
         score = calculateScore(product),
         information = product.information!!.map {
             SearchableRetailerProductInformation(
                 it,
-                localMap[it.retailer!!] ?: false
+                localMap[it.retailer!!] ?: false,
+                storeRegionsMap
             )
         })
 

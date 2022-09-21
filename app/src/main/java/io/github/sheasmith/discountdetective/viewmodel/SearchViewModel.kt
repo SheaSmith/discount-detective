@@ -11,15 +11,17 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.cosc345.shared.models.Product
+import com.example.cosc345.shared.models.Region
 import com.example.cosc345.shared.models.Retailer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sheasmith.discountdetective.exceptions.NoInternetException
 import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.paging.AppSearchProductsPagingSource
 import io.github.sheasmith.discountdetective.paging.FirebaseProductsPagingSource
-import io.github.sheasmith.discountdetective.repository.ShoppingListRepository
+import io.github.sheasmith.discountdetective.repository.PreferencesRepository
 import io.github.sheasmith.discountdetective.repository.RetailersRepository
 import io.github.sheasmith.discountdetective.repository.SearchRepository
+import io.github.sheasmith.discountdetective.repository.ShoppingListRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -38,7 +40,8 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
     private val retailersRepository: RetailersRepository,
-    private val shoppingListRepository: ShoppingListRepository
+    private val shoppingListRepository: ShoppingListRepository,
+    preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     /**
@@ -62,6 +65,11 @@ class SearchViewModel @Inject constructor(
     val retailers: MutableStateFlow<Map<String, Retailer>> = MutableStateFlow(mapOf())
 
     /**
+     * Users current region.
+     */
+    val region: LiveData<String> = preferencesRepository.getRegion()
+
+    /**
      * The live data for the paged search results.
      */
     val searchLiveData: MutableState<Flow<PagingData<Pair<String, Product>>>> =
@@ -76,6 +84,10 @@ class SearchViewModel @Inject constructor(
 
         viewModelScope.launch {
             retailers.value = retailersRepository.getRetailers()
+        }
+
+        region.observeForever {
+            query()
         }
     }
 
@@ -92,8 +104,12 @@ class SearchViewModel @Inject constructor(
             if (searchRepository.isInitialized.value && searchRepository.hasIndexedBefore()
                     .first()
             ) {
+                val query = "${searchQuery.value} \"${region.value}\""
                 searchLiveData.value = Pager(PagingConfig(pageSize = 10)) {
-                    AppSearchProductsPagingSource(searchRepository, searchQuery.value)
+                    AppSearchProductsPagingSource(
+                        searchRepository,
+                        query
+                    )
                 }
                     .flow
                     .cachedIn(viewModelScope)
@@ -113,7 +129,11 @@ class SearchViewModel @Inject constructor(
     private fun getFirebaseState(query: String = ""): Flow<PagingData<Pair<String, Product>>> {
         return try {
             Pager(PagingConfig(pageSize = 10)) {
-                FirebaseProductsPagingSource(searchRepository, query)
+                FirebaseProductsPagingSource(
+                    searchRepository,
+                    query,
+                    region.value ?: Region.DUNEDIN
+                )
             }
                 .flow
                 .cachedIn(viewModelScope)

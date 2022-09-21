@@ -42,6 +42,7 @@ import kotlinx.coroutines.CoroutineScope
  * @param retailers A map of all retailers.
  * @param snackbarHostState The snackbar host for displaying snackbars.
  * @param coroutineScope The scope for launching suspend functions within the view.
+ * @param region The region (city/town) that the user wants to compare products for.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +53,8 @@ fun SearchProductCard(
     retailers: Map<String, Retailer>,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope,
-    onAddToShoppingList: ((String, String, String, Int) -> Unit)? = null
+    onAddToShoppingList: ((String, String, String, Int) -> Unit)? = null,
+    region: String
 ) {
     val product = productPair?.second
 
@@ -85,7 +87,8 @@ fun SearchProductCard(
                 retailers,
                 loading,
                 onAddToShoppingList,
-                coroutineScope
+                coroutineScope,
+                region
             )
 
         }

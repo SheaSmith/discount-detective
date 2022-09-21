@@ -19,7 +19,10 @@ import kotlinx.coroutines.flow.first
  *
  * @param context The context to use to create the AppSearch session.
  */
-abstract class SearchBaseRepository(private val context: Context) {
+abstract class SearchBaseRepository(
+    private val context: Context,
+    private val retailersRepository: RetailersRepository
+) {
     companion object {
         private val TAG = SearchBaseRepository::class.simpleName
     }
@@ -89,6 +92,24 @@ abstract class SearchBaseRepository(private val context: Context) {
                 appSearchSession.close()
             }
         }
+    }
+
+    /**
+     * Get a map with the retailer ID as the key and whether the retailer is local or not from
+     * Firebase.
+     *
+     * @return The map.
+     */
+    suspend fun getRetailersMaps(): Pair<Map<String, Boolean>, Map<String, Map<String, String>>> {
+        val retailers = retailersRepository.getRetailers()
+        val storeRegionsMap =
+            retailers.mapValues { retailer -> retailer.value.stores!!.associate { it.id!! to it.region!! } }
+        val localMap = retailers.mapValues { it.value.local!! }
+        Log.d(
+            TAG,
+            "Getting retailers local map. Retailer length ${localMap.size}."
+        )
+        return Pair(localMap, storeRegionsMap)
     }
 
     /**

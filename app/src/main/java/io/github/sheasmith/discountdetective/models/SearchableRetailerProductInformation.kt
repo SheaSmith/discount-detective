@@ -90,7 +90,7 @@ data class SearchableRetailerProductInformation(
     /**
      * The pricing for the different stores for this retailer. We don't need to index on these properties.
      */
-    @Document.DocumentProperty(indexNestedProperties = false)
+    @Document.DocumentProperty(indexNestedProperties = true)
     val pricing: List<SearchablePricingInformation>,
 
     /**
@@ -140,7 +140,11 @@ data class SearchableRetailerProductInformation(
      * construct this model.
      * @param local Whether the retailer for this model is local or not.
      */
-    constructor(info: RetailerProductInformation, local: Boolean) : this(
+    constructor(
+        info: RetailerProductInformation,
+        local: Boolean,
+        storeRegionsMap: Map<String, Map<String, String>>
+    ) : this(
         "all",
         info.retailer!!,
         info.brandName,
@@ -152,7 +156,7 @@ data class SearchableRetailerProductInformation(
         info.weight,
         info.saleType!!,
         info.image,
-        info.pricing!!.map { SearchablePricingInformation(it, info.retailer!!) },
+        info.pricing!!.map { SearchablePricingInformation(it, info.retailer!!, storeRegionsMap) },
         info.automated ?: true,
         info.verified ?: false,
         local

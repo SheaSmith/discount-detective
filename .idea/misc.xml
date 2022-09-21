@@ -5,6 +5,7 @@
       <map>
         <entry key="../../../../layout/compose-model-1659923007922.xml" value="0.1" />
         <entry key="../../../../layout/compose-model-1659994406026.xml" value="0.25" />
+        <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/drawable/dialog_background.xml" value="0.1" />
         <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/drawable/ic_round_place_24.xml" value="0.1" />
         <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/drawable/switch_track.xml" value="0.1" />
         <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/layout/fragment_container_settings.xml" value="0.1453804347826087" />
@@ -14,15 +15,10 @@
         <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/xml/root_preferences.xml" value="0.1453804347826087" />
         <entry key="..\:/Users/petra/StudioProjects/COSC345-Project/app/src/main/res/xml/settings_screen.xml" value="0.22" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.222" />
-        <entry key="app/src/main/res/drawable/top_action_bar_scrim.xml" value="0.137" />
-        <entry key="app/src/main/res/layout/fragment_barcode_scan.xml" value="0.19157608695652173" />
       </map>
     </option>
   </component>
-  <component name="FrameworkDetectionExcludesConfiguration">
-    <file type="web" url="file://$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
