@@ -52,10 +52,8 @@ class ShoppingListViewModel @Inject constructor(
      */
     fun changeShoppingListChecked(item: ShoppingListItem, checked: Boolean) {
         viewModelScope.launch {
-            shoppingList.value?.find { it.third.productId == item.productId }?.let { it ->
-                it.third.checked = checked
-                shoppingListRepository.updateChecked(it.third)
-            }
+            item.checked = checked
+            shoppingListRepository.updateChecked(item)
         }
     }
 
