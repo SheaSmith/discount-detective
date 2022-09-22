@@ -43,13 +43,11 @@ class ShoppingListRepository @Inject constructor(
         shoppingListDao.delete(shoppingListShoppingListItem)
     }
 
+    /**
+     * Update the shoppingList item
+     */
     suspend fun updateChecked(shoppingListShoppingListItem: ShoppingListItem) {
-        shoppingListDao.updateChecked(
-            checked = shoppingListShoppingListItem.checked,
-            productId = shoppingListShoppingListItem.productId,
-            retailerProductInformationId = shoppingListShoppingListItem.retailerProductInformationId,
-            storeId = shoppingListShoppingListItem.storeId
-        )
+        shoppingListDao.updateChecked(shoppingListShoppingListItem)
     }
 
 }

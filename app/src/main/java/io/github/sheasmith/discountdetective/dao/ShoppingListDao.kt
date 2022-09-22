@@ -32,17 +32,13 @@ interface ShoppingListDao {
     /**
      * Update the checked state of an item
      */
-    @Query(
-        "UPDATE shopping_list SET " +
-                "checked = :checked WHERE " +
-                "productId = :productId AND " +
-                "retailerProductInformationId = :retailerProductInformationId AND " +
-                "storeId = :storeId"
-    )
-    suspend fun updateChecked(
-        checked: Boolean,
-        productId: String,
-        retailerProductInformationId: String,
-        storeId: String
-    )
+//    @Query(
+//        "UPDATE shopping_list SET " +
+//                "checked = :checked WHERE " +
+//                "productId = :productId AND " +
+//                "retailerProductInformationId = :retailerProductInformationId AND " +
+//                "storeId = :storeId"
+//    )
+    @Update
+    suspend fun updateChecked(shoppingListItem: ShoppingListItem)
 }
