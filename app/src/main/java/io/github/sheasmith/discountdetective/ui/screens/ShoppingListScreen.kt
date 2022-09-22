@@ -5,6 +5,7 @@ package io.github.sheasmith.discountdetective.ui.screens
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -160,36 +161,22 @@ private fun ProductList(
 //            }
         itemsIndexed(list, key = { _, item -> item }) { index, item ->
             DraggableItem(dragDropState, index) { isDragging ->
-//                val elevation by animateDpAsState(if (isDragging) 4.dp else 1.dp)
-                testCard(
+                val elevation by animateDpAsState(if (isDragging) 4.dp else 1.dp)
+                Card(
                     elevation = CardDefaults.cardElevation(
-                        draggedElevation = 4.dp,
-                        hoveredElevation = 6.dp,
-                        defaultElevation = 1.dp
-                    ),
-                    item = item,
-                    isDragging = isDragging
-                )
+                        defaultElevation = elevation
+                    )
+                ) {
+                    Text(
+                        "Item $item",
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                    )
+                }
             }
         }
     }
-}
-
-@Composable
-private fun testCard(
-    elevation: CardElevation,
-    item: Int,
-    isDragging: Boolean
-) {
-    if (isDragging) {
-        print("here")
-    }
-    Text(
-        "Item $item",
-        Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-    )
 }
 
 
