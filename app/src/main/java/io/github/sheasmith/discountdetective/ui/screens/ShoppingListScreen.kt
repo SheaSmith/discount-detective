@@ -194,14 +194,14 @@ private fun ProductCard(
     onDelete: () -> Unit
 ) {
     // remember local action state
-    var isChecked by rememberSaveable { mutableStateOf(false) }
+    var isChecked by rememberSaveable { mutableStateOf(checked) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 5.dp) //this for padding
             .shadow(elevation.value)
-            .alpha(if (checked or isChecked) 0.5f else 1f),
+            .alpha(if (isChecked) 0.5f else 1f),
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent
         ),
@@ -241,7 +241,7 @@ private fun ProductCard(
             }
 
             Checkbox(
-                checked = checked or isChecked,
+                checked = isChecked,
                 onCheckedChange = {
                     isChecked = it
                     onCheckedChanged(it)
@@ -274,8 +274,6 @@ private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricing
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            // add the variant, quantity to title
-            // productInfo?.name ?: stringResource(id = R.string.placeholder)
             text = "${product.third.quantity}x ${
                 arrayOf(
                     product.first.brandName,
