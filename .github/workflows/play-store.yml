@@ -58,7 +58,7 @@ jobs:
         run: ./gradlew bundleProduction
         if: github.event.release.prerelease == false && github.event_name != 'push'
 
-      - uses: r0adkll/sign-android-release@v1.0.18
+      - uses: r0adkll/sign-android-release@master
         name: Sign app bundle for alpha
         # ID used to access action output
         id: sign_app_alpha
@@ -70,7 +70,7 @@ jobs:
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
 
-      - uses: r0adkll/sign-android-release@v1.0.18
+      - uses: r0adkll/sign-android-release@master
         name: Sign app bundle for beta
         # ID used to access action output
         id: sign_app_beta
@@ -82,7 +82,7 @@ jobs:
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
 
-      - uses: r0adkll/sign-android-release@v1.0.18
+      - uses: r0adkll/sign-android-release@master
         name: Sign app bundle for production
         # ID used to access action output
         id: sign_app_release
