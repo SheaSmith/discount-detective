@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -192,13 +193,15 @@ private fun ProductCard(
     onCheckedChanged: (Boolean) -> Unit,
     onDelete: () -> Unit
 ) {
+    // remember local action state
+    var isChecked by rememberSaveable { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 5.dp) //this for padding
             .shadow(elevation.value)
-            .alpha(if (checked) 0.5f else 1f),
+            .alpha(if (checked or isChecked) 0.5f else 1f),
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent
         ),
@@ -238,8 +241,11 @@ private fun ProductCard(
             }
 
             Checkbox(
-                checked = checked,
-                onCheckedChange = onCheckedChanged,
+                checked = checked or isChecked,
+                onCheckedChange = {
+                    isChecked = it
+                    onCheckedChanged(it)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
             )

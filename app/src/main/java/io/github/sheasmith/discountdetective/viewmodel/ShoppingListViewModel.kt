@@ -56,18 +56,6 @@ class ShoppingListViewModel @Inject constructor(
                 it.third.checked = checked
                 shoppingListRepository.updateChecked(it.third)
             }
-
-            val shoppingListItemCopy = ShoppingListItem(
-                productId = item.productId,
-                retailerProductInformationId = item.retailerProductInformationId,
-                storeId = item.storeId,
-                quantity = item.quantity,
-                checked = item.checked
-            )
-            // delete
-            shoppingListRepository.deleteFromShoppingList(item)
-            // insert
-            shoppingListRepository.addToShoppingList(shoppingListItemCopy)
         }
     }
 
