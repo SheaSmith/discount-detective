@@ -52,11 +52,11 @@ jobs:
 
       - name: Build beta with gradle
         run: ./gradlew bundleBeta
-        if: github.event.release.prerelease == true
+        if: github.event.release.prerelease == true && github.event_name != 'push'
 
       - name: Build production with gradle
         run: ./gradlew bundleProduction
-        if: github.event.release.prerelease == false
+        if: github.event.release.prerelease == false && github.event_name != 'push'
 
       - uses: r0adkll/sign-android-release@v1
         name: Sign app bundle for alpha
@@ -74,7 +74,7 @@ jobs:
         name: Sign app bundle for beta
         # ID used to access action output
         id: sign_app_beta
-        if: github.event.release.prerelease == true
+        if: github.event.release.prerelease == true && github.event_name != 'push'
         with:
           releaseDirectory: app/build/outputs/bundle/betaRelease
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
@@ -86,7 +86,7 @@ jobs:
         name: Sign app bundle for production
         # ID used to access action output
         id: sign_app_release
-        if: github.event.release.prerelease == false
+        if: github.event.release.prerelease == false && github.event_name != 'push'
         with:
           releaseDirectory: app/build/outputs/bundle/productionRelease
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
@@ -96,13 +96,13 @@ jobs:
 
       - run: |
           mkdir whatsnew
-          echo ${{ github.event.release.body }} > whatsnew/whatsnew-en-AU
+          echo "${{ github.event.release.body }}" > whatsnew/whatsnew-en-AU
         if: github.event_name != 'push'
         name: Generate release notes for release
 
       - run: |
           mkdir whatsnew
-          echo ${{ github.event.head_commit.message }} > whatsnew/whatsnew-en-AU
+          echo "${{ github.event.head_commit.message }}" > whatsnew/whatsnew-en-AU
         if: github.event_name == 'push'
         name: Generate release notes for alpha
 
@@ -117,7 +117,7 @@ jobs:
           whatsNewDirectory: whatsnew
 
       - uses: r0adkll/upload-google-play@v1
-        if: github.event.release.prerelease == true
+        if: github.event.release.prerelease == true && github.event_name != 'push'
         name: Deploy to Google Play for beta
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
@@ -127,7 +127,7 @@ jobs:
           whatsNewDirectory: whatsnew
 
       - uses: r0adkll/upload-google-play@v1
-        if: github.event.release.prerelease == true
+        if: github.event.release.prerelease == false && github.event_name != 'push'
         name: Deploy to Google Play for production
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
