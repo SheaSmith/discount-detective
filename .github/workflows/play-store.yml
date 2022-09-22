@@ -61,7 +61,7 @@ jobs:
       - uses: r0adkll/sign-android-release@v1
         name: Sign app bundle for alpha
         # ID used to access action output
-        id: sign_app
+        id: sign_app_alpha
         if: github.event_name == 'push'
         with:
           releaseDirectory: app/build/outputs/bundle/alphaRelease
@@ -73,7 +73,7 @@ jobs:
       - uses: r0adkll/sign-android-release@v1
         name: Sign app bundle for beta
         # ID used to access action output
-        id: sign_app
+        id: sign_app_beta
         if: github.event.release.prerelease == true
         with:
           releaseDirectory: app/build/outputs/bundle/betaRelease
@@ -85,7 +85,7 @@ jobs:
       - uses: r0adkll/sign-android-release@v1
         name: Sign app bundle for production
         # ID used to access action output
-        id: sign_app
+        id: sign_app_release
         if: github.event.release.prerelease == false
         with:
           releaseDirectory: app/build/outputs/bundle/productionRelease
@@ -112,7 +112,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: io.github.sheasmith.discountdetective
-          releaseFiles: ${{steps.sign_app.outputs.signedReleaseFile}}
+          releaseFiles: ${{steps.sign_app_alpha.outputs.signedReleaseFile}}
           track: internal
           whatsNewDirectory: whatsnew
 
@@ -122,7 +122,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: io.github.sheasmith.discountdetective
-          releaseFiles: ${{steps.sign_app.outputs.signedReleaseFile}}
+          releaseFiles: ${{steps.sign_app_beta.outputs.signedReleaseFile}}
           track: beta
           whatsNewDirectory: whatsnew
 
@@ -132,6 +132,6 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: io.github.sheasmith.discountdetective
-          releaseFiles: ${{steps.sign_app.outputs.signedReleaseFile}}
+          releaseFiles: ${{steps.sign_app_release.outputs.signedReleaseFile}}
           track: production
           whatsNewDirectory: whatsnew

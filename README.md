@@ -4,6 +4,7 @@
 [![Android CI](https://github.com/SheaSmith/COSC345-Project/actions/workflows/android.yml/badge.svg)](https://github.com/SheaSmith/COSC345-Project/actions/workflows/android.yml)
 [![Deploy static content to Pages](https://github.com/SheaSmith/COSC345-Project/actions/workflows/build-docs.yml/badge.svg)](https://github.com/SheaSmith/COSC345-Project/actions/workflows/build-docs.yml)
 [![codecov](https://codecov.io/gh/SheaSmith/discount-detective/branch/master/graph/badge.svg?token=6LT4FB6K2B)](https://codecov.io/gh/SheaSmith/discount-detective)
+[![Deploy to Play Store](https://github.com/SheaSmith/discount-detective/actions/workflows/play-store.yml/badge.svg)](https://github.com/SheaSmith/discount-detective/actions/workflows/play-store.yml)
 
 ## Introduction
 
