@@ -38,21 +38,38 @@ Additionally, the app will be slower to run during this indexing. The indexing t
 minutes on a physical device, but only needs to run on the first run.
 
 ## Code Review
-Pushes into master are disabled. In order to get your code included in the repository, you must open a pull request. Additionally, when opening a pull request, your changes must be reviewed by one of the members of this repository. This is mandatory for all pull requests.
+
+Pushes into master are disabled. In order to get your code included in the repository, you must open
+a pull request. Additionally, when opening a pull request, your changes must be reviewed by one of
+the members of this repository. This is mandatory for all pull requests.
+
+## Continuous Google Play Deployment
+
+All pushes into master are automatically pushed into an alpha test track on Google Play. You can
+join this track by visiting https://play.google.com/apps/internaltest/4701662988659821470, or by
+scanning this QR code:
+
+![QR Code](https://play.google.com/apps/internaltest/4701662988659821470)
+
+Github releases are automatically pushed into either a open beta or production test track, depending
+on whether the release is a pre-release or not. You can download these versions at
+the [Play Store](https://play.google.com/store/apps/details?id=io.github.sheasmith.discountdetective)
+page (once it has passed review).
 
 ## Technical Details
 
 This app is split into four modules, which are documented below (if you are viewing this on
 the [documentation](https://sheasmith.github.io/discount-detective) page).
 
-For most of the app, we are using Jetpack Compose (a SwiftUI analogue for Android) for the UI, along with
-the Google recommended clean architecture. This means we follow a reasonably strict MVVM (Model,
-View, ViewModel) pattern for the app, with all data retrieval code stores in repositories, which map
-to the models, which are then processed by the ViewModel for state management and to pass to the UI.
+For most of the app, we are using Jetpack Compose (a SwiftUI analogue for Android) for the UI, along
+with the Google recommended clean architecture. This means we follow a reasonably strict MVVM (
+Model, View, ViewModel) pattern for the app, with all data retrieval code stores in repositories,
+which map to the models, which are then processed by the ViewModel for state management and to pass
+to the UI.
 
-For the setting screen, we are using fragments within a container, loaded into Jetpack Compose. There are
-three available settings for the user to change. These are 1. Dark/light mode 2. The region, and 3. A
-feeedback button which is linked to our user testing Google form.
+For the setting screen, we are using fragments within a container, loaded into Jetpack Compose.
+There are three available settings for the user to change. These are 1. Dark/light mode 2. The
+region, and 3. A feeedback button which is linked to our user testing Google form.
 
 For the search, we are using Google's AndroidX AppSearch library. We pull down a list of all
 products from Firebase Realtime Database (our backend), which is then indexed by AppSearch to allow
