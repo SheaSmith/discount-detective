@@ -42,5 +42,19 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="About">
+
+        <Preference
+            app:icon="@drawable/ic_app_type"
+            app:key="type"
+            app:title="Type" />
+
+        <Preference
+            app:icon="@drawable/ic_version"
+            app:key="version"
+            app:title="Version" />
+
+    </PreferenceCategory>
+
 
 </androidx.preference.PreferenceScreen>

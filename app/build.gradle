@@ -32,7 +32,16 @@ android {
             }
         }
     }
-    
+
+    flavorDimensions "version"
+
+    productFlavors {
+        development {}
+        alpha {}
+        beta {}
+        production {}
+    }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.3.0-rc01"
     }

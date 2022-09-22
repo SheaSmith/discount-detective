@@ -6,9 +6,12 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.updatePadding
+import androidx.preference.Preference
+import androidx.preference.Preference.SummaryProvider
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
+import io.github.sheasmith.discountdetective.BuildConfig
 import io.github.sheasmith.discountdetective.R
 
 /**
@@ -33,6 +36,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 }
             }
+        }
+
+        val versionPreference: Preference? = findPreference("version")
+        versionPreference?.summaryProvider = SummaryProvider<Preference> {
+            BuildConfig.VERSION_NAME
+        }
+
+        val typePreference: Preference? = findPreference("type")
+        typePreference?.summaryProvider = SummaryProvider<Preference> {
+            BuildConfig.FLAVOR
         }
     }
 
