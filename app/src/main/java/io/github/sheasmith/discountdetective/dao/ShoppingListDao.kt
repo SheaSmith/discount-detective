@@ -5,12 +5,12 @@ import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import kotlinx.coroutines.flow.Flow
 
 /**
- * A dao that handles data manipulation for the shopping list.
+ * A dao interface that handles data for the shopping list.
  */
 @Dao
 interface ShoppingListDao {
     /**
-     * Get all products in the shopping list.
+     * Get all products from the shopping_list table.
      * @return A flow containing the IDs which refer to the products, their retailer product information and their pricing.
      */
     @Query("SELECT * FROM shopping_list")
@@ -31,6 +31,7 @@ interface ShoppingListDao {
     suspend fun delete(shoppingListItem: ShoppingListItem)
 
     /**
+     * Update a shoppingListItem from shoppingList table
      * @param shoppingListItem item to be updated
      */
     @Update

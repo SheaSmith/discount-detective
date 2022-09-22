@@ -16,19 +16,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Holds all data associated with screen
- * + setters and getters
+ * Viewmodel for backing the shoppingListPage
  *
- * Responsible for preparing data for the screen.
- * and
- * Transform the data stored from the repo
- * from flow to LiveData to the UI
- * Ensures that everytime data changes in database, UI
- * Automatically updated
-
- * Specific:
- * need to display a list of products
- *
+ * @param productRepository The product repository which handles all products
+ * @param retailersRepository The retailers repository which handles all retailers
+ * @param shoppingListRepository The shoppingListRepositiory which handles shoppingList Items.
  */
 @HiltViewModel
 class ShoppingListViewModel @Inject constructor(
@@ -37,6 +29,9 @@ class ShoppingListViewModel @Inject constructor(
     private val retailersRepository: RetailersRepository
 ) : ViewModel() {
 
+    /**
+     * All shoppingList items in the database
+     */
     private val allProducts: Flow<List<ShoppingListItem>> =
         shoppingListRepository.shoppingList
 
@@ -49,6 +44,8 @@ class ShoppingListViewModel @Inject constructor(
     /**
      * Update the state of the checkbox in the shoppingList
      * by copy then delete and insert so compose tracks changes
+     * @param item the shoppinglist item that has been checked
+     * @param checked the new check state
      */
     fun changeShoppingListChecked(item: ShoppingListItem, checked: Boolean) {
         viewModelScope.launch {
@@ -126,6 +123,11 @@ class ShoppingListViewModel @Inject constructor(
         }
     }
 
+    /**
+     *  Delete an item from the shoppingList
+     *
+     *  @param shoppingListItem the item to delete
+     */
     fun delete(shoppingListItem: ShoppingListItem) {
         viewModelScope.launch {
             shoppingListRepository.deleteFromShoppingList(shoppingListItem)
