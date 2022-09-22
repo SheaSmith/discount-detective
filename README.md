@@ -50,7 +50,7 @@ All pushes into master are automatically pushed into an alpha test track on Goog
 join this track by visiting https://play.google.com/apps/internaltest/4701662988659821470, or by
 scanning this QR code:
 
-![QR Code](https://play.google.com/apps/internaltest/4701662988659821470)
+![QR Code](https://i.imgur.com/loQCoRx.png)
 
 Github releases are automatically pushed into either a open beta or production test track, depending
 on whether the release is a pre-release or not. You can download these versions at
