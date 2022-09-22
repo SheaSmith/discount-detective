@@ -102,7 +102,7 @@ jobs:
 
       - run: |
           mkdir whatsnew
-          echo ${{ github.event.commits[0][message] }} > whatsnew/whatsnew-en-AU
+          echo ${{ github.event.head_commit.message }} > whatsnew/whatsnew-en-AU
         if: github.event_name == 'push'
         name: Generate release notes for alpha
 
