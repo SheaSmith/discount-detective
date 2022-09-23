@@ -106,7 +106,7 @@ jobs:
         if: github.event_name == 'push'
         name: Generate release notes for alpha
 
-      - uses: r0adkll/upload-google-play@master
+      - uses: r0adkll/upload-google-play@v1.0.17
         if: github.event_name == 'push'
         name: Deploy to Google Play for alpha
         with:
@@ -118,7 +118,7 @@ jobs:
           userFraction: 1.0
           whatsNewDirectory: whatsnew
 
-      - uses: r0adkll/upload-google-play@master
+      - uses: r0adkll/upload-google-play@v1.0.17
         if: github.event.release.prerelease == true && github.event_name != 'push'
         name: Deploy to Google Play for beta
         with:
@@ -130,7 +130,7 @@ jobs:
           userFraction: 1.0
           whatsNewDirectory: whatsnew
 
-      - uses: r0adkll/upload-google-play@master
+      - uses: r0adkll/upload-google-play@v1.0.17
         if: github.event.release.prerelease == false && github.event_name != 'push'
         name: Deploy to Google Play for production
         with:
