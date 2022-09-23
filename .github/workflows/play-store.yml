@@ -114,6 +114,7 @@ jobs:
           packageName: io.github.sheasmith.discountdetective
           releaseFiles: ${{steps.sign_app_alpha.outputs.signedReleaseFile}}
           track: internal
+          status: completed
           whatsNewDirectory: whatsnew
 
       - uses: r0adkll/upload-google-play@master
@@ -124,6 +125,7 @@ jobs:
           packageName: io.github.sheasmith.discountdetective
           releaseFiles: ${{steps.sign_app_beta.outputs.signedReleaseFile}}
           track: beta
+          status: completed
           whatsNewDirectory: whatsnew
 
       - uses: r0adkll/upload-google-play@master
@@ -134,4 +136,5 @@ jobs:
           packageName: io.github.sheasmith.discountdetective
           releaseFiles: ${{steps.sign_app_release.outputs.signedReleaseFile}}
           track: production
+          status: completed
           whatsNewDirectory: whatsnew
