@@ -1,5 +1,6 @@
 package io.github.sheasmith.discountdetective.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cosc345.shared.models.Retailer
@@ -10,7 +11,6 @@ import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.repository.ProductRepository
 import io.github.sheasmith.discountdetective.repository.RetailersRepository
 import io.github.sheasmith.discountdetective.repository.ShoppingListRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,7 +32,7 @@ class ShoppingListViewModel @Inject constructor(
     /**
      * All shoppingList items in the database
      */
-    private val allProducts: Flow<List<ShoppingListItem>> =
+    private val allProducts: LiveData<List<ShoppingListItem>> =
         shoppingListRepository.shoppingList
 
     /**
@@ -45,11 +45,9 @@ class ShoppingListViewModel @Inject constructor(
      * Update the state of the checkbox in the shoppingList
      * by copy then delete and insert so compose tracks changes
      * @param item the shoppinglist item that has been checked
-     * @param checked the new check state
      */
-    fun changeShoppingListChecked(item: ShoppingListItem, checked: Boolean) {
+    fun changeShoppingListChecked(item: ShoppingListItem) {
         viewModelScope.launch {
-            item.checked = checked
             shoppingListRepository.updateChecked(item)
         }
     }
@@ -65,20 +63,22 @@ class ShoppingListViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            allProducts.collect { shoppingListItems ->
-                shoppingList.value = shoppingListItems.mapNotNull { shoppingListInfo ->
-                    val product = productRepository.getProductFromID(shoppingListInfo.productId)
+            allProducts.observeForever { shoppingListItems ->
+                viewModelScope.launch {
+                    shoppingList.value = shoppingListItems.mapNotNull { shoppingListInfo ->
+                        val product = productRepository.getProductFromID(shoppingListInfo.productId)
 
-                    if (product != null) {
-                        val key =
-                            product.information!!.first { info -> info.id == shoppingListInfo.retailerProductInformationId && info.pricing!!.any { it.store == shoppingListInfo.storeId } }
-                        val value =
-                            key.pricing!!.first { it.store == shoppingListInfo.storeId }
+                        if (product != null) {
+                            val key =
+                                product.information!!.first { info -> info.id == shoppingListInfo.retailerProductInformationId && info.pricing!!.any { it.store == shoppingListInfo.storeId } }
+                            val value =
+                                key.pricing!!.first { it.store == shoppingListInfo.storeId }
 
-                        Triple(key, value, shoppingListInfo)
-                    } else {
-                        shoppingListRepository.deleteFromShoppingList(shoppingListInfo)
-                        null
+                            Triple(key, value, shoppingListInfo)
+                        } else {
+                            shoppingListRepository.deleteFromShoppingList(shoppingListInfo)
+                            null
+                        }
                     }
                 }
             }

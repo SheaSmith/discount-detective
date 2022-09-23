@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -91,13 +90,7 @@ fun ShoppingListScreen(
                 grouped = grouped,
                 viewModel = viewModel,
                 innerPadding = innerPadding,
-                retailers = retailers,
-                onCheckedItem = { item, checked ->
-                    viewModel.changeShoppingListChecked(item, checked)
-                },
-                onDeleteItem = { item ->
-                    viewModel.delete(item)
-                }
+                retailers = retailers
             )
         } else {
             Text(
@@ -118,9 +111,7 @@ private fun ProductList(
     grouped: Map<Pair<String, String>, List<Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>>>,
     retailers: Map<String, Retailer>,
     viewModel: ShoppingListViewModel,
-    innerPadding: PaddingValues,
-    onCheckedItem: (ShoppingListItem, Boolean) -> Unit,
-    onDeleteItem: (ShoppingListItem) -> Unit
+    innerPadding: PaddingValues
 ) {
     val data = remember { mutableStateOf(grouped.values.toList().flatten()) }
 
@@ -164,19 +155,17 @@ private fun ProductList(
                     selection.add(it)
                 }
             }
-            items(productsForStore) { product ->
+            items(productsForStore) { shoppingListItem ->
                 ReorderableItem(
                     reorderableState = state,
-                    key = product
+                    key = shoppingListItem
                 )
                 { isDragging ->
                     val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
                     ProductCard(
-                        product = product,
+                        shoppingListItem = shoppingListItem,
                         elevation = elevation,
-                        checked = product.third.checked,
-                        onCheckedChanged = { checked -> onCheckedItem(product.third, checked) },
-                        onDelete = { onDeleteItem(product.third) }
+                        viewModel = viewModel
                     )
                 }
             }
@@ -187,14 +176,11 @@ private fun ProductList(
 
 @Composable
 private fun ProductCard(
-    product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
+    shoppingListItem: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
     elevation: State<Dp>,
-    checked: Boolean,
-    onCheckedChanged: (Boolean) -> Unit,
-    onDelete: () -> Unit
+    viewModel: ShoppingListViewModel
 ) {
-    // remember local action state
-    var isChecked by rememberSaveable { mutableStateOf(checked) }
+    var isChecked by mutableStateOf(shoppingListItem.third.checked)
 
     Card(
         modifier = Modifier
@@ -223,11 +209,13 @@ private fun ProductCard(
                     .fillMaxSize(0.1f)
             )
             // product info block
-            ProductInfo(product = product)
+            ProductInfo(product = shoppingListItem)
 
             // delete button
             IconButton(
-                onClick = onDelete,
+                onClick = {
+                    viewModel.delete(shoppingListItem.third)
+                },
                 modifier = Modifier
                     .size(
                         width = 30.dp,
@@ -243,8 +231,9 @@ private fun ProductCard(
             Checkbox(
                 checked = isChecked,
                 onCheckedChange = {
+                    shoppingListItem.third.checked = it
+                    viewModel.changeShoppingListChecked(shoppingListItem.third)
                     isChecked = it
-                    onCheckedChanged(it)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
