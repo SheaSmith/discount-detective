@@ -3,11 +3,13 @@
     <string-array name="array_city">
         <item>"Dunedin"</item>
         <item>"Invercargill"</item>
+        <item>"Whitianga"</item>
     </string-array>
 
     <string-array name="array_city_values">
         <item>"dunedin"</item>
         <item>"invercargill"</item>
+        <item>"whitianga"</item>
     </string-array>
 
     <string-array name="array_darkmode">
@@ -20,16 +22,6 @@
         <item>"light"</item>
         <item>"dark"</item>
         <item>"system"</item>
-    </string-array>
-
-    <string-array name="array_local">
-        <item>"Only local"</item>
-        <item>"All stores"</item>
-    </string-array>
-
-    <string-array name="array_local_values">
-        <item>"local"</item>
-        <item>"all"</item>
     </string-array>
 
 </resources>

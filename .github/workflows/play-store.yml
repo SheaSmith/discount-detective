@@ -1,0 +1,140 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy to Play Store
+
+# Controls when the workflow will run
+on:
+  release:
+    types: [ published ]
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Bump version for release
+        uses: chkfung/android-version-actions@v1.1
+        if: github.event_name != 'push'
+        with:
+          gradlePath: app/build.gradle # or app/build.gradle.kts 
+          versionCode: ${{github.run_number}}
+          versionName: ${{ github.event.release.name }}
+
+      - name: Bump version for alpha
+        uses: chkfung/android-version-actions@v1.1
+        if: github.event_name == 'push'
+        with:
+          gradlePath: app/build.gradle # or app/build.gradle.kts
+          versionCode: ${{github.run_number}}
+          versionName: ${{ github.sha }}
+
+      - name: Build alpha with gradle
+        run: ./gradlew bundleAlpha
+        if: github.event_name == 'push'
+
+      - name: Build beta with gradle
+        run: ./gradlew bundleBeta
+        if: github.event.release.prerelease == true && github.event_name != 'push'
+
+      - name: Build production with gradle
+        run: ./gradlew bundleProduction
+        if: github.event.release.prerelease == false && github.event_name != 'push'
+
+      - uses: r0adkll/sign-android-release@master
+        name: Sign app bundle for alpha
+        # ID used to access action output
+        id: sign_app_alpha
+        if: github.event_name == 'push'
+        with:
+          releaseDirectory: app/build/outputs/bundle/alphaRelease
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - uses: r0adkll/sign-android-release@master
+        name: Sign app bundle for beta
+        # ID used to access action output
+        id: sign_app_beta
+        if: github.event.release.prerelease == true && github.event_name != 'push'
+        with:
+          releaseDirectory: app/build/outputs/bundle/betaRelease
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - uses: r0adkll/sign-android-release@master
+        name: Sign app bundle for production
+        # ID used to access action output
+        id: sign_app_release
+        if: github.event.release.prerelease == false && github.event_name != 'push'
+        with:
+          releaseDirectory: app/build/outputs/bundle/productionRelease
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - run: |
+          mkdir whatsnew
+          echo "${{ github.event.release.body }}" > whatsnew/whatsnew-en-AU
+        if: github.event_name != 'push'
+        name: Generate release notes for release
+
+      - run: |
+          mkdir whatsnew
+          echo "${{ github.event.head_commit.message }}" > whatsnew/whatsnew-en-AU
+        if: github.event_name == 'push'
+        name: Generate release notes for alpha
+
+      - uses: r0adkll/upload-google-play@v1.0.17
+        if: github.event_name == 'push'
+        name: Deploy to Google Play for alpha
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: io.github.sheasmith.discountdetective
+          releaseFiles: ${{steps.sign_app_alpha.outputs.signedReleaseFile}}
+          track: internal
+          status: completed
+          whatsNewDirectory: whatsnew
+
+      - uses: r0adkll/upload-google-play@v1.0.17
+        if: github.event.release.prerelease == true && github.event_name != 'push'
+        name: Deploy to Google Play for beta
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: io.github.sheasmith.discountdetective
+          releaseFiles: ${{steps.sign_app_beta.outputs.signedReleaseFile}}
+          track: beta
+          status: completed
+          whatsNewDirectory: whatsnew
+
+      - uses: r0adkll/upload-google-play@v1.0.17
+        if: github.event.release.prerelease == false && github.event_name != 'push'
+        name: Deploy to Google Play for production
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: io.github.sheasmith.discountdetective
+          releaseFiles: ${{steps.sign_app_release.outputs.signedReleaseFile}}
+          track: production
+          status: completed
+          whatsNewDirectory: whatsnew

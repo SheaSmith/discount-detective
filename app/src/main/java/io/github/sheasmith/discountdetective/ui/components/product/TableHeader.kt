@@ -1,4 +1,4 @@
-package io.github.sheasmith.discountdetective.ui.components.shoppinglist
+package io.github.sheasmith.discountdetective.ui.components.product
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding

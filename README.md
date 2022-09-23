@@ -4,14 +4,14 @@
 [![Android CI](https://github.com/SheaSmith/COSC345-Project/actions/workflows/android.yml/badge.svg)](https://github.com/SheaSmith/COSC345-Project/actions/workflows/android.yml)
 [![Deploy static content to Pages](https://github.com/SheaSmith/COSC345-Project/actions/workflows/build-docs.yml/badge.svg)](https://github.com/SheaSmith/COSC345-Project/actions/workflows/build-docs.yml)
 [![codecov](https://codecov.io/gh/SheaSmith/discount-detective/branch/master/graph/badge.svg?token=6LT4FB6K2B)](https://codecov.io/gh/SheaSmith/discount-detective)
+[![Deploy to Play Store](https://github.com/SheaSmith/discount-detective/actions/workflows/play-store.yml/badge.svg)](https://github.com/SheaSmith/discount-detective/actions/workflows/play-store.yml)
 
 ## Introduction
 
 Discount Detective is a price comparison app for food and other essential products.
 
 We compare prices from all of the major New Zealand supermarkets, along with a selection of local
-retailers in some areas. Currently the app is only available in Dunedin, although we plan to add
-support for the bigger supermarkets, and some local shops, in other regions soon.
+retailers in some areas. Currently the app is available in Dunedin, Whitianga, and Invercargill.
 
 You can search products, find the lowest prices, both at non-local and local stores and see what
 local stores have in stock, so you can shop local. We also have support for adding items to a
@@ -38,15 +38,46 @@ search, however, there is a fallback search technique that can be used during th
 Additionally, the app will be slower to run during this indexing. The indexing takes around 10
 minutes on a physical device, but only needs to run on the first run.
 
+## Code Review
+
+Pushes into master are disabled. In order to get your code included in the repository, you must open
+a pull request. Additionally, when opening a pull request, your changes must be reviewed by one of
+the members of this repository. This is mandatory for all pull requests.
+
+## Continuous Google Play Deployment
+
+All pushes into master are automatically pushed into an alpha test track on Google Play. You can
+join this track by visiting https://play.google.com/apps/internaltest/4701662988659821470, or by
+scanning this QR code:
+
+![QR Code](https://i.imgur.com/loQCoRx.png)
+
+Github releases are automatically pushed into either a open beta or production test track, depending
+on whether the release is a pre-release or not. You can download these versions at
+the [Play Store](https://play.google.com/store/apps/details?id=io.github.sheasmith.discountdetective)
+page (once it has passed review).
+
+## Crash Logging
+
+We use Firebase Crashlytics for crash logging. This means whenever the app crashes, we get a report
+of this crash, along with some other information about the circumstances (such as Android version or
+phone brand). If you notice a crash, please create an issue, and if possible, specify a time or
+device type, so we can track down the crash more easily.
+
 ## Technical Details
 
 This app is split into four modules, which are documented below (if you are viewing this on
 the [documentation](https://sheasmith.github.io/discount-detective) page).
 
-For the app, we are using Jetpack Compose (a SwiftUI analogue for Android) for the UI, along with
-the Google recommended clean architecture. This means we follow a reasonably strict MVVM (Model,
-View, ViewModel) pattern for the app, with all data retrieval code stores in repositories, which map
-to the models, which are then processed by the ViewModel for state management and to pass to the UI.
+For most of the app, we are using Jetpack Compose (a SwiftUI analogue for Android) for the UI, along
+with the Google recommended clean architecture. This means we follow a reasonably strict MVVM (
+Model, View, ViewModel) pattern for the app, with all data retrieval code stores in repositories,
+which map to the models, which are then processed by the ViewModel for state management and to pass
+to the UI.
+
+For the setting screen, we are using fragments within a container, loaded into Jetpack Compose.
+There are three available settings for the user to change. These are 1. Dark/light mode 2. The
+region, and 3. A feeedback button which is linked to our user testing Google form.
 
 For the search, we are using Google's AndroidX AppSearch library. We pull down a list of all
 products from Firebase Realtime Database (our backend), which is then indexed by AppSearch to allow

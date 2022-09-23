@@ -47,7 +47,7 @@ class VeggieBoysScraper : Scraper() {
         veggieBoysService.getProducts().products!!.forEach { (productName, price, imagePath, id, href, onSpecial) ->
             if (id == "275") {
                 dairyDaleMultiBuy = price
-            } else {
+            } else if (productName?.isNotEmpty() == true) {
 
                 val product = RetailerProductInformation(
                     retailer = retailerId,
@@ -57,7 +57,7 @@ class VeggieBoysScraper : Scraper() {
                     verified = false
                 )
 
-                var name = productName!!
+                var name: String = productName
                 Units.all.forEach {
                     val result = extractAndRemoveQuantity(name, it)
 

@@ -1,6 +1,7 @@
 package io.github.sheasmith.discountdetective.models
 
 import androidx.appsearch.annotation.Document
+import androidx.appsearch.app.AppSearchSchema.StringPropertyConfig.INDEXING_TYPE_EXACT_TERMS
 import com.example.cosc345.shared.models.StorePricingInformation
 
 /**
@@ -74,7 +75,13 @@ data class SearchablePricingInformation(
      * Whether this price is 'verified'. Essentially, this is either a price extracted via a verified retailer submitting prices.
      */
     @Document.BooleanProperty
-    val verified: Boolean
+    val verified: Boolean,
+
+    /**
+     * String property for the region the store belongs to.
+     */
+    @Document.StringProperty(indexingType = INDEXING_TYPE_EXACT_TERMS)
+    val region: String
 ) {
     /**
      * Convert this object back to a standard [StorePricingInformation].
@@ -96,7 +103,10 @@ data class SearchablePricingInformation(
      * @param pricingInformation The pricing information to use to initialise this.
      * @param retailerId The retailer ID to use.
      */
-    constructor(pricingInformation: StorePricingInformation, retailerId: String) : this(
+    constructor(
+        pricingInformation: StorePricingInformation, retailerId: String,
+        storeRegionsMap: Map<String, Map<String, String>>
+    ) : this(
         "all",
         retailerId,
         pricingInformation.store!!,
@@ -106,6 +116,7 @@ data class SearchablePricingInformation(
         pricingInformation.multiBuyPrice,
         pricingInformation.clubOnly,
         pricingInformation.automated ?: true,
-        pricingInformation.verified ?: false
+        pricingInformation.verified ?: false,
+        storeRegionsMap[retailerId]!![pricingInformation.store!!]!!
     )
 }

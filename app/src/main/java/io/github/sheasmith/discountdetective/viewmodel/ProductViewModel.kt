@@ -7,6 +7,7 @@ import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sheasmith.discountdetective.models.ShoppingListItem
+import io.github.sheasmith.discountdetective.repository.PreferencesRepository
 import io.github.sheasmith.discountdetective.repository.ProductRepository
 import io.github.sheasmith.discountdetective.repository.RetailersRepository
 import io.github.sheasmith.discountdetective.repository.ShoppingListRepository
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class ProductViewModel @Inject constructor(
     retailersRepository: RetailersRepository,
     private val productRepository: ProductRepository,
-    private val shoppingListRepository: ShoppingListRepository
+    private val shoppingListRepository: ShoppingListRepository,
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
     /**
      * The currently opened product.
@@ -32,6 +34,11 @@ class ProductViewModel @Inject constructor(
      * The current list of retailers.
      */
     val retailers: MutableStateFlow<Map<String, Retailer>> = MutableStateFlow(mapOf())
+
+    /**
+     * Users current region.
+     */
+    val region = preferencesRepository.getRegion()
 
     init {
         viewModelScope.launch {
@@ -65,9 +72,15 @@ class ProductViewModel @Inject constructor(
 
                 if (localRetailers.isNotEmpty()) {
                     localRetailerInfo.value =
-                        product.value!!.second.information!!.filter { localRetailers.contains(it.retailer) }
+                        product.value!!.second.getFilteredInformation(
+                            region.value!!,
+                            retailers.value
+                        ).filter { localRetailers.contains(it.retailer) }
                     nonLocalRetailerInfo.value =
-                        product.value!!.second.information!!.filter { !localRetailers.contains(it.retailer) }
+                        product.value!!.second.getFilteredInformation(
+                            region.value!!,
+                            retailers.value
+                        ).filter { !localRetailers.contains(it.retailer) }
                 }
             }
             // TODO: do something here
