@@ -115,6 +115,7 @@ jobs:
           releaseFiles: ${{steps.sign_app_alpha.outputs.signedReleaseFile}}
           track: internal
           status: completed
+          userFraction: 1.0
           whatsNewDirectory: whatsnew
 
       - uses: r0adkll/upload-google-play@master
@@ -126,6 +127,7 @@ jobs:
           releaseFiles: ${{steps.sign_app_beta.outputs.signedReleaseFile}}
           track: beta
           status: completed
+          userFraction: 1.0
           whatsNewDirectory: whatsnew
 
       - uses: r0adkll/upload-google-play@master
@@ -137,4 +139,5 @@ jobs:
           releaseFiles: ${{steps.sign_app_release.outputs.signedReleaseFile}}
           track: production
           status: completed
+          userFraction: 1.0
           whatsNewDirectory: whatsnew
