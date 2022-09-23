@@ -50,12 +50,19 @@ All pushes into master are automatically pushed into an alpha test track on Goog
 join this track by visiting https://play.google.com/apps/internaltest/4701662988659821470, or by
 scanning this QR code:
 
-![QR Code](https://play.google.com/apps/internaltest/4701662988659821470)
+![QR Code](https://i.imgur.com/loQCoRx.png)
 
 Github releases are automatically pushed into either a open beta or production test track, depending
 on whether the release is a pre-release or not. You can download these versions at
 the [Play Store](https://play.google.com/store/apps/details?id=io.github.sheasmith.discountdetective)
 page (once it has passed review).
+
+## Crash Logging
+
+We use Firebase Crashlytics for crash logging. This means whenever the app crashes, we get a report
+of this crash, along with some other information about the circumstances (such as Android version or
+phone brand). If you notice a crash, please create an issue, and if possible, specify a time or
+device type, so we can track down the crash more easily.
 
 ## Technical Details
 
