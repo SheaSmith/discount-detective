@@ -1,8 +1,8 @@
 package io.github.sheasmith.discountdetective.repository
 
+import androidx.lifecycle.LiveData
 import io.github.sheasmith.discountdetective.dao.ShoppingListDao
 import io.github.sheasmith.discountdetective.models.ShoppingListItem
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +23,7 @@ class ShoppingListRepository @Inject constructor(
     /**
      * A flow containing all of the product IDs, updated whenever a new item is added.
      */
-    var shoppingList: Flow<List<ShoppingListItem>> = shoppingListDao.getShoppingList()
+    var shoppingList: LiveData<List<ShoppingListItem>> = shoppingListDao.getShoppingList()
 
     /**
      * Insert a product into the shopping list
@@ -42,4 +42,12 @@ class ShoppingListRepository @Inject constructor(
     suspend fun deleteFromShoppingList(shoppingListShoppingListItem: ShoppingListItem) {
         shoppingListDao.delete(shoppingListShoppingListItem)
     }
+
+    /**
+     * @param shoppingListShoppingListItem the item to update.
+     */
+    suspend fun updateChecked(shoppingListShoppingListItem: ShoppingListItem) {
+        shoppingListDao.updateChecked(shoppingListShoppingListItem)
+    }
+
 }

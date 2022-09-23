@@ -1,5 +1,6 @@
 package io.github.sheasmith.discountdetective.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cosc345.shared.models.Retailer
@@ -10,25 +11,16 @@ import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.repository.ProductRepository
 import io.github.sheasmith.discountdetective.repository.RetailersRepository
 import io.github.sheasmith.discountdetective.repository.ShoppingListRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Holds all data associated with screen
- * + setters and getters
+ * Viewmodel for backing the shoppingListPage
  *
- * Responsible for preparing data for the screen.
- * and
- * Transform the data stored from the repo
- * from flow to LiveData to the UI
- * Ensures that everytime data changes in database, UI
- * Automatically updated
-
- * Specific:
- * need to display a list of products
- *
+ * @param productRepository The product repository which handles all products
+ * @param retailersRepository The retailers repository which handles all retailers
+ * @param shoppingListRepository The shoppingListRepositiory which handles shoppingList Items.
  */
 @HiltViewModel
 class ShoppingListViewModel @Inject constructor(
@@ -37,14 +29,28 @@ class ShoppingListViewModel @Inject constructor(
     private val retailersRepository: RetailersRepository
 ) : ViewModel() {
 
-    private val allProducts: Flow<List<ShoppingListItem>> =
+    /**
+     * All shoppingList items in the database
+     */
+    private val allProducts: LiveData<List<ShoppingListItem>> =
         shoppingListRepository.shoppingList
 
     /**
      * The current shopping list items
      */
-    val shoppingList: MutableStateFlow<List<Triple<RetailerProductInformation, StorePricingInformation, Int>>?> =
+    val shoppingList: MutableStateFlow<List<Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>>?> =
         MutableStateFlow(null)
+
+    /**
+     * Update the state of the checkbox in the shoppingList
+     * by copy then delete and insert so compose tracks changes
+     * @param item the shoppinglist item that has been checked
+     */
+    fun changeShoppingListChecked(item: ShoppingListItem) {
+        viewModelScope.launch {
+            shoppingListRepository.updateChecked(item)
+        }
+    }
 
     /**
      * The current retailers from Firebase.
@@ -57,21 +63,22 @@ class ShoppingListViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            allProducts.collect { shoppingListItems ->
-                shoppingList.value = shoppingListItems.mapNotNull { shoppingListInfo ->
-                    val product = productRepository.getProductFromID(shoppingListInfo.productId)
+            allProducts.observeForever { shoppingListItems ->
+                viewModelScope.launch {
+                    shoppingList.value = shoppingListItems.mapNotNull { shoppingListInfo ->
+                        val product = productRepository.getProductFromID(shoppingListInfo.productId)
 
-                    if (product != null) {
-                        val key =
-                            product.information!!.first { info -> info.id == shoppingListInfo.retailerProductInformationId && info.pricing!!.any { it.store == shoppingListInfo.storeId } }
-                        val value =
-                            key.pricing!!.first { it.store == shoppingListInfo.storeId }
+                        if (product != null) {
+                            val key =
+                                product.information!!.first { info -> info.id == shoppingListInfo.retailerProductInformationId && info.pricing!!.any { it.store == shoppingListInfo.storeId } }
+                            val value =
+                                key.pricing!!.first { it.store == shoppingListInfo.storeId }
 
-                        Triple(key, value, shoppingListInfo.quantity)
-                    } else {
-                        shoppingListRepository.deleteFromShoppingList(shoppingListInfo)
-
-                        null
+                            Triple(key, value, shoppingListInfo)
+                        } else {
+                            shoppingListRepository.deleteFromShoppingList(shoppingListInfo)
+                            null
+                        }
                     }
                 }
             }
@@ -113,6 +120,17 @@ class ShoppingListViewModel @Inject constructor(
     fun insert(shoppingListItem: ShoppingListItem) {
         viewModelScope.launch {
             shoppingListRepository.addToShoppingList(shoppingListItem)
+        }
+    }
+
+    /**
+     *  Delete an item from the shoppingList
+     *
+     *  @param shoppingListItem the item to delete
+     */
+    fun delete(shoppingListItem: ShoppingListItem) {
+        viewModelScope.launch {
+            shoppingListRepository.deleteFromShoppingList(shoppingListItem)
         }
     }
 

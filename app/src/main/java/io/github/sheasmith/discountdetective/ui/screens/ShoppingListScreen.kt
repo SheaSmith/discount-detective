@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -35,6 +36,7 @@ import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.StorePricingInformation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
+import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.ui.components.StatusBarLargeTopAppBar
 import io.github.sheasmith.discountdetective.viewmodel.ShoppingListViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
@@ -58,7 +60,6 @@ fun ShoppingListScreen(
 
     val retailers by viewModel.retailers.collectAsState()
     //productIDs in the shopping list
-    //TODO: No duplicates possible as have same productID
     val products by viewModel.shoppingList.collectAsState(initial = null)
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
@@ -85,7 +86,6 @@ fun ShoppingListScreen(
                 Pair(it.first.retailer!!, it.second.store!!)
             }.mapValues { it.value }
 
-
             ProductList(
                 grouped = grouped,
                 viewModel = viewModel,
@@ -108,10 +108,10 @@ fun ShoppingListScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ProductList(
-    grouped: Map<Pair<String, String>, List<Triple<RetailerProductInformation, StorePricingInformation, Int>>>,
+    grouped: Map<Pair<String, String>, List<Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>>>,
     retailers: Map<String, Retailer>,
     viewModel: ShoppingListViewModel,
-    innerPadding: PaddingValues,
+    innerPadding: PaddingValues
 ) {
     val data = remember { mutableStateOf(grouped.values.toList().flatten()) }
 
@@ -124,7 +124,6 @@ private fun ProductList(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         contentPadding = innerPadding,
-        state = state.listState,
         modifier = Modifier
             .reorderable(state)
             .detectReorderAfterLongPress(state)
@@ -150,22 +149,23 @@ private fun ProductList(
             val productsForStoreId = productsForStore.map { it.first.id }
             val intersectIds = productsForStoreId.intersect(dataIdList.toSet())
             val selection =
-                mutableListOf<Triple<RetailerProductInformation, StorePricingInformation, Int>>()
+                mutableListOf<Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>>()
             data.value.forEach {
                 if (it.first.id in intersectIds) {
                     selection.add(it)
                 }
             }
-            items(productsForStore) { product ->
+            items(productsForStore) { shoppingListItem ->
                 ReorderableItem(
                     reorderableState = state,
-                    key = product
+                    key = shoppingListItem
                 )
                 { isDragging ->
                     val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
                     ProductCard(
-                        product = product,
-                        elevation = elevation
+                        shoppingListItem = shoppingListItem,
+                        elevation = elevation,
+                        viewModel = viewModel
                     )
                 }
             }
@@ -176,21 +176,19 @@ private fun ProductList(
 
 @Composable
 private fun ProductCard(
-    product: Triple<RetailerProductInformation, StorePricingInformation, Int>,
-    elevation: State<Dp>
+    shoppingListItem: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
+    elevation: State<Dp>,
+    viewModel: ShoppingListViewModel
 ) {
-    //checkbox Checked
-    val isChecked = remember { mutableStateOf(false) }
+    var isChecked by remember { mutableStateOf(shoppingListItem.third.checked) }
+    isChecked = shoppingListItem.third.checked
 
-
-    //add this in for the correct colour
-    //tonalElevation = 2.dp
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 5.dp) //this for padding
             .shadow(elevation.value)
-            .alpha(if (isChecked.value) 0.5f else 1f),
+            .alpha(if (isChecked) 0.5f else 1f),
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent
         ),
@@ -211,13 +209,32 @@ private fun ProductCard(
                     .align(Alignment.CenterVertically)
                     .fillMaxSize(0.1f)
             )
+            // product info block
+            ProductInfo(product = shoppingListItem)
 
-            ProductInfo(product = product)
+            // delete button
+            IconButton(
+                onClick = {
+                    viewModel.delete(shoppingListItem.third)
+                },
+                modifier = Modifier
+                    .size(
+                        width = 30.dp,
+                        height = 30.dp
+                    )
+            ) {
+                Icon(
+                    Icons.Filled.Close,
+                    contentDescription = "Close"
+                )
+            }
 
             Checkbox(
-                checked = isChecked.value,
+                checked = isChecked,
                 onCheckedChange = {
-                    isChecked.value = it
+                    shoppingListItem.third.checked = it
+                    viewModel.changeShoppingListChecked(shoppingListItem.third)
+                    isChecked = it
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -227,7 +244,7 @@ private fun ProductCard(
 }
 
 @Composable
-private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricingInformation, Int>) {
+private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>) {
     AsyncImage(
         model = product.first.image,
         contentDescription = stringResource(id = R.string.content_description_product_image),
@@ -247,9 +264,7 @@ private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricing
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            // add the variant, quantity to title
-            // productInfo?.name ?: stringResource(id = R.string.placeholder)
-            text = "${product.third}x ${
+            text = "${product.third.quantity}x ${
                 arrayOf(
                     product.first.brandName,
                     product.first.name,

@@ -7,7 +7,7 @@ import io.github.sheasmith.discountdetective.models.ShoppingListItem
 /**
  * The database responsible for storing shopping list items.
  */
-@Database(entities = [ShoppingListItem::class], version = 3)
+@Database(entities = [ShoppingListItem::class], version = 6)
 abstract class ShoppingListDatabase : RoomDatabase() {
 
     /**
