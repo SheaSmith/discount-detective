@@ -180,7 +180,8 @@ private fun ProductCard(
     elevation: State<Dp>,
     viewModel: ShoppingListViewModel
 ) {
-    var isChecked by mutableStateOf(shoppingListItem.third.checked)
+    var isChecked by remember { mutableStateOf(shoppingListItem.third.checked) }
+    isChecked = shoppingListItem.third.checked
 
     Card(
         modifier = Modifier
