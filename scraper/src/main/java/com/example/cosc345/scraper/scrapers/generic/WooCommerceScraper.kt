@@ -3,6 +3,8 @@ package com.example.cosc345.scraper.scrapers.generic
 import com.example.cosc345.scraper.api.WooComAPI
 import com.example.cosc345.scraper.interfaces.Scraper
 import com.example.cosc345.scraper.models.ScraperResult
+import com.example.cosc345.shared.extensions.capitaliseNZ
+import com.example.cosc345.shared.extensions.titleCase
 import com.example.cosc345.shared.models.*
 
 
@@ -43,11 +45,11 @@ abstract class WooCommerceScraper(
             //for each product in service
             wooComService.getProducts(page)
                 .filter {
-                    it.inStock && it.categories.none { (categoryId, _) ->
+                    it.inStock && it.categories?.none { (categoryId, _) ->
                         bannedCategories.contains(
                             categoryId
                         )
-                    }
+                    } != false
                 }
                 .forEach { (wooComId, wooComName, _, onSale, _, prices, images, _, permaLink, _, attributes) ->
 
@@ -65,7 +67,7 @@ abstract class WooCommerceScraper(
                     product.pricing = retailer.stores!!.map {
                         StorePricingInformation(
                             it.id,
-                            prices.price.toInt(),
+                            prices.price.toIntOrNull() ?: (prices.price.toDouble() * 100).toInt(),
                             discountPrice = if (onSale) prices.discountPrice.toInt() else null,
                             automated = true,
                             verified = false
@@ -73,7 +75,7 @@ abstract class WooCommerceScraper(
                     }.toMutableList()
 
                     val weightCandidate =
-                        attributes.firstOrNull { it.name == "Weight" }?.terms?.first()
+                        attributes?.firstOrNull { it.name == "Weight" }?.terms?.first()
 
                     if (weightCandidate != null) {
                         val weightInGrams =
@@ -96,6 +98,9 @@ abstract class WooCommerceScraper(
                         .replace("&#8217;".toRegex(), "-")
                         .replace("&#038;".toRegex(), "-")
                         .replace("*", "")
+                        .lowercase()
+                        .titleCase()
+                        .capitaliseNZ()
                         .trim()
 
                     Units.all.forEach {
