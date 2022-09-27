@@ -30,6 +30,7 @@ class NewWorldScraper : FoodStuffsScraper(
         "New World Gardens" to Region.DUNEDIN,
         "New World Elles Road" to Region.INVERCARGILL,
         "New World Windsor" to Region.INVERCARGILL,
-        "New World Whitianga" to Region.WHITIANGA
+        "New World Whitianga" to Region.WHITIANGA,
+        "New World Mosgiel" to Region.DUNEDIN
     )
 )
