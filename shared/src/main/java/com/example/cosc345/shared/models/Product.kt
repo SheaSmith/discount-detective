@@ -28,12 +28,20 @@ data class Product(
      * @param retailers The map of retailers to determine whether a price is local or not.
      * @return A pair, with the first item being the dollar component of the price, and the second being the cents and the sale type.
      */
-    fun getBestLocalPrice(retailers: Map<String, Retailer>): Pair<String, String>? {
-        val localRetailers = retailers.filter { it.value.local == true }.keys
+    fun getBestLocalPrice(retailers: Map<String, Retailer>, region: String): Pair<String, String>? {
+        val localRetailers =
+            retailers.filter {
+                it.value.local == true && it.value.stores?.any { store ->
+                    store.region.equals(
+                        region,
+                        true
+                    )
+                } == true
+            }.keys
 
         val localPrices = information!!.filter { localRetailers.contains(it.retailer) }
 
-        return findLowestPrice(localPrices)
+        return findLowestPrice(localPrices, retailers, region)
     }
 
     /**
@@ -42,12 +50,23 @@ data class Product(
      * @param retailers The map of retailers to determine whether a price is local or not.
      * @return A pair, with the first item being the dollar component of the price, and the second being the cents and the sale type.
      */
-    fun getBestNonLocalPrice(retailers: Map<String, Retailer>): Pair<String, String>? {
-        val localRetailers = retailers.filter { it.value.local != true }.keys
+    fun getBestNonLocalPrice(
+        retailers: Map<String, Retailer>,
+        region: String
+    ): Pair<String, String>? {
+        val localRetailers =
+            retailers.filter {
+                it.value.local != true && it.value.stores?.any { store ->
+                    store.region.equals(
+                        region,
+                        true
+                    )
+                } == true
+            }.keys
 
         val nonLocalPrices = information!!.filter { localRetailers.contains(it.retailer) }
 
-        return findLowestPrice(nonLocalPrices)
+        return findLowestPrice(nonLocalPrices, retailers, region)
     }
 
     /**
@@ -57,10 +76,22 @@ data class Product(
      * @return A pair, with the dollars component (e.g. "$10" for $10.00/kg) as the first value, and
      * the cents component (for example, ".00/kg" for "$10.00/kg) as the second value.
      */
-    private fun findLowestPrice(products: List<RetailerProductInformation>): Pair<String, String>? {
+    private fun findLowestPrice(
+        products: List<RetailerProductInformation>,
+        retailers: Map<String, Retailer>,
+        region: String
+    ): Pair<String, String>? {
         if (products.isNotEmpty()) {
             val lowestPricePair =
-                products.flatMap { productInfo -> productInfo.pricing!!.map { it to productInfo } }
+                products.flatMap { productInfo ->
+                    productInfo.pricing!!.filter { (store, _, _, _, _, _, _, _) ->
+                        retailers[productInfo.retailer]!!.stores?.first { (id, _, _, _, _, _, _) -> id == store }!!.region.equals(
+                            region,
+                            true
+                        )
+                    }
+                        .map { it to productInfo }
+                }
                     .minBy { it.first.getPrice(it.second) }
 
             return lowestPricePair.first.getDisplayPrice(lowestPricePair.second)
