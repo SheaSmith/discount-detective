@@ -64,7 +64,14 @@ data class Product(
                 } == true
             }.keys
 
-        val nonLocalPrices = information!!.filter { localRetailers.contains(it.retailer) }
+        val nonLocalPrices = information!!.filter {
+            localRetailers.contains(it.retailer) && it.pricing!!.any { (pricingStore) ->
+                retailers[it.retailer]!!.stores!!.first { (id) -> id == pricingStore }.region.equals(
+                    region,
+                    true
+                )
+            }
+        }
 
         return findLowestPrice(nonLocalPrices, retailers, region)
     }
