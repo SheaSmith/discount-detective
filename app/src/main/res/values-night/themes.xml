@@ -5,7 +5,7 @@
         <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/md_theme_dark_onPrimary</item>
+        <item name="colorSecondary">@color/md_theme_dark_primary</item>
         <item name="colorOnSecondary">@color/md_theme_dark_primaryContainer</item>
         <item name="colorSecondaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
         <item name="colorOnSecondaryContainer">@color/md_theme_dark_onPrimary</item>
@@ -30,5 +30,6 @@
 
         <item name="preferenceTheme">@style/Theme.DiscountDetective.PreferenceThemeOverlay</item>
         <item name="switchStyle">@style/SwitchStyle</item>
+        <item name="alertDialogTheme">@style/DialogStyle</item>
     </style>
 </resources>
