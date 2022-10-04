@@ -74,13 +74,9 @@ data class SearchableProduct(
         private fun calculateScore(product: Product): Int {
             val bestInformation = product.getBestInformation()
 
-            val wordScore = 100 - ((bestInformation.name?.count { it == ' ' } ?: 0) +
+            return 100 - ((bestInformation.name?.count { it == ' ' } ?: 0) +
                     (bestInformation.brandName?.count { it == ' ' } ?: 0) +
                     (bestInformation.variant?.count { it == ' ' } ?: 0))
-
-            val retailersScore = product.information!!.size * 3
-
-            return wordScore + retailersScore
         }
     }
 }
