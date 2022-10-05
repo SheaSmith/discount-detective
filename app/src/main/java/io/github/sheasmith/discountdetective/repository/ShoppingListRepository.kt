@@ -28,10 +28,20 @@ class ShoppingListRepository @Inject constructor(
     /**
      * Insert a product into the shopping list
      *
-     * @param shoppingListShoppingListItem The shopping list item to add to the database.
+     * @param shoppingListItem The shopping list item to add to the database.
      */
-    suspend fun addToShoppingList(shoppingListShoppingListItem: ShoppingListItem) {
-        shoppingListDao.insert(shoppingListShoppingListItem)
+    suspend fun addToShoppingList(shoppingListItem: ShoppingListItem) {
+        val existingItem = shoppingListDao.getShoppingListItem(
+            shoppingListItem.productId,
+            shoppingListItem.retailerProductInformationId,
+            shoppingListItem.storeId
+        )
+        if (existingItem == null) {
+            shoppingListDao.insert(shoppingListItem)
+        } else {
+            existingItem.quantity += shoppingListItem.quantity
+            shoppingListDao.update(existingItem)
+        }
     }
 
     /**
@@ -47,7 +57,7 @@ class ShoppingListRepository @Inject constructor(
      * @param shoppingListShoppingListItem the item to update.
      */
     suspend fun updateChecked(shoppingListShoppingListItem: ShoppingListItem) {
-        shoppingListDao.updateChecked(shoppingListShoppingListItem)
+        shoppingListDao.update(shoppingListShoppingListItem)
     }
 
 }
