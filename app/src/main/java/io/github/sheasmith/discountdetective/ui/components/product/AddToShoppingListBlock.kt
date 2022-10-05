@@ -74,7 +74,11 @@ fun AddToShoppingListBlock(
             region = region
         )
 
-        QuantitySelector(quantity = quantity, setQuantity = { quantity = it }, loading = loading)
+        QuantitySelector(quantity = quantity, setQuantity = {
+            if ((it ?: 0) <= 10000) {
+                quantity = it
+            }
+        }, loading = loading)
 
         Spacer(modifier = Modifier.weight(1.0f))
 
@@ -283,7 +287,8 @@ private fun RowScope.QuantitySelector(
                         highlight = PlaceholderHighlight.fade()
                     )
                     .height(50.dp),
-                shape = leftShape
+                shape = leftShape,
+                enabled = quantity == null || quantity < 10000
             ) {
                 Icon(Icons.Rounded.Add, stringResource(id = R.string.increase_quantity))
             }
