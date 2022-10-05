@@ -54,9 +54,11 @@ class ShoppingListRepository @Inject constructor(
     }
 
     /**
+     * Update a shopping list item.
+     *
      * @param shoppingListShoppingListItem the item to update.
      */
-    suspend fun updateChecked(shoppingListShoppingListItem: ShoppingListItem) {
+    suspend fun update(shoppingListShoppingListItem: ShoppingListItem) {
         shoppingListDao.update(shoppingListShoppingListItem)
     }
 
