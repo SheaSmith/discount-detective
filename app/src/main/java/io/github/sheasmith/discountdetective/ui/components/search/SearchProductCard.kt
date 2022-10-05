@@ -58,7 +58,7 @@ fun SearchProductCard(
 ) {
     val product = productPair?.second
 
-    Card(
+    ElevatedCard(
         onClick = {
             if (product != null) {
                 navController.navigate("products/${productPair.first}")
@@ -69,37 +69,49 @@ fun SearchProductCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = CardDefaults.elevatedCardColors(
-            disabledContainerColor = Color.Transparent
+            disabledContainerColor = Color.Transparent,
+            containerColor = MaterialTheme.colorScheme.background
         ),
-        elevation = if (loading) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation(),
-        shape = CardDefaults.elevatedShape
+        elevation = CardDefaults.cardElevation(),
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Contents(
-                product = product,
-                retailers = retailers,
-                loading = loading
-            )
+        Column {
+            ElevatedCard(
+                colors = CardDefaults.elevatedCardColors(
+                    disabledContainerColor = Color.Transparent
+                ),
+                elevation = if (loading) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation(),
+            ) {
+                Box(
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    Contents(
+                        product = product, retailers = retailers, loading = loading
+                    )
+                }
+            }
 
-            AddToShoppingListBlock(
-                snackbarHostState,
-                productPair,
-                retailers,
-                loading,
-                onAddToShoppingList,
-                coroutineScope,
-                region
-            )
-
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                AddToShoppingListBlock(
+                    snackbarHostState,
+                    productPair,
+                    retailers,
+                    loading,
+                    onAddToShoppingList,
+                    coroutineScope,
+                    region
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun Contents(
-    product: Product?,
-    retailers: Map<String, Retailer>,
-    loading: Boolean
+    product: Product?, retailers: Map<String, Retailer>, loading: Boolean
 ) {
     val info = product?.getBestInformation()
     val bestLocalPrice = product?.getBestLocalPrice(retailers)
@@ -150,8 +162,7 @@ private fun Contents(
 
                 val minimumHeightState = remember { MinimumHeightState() }
                 val minimumHeightStateModifier = Modifier.minimumHeightModifier(
-                    minimumHeightState,
-                    density
+                    minimumHeightState, density
                 )
 
                 SearchProductPricingBlock(
