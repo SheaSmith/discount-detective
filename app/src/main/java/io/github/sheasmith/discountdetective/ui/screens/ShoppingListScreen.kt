@@ -236,21 +236,23 @@ private fun ProductCard(
                         Text(text = "Edit item preferences")
                     },
                     text = {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.padding(40.dp)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            QuantitySelector(
-                                quantity = quantity,
-                                setQuantity = {
-                                    if (it != null) {
-                                        shoppingListItem.third.quantity = it
-                                        quantity = it
-                                    }
-                                    viewModel.updateShoppingListItem(shoppingListItem.third)
-                                },
-                                loading = false,
-                            )
+                            Text(text = "Select Quantity")
+                            Row {
+                                QuantitySelector(
+                                    quantity = quantity,
+                                    setQuantity = {
+                                        if (it != null) {
+                                            shoppingListItem.third.quantity = it
+                                            quantity = it
+                                        }
+                                        viewModel.updateShoppingListItem(shoppingListItem.third)
+                                    },
+                                    loading = false,
+                                )
+                            }
                         }
                     },
                     confirmButton = {
