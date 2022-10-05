@@ -1,5 +1,6 @@
 package io.github.sheasmith.discountdetective.ui.components.search
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,28 +59,29 @@ fun SearchProductCard(
 ) {
     val product = productPair?.second
 
-    ElevatedCard(
-        onClick = {
-            if (product != null) {
-                navController.navigate("products/${productPair.first}")
-            }
-        },
-        enabled = !loading,
+    OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = CardDefaults.elevatedCardColors(
             disabledContainerColor = Color.Transparent,
-            containerColor = MaterialTheme.colorScheme.background
         ),
-        elevation = CardDefaults.cardElevation(),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column {
             ElevatedCard(
+                onClick = {
+                    if (product != null) {
+                        navController.navigate("products/${productPair.first}")
+                    }
+                },
+                enabled = !loading,
                 colors = CardDefaults.elevatedCardColors(
                     disabledContainerColor = Color.Transparent
                 ),
-                elevation = if (loading) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation(),
+                elevation = if (loading) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation(
+                    defaultElevation = 4.dp
+                )
             ) {
                 Box(
                     modifier = Modifier.padding(8.dp),
