@@ -26,7 +26,7 @@ import io.github.sheasmith.discountdetective.R
  * is pressed.
  */
 @Composable
-fun SearchError(
+fun ErrorUi(
     @StringRes title: Int,
     @StringRes description: Int,
     icon: ImageVector,

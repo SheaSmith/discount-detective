@@ -46,4 +46,5 @@
     <string name="your_shopping_list">Your Shopping List</string>
     <string name="empty_shopping_list">Empty Shopping List</string>
     <string name="drag_handle">Drag handle</string>
+    <string name="empty_shopping_list_description">Your shopping list is currently empty. Add some items to it from the search page.</string>
 </resources>
