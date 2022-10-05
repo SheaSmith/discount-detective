@@ -11,9 +11,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -222,36 +221,53 @@ private fun ProductCard(
                 onClick = { openDialog.value = true }
             ) {
                 Icon(
-                    Icons.Filled.Close,
+                    Icons.Filled.Edit,
                     contentDescription = "Dialog"
                 )
             }
-            // edit button
+            // edit dialog
             if (openDialog.value) {
                 AlertDialog(
                     onDismissRequest = {
-                        // Dismiss the dialog when the user clicks outside the dialog or on the back
-                        // button. If you want to disable that functionality, simply use an empty
-                        // onDismissRequest.
                         openDialog.value = false
                     },
-                    icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+                    icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
                     title = {
-                        Text(text = "Title")
+                        Text(text = "Edit item preferences")
                     },
                     text = {
-                        Text(
-                            "Update or delete a product "
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(40.dp)
+                        ) {
+                            QuantitySelector(
+                                quantity = quantity,
+                                setQuantity = {
+                                    if (it != null) {
+                                        shoppingListItem.third.quantity = it
+                                        quantity = it
+                                    }
+                                    viewModel.updateShoppingListItem(shoppingListItem.third)
+                                },
+                                loading = false,
+                            )
+                        }
                     },
                     confirmButton = {
+                        TextButton(
+                            onClick = {
+                                openDialog.value = false
+                            }
+                        ) {
+                            Text("Confirm")
+                        }
                         TextButton(
                             onClick = {
                                 openDialog.value = false
                                 viewModel.delete(shoppingListItem.third)
                             }
                         ) {
-                            Text("Confirm Deletion")
+                            Text("Delete")
                         }
                     },
                     dismissButton = {
@@ -262,20 +278,7 @@ private fun ProductCard(
                         ) {
                             Text("Dismiss")
                         }
-
-                        QuantitySelector(
-                            quantity = quantity,
-                            setQuantity = {
-                                if (it != null) {
-                                    shoppingListItem.third.quantity = it
-                                    quantity = it
-                                }
-                                viewModel.updateShoppingListItem(shoppingListItem.third)
-                            },
-                            loading = false
-                        )
-
-                    }
+                    },
                 )
             }
 
