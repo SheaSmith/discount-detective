@@ -65,8 +65,8 @@ data class Product(
             }.keys
 
         val nonLocalPrices = information!!.filter {
-            localRetailers.contains(it.retailer) && it.pricing!!.any { (pricingStore) ->
-                retailers[it.retailer]!!.stores!!.first { (id) -> id == pricingStore }.region.equals(
+            localRetailers.contains(it.retailer) && it.pricing!!.any { (storeId, _, _, _, _, _, _, _) ->
+                retailers[it.retailer]!!.stores!!.first { (id, _, _, _, _, _, _) -> id == storeId }.region.equals(
                     region,
                     true
                 )
@@ -89,19 +89,25 @@ data class Product(
         region: String
     ): Pair<String, String>? {
         if (products.isNotEmpty()) {
-            val lowestPricePair =
-                products.flatMap { productInfo ->
-                    productInfo.pricing!!.filter { (store, _, _, _, _, _, _, _) ->
-                        retailers[productInfo.retailer]!!.stores?.first { (id, _, _, _, _, _, _) -> id == store }!!.region.equals(
-                            region,
-                            true
-                        )
+            try {
+                val lowestPricePair =
+                    products.flatMap { productInfo ->
+                        productInfo.pricing!!.filter { (store, _, _, _, _, _, _, _) ->
+                            retailers[productInfo.retailer]!!.stores?.first { (id, _, _, _, _, _, _) -> id == store }!!.region.equals(
+                                region,
+                                true
+                            )
+                        }
+                            .map { it to productInfo }
                     }
-                        .map { it to productInfo }
-                }
-                    .minBy { it.first.getPrice(it.second) }
+                        .minBy { it.first.getPrice(it.second) }
 
-            return lowestPricePair.first.getDisplayPrice(lowestPricePair.second)
+                return lowestPricePair.first.getDisplayPrice(lowestPricePair.second)
+
+            } catch (e: NoSuchElementException) {
+                return null
+            }
+
         }
 
         return null
