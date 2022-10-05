@@ -28,7 +28,8 @@ class WarehouseScraper : Scraper() {
 
         val storeWhitelist = mapOf(
             "South Dunedin" to Region.DUNEDIN,
-            "Invercargill" to Region.INVERCARGILL
+            "Invercargill" to Region.INVERCARGILL,
+            "Whitianga" to Region.WHITIANGA
         )
         warehouseService.getStores().stores.forEach { (branchId, storeName, latitude, longitude, _, address) ->
             val name = storeName.split(" - ").first().trim()
