@@ -78,7 +78,8 @@ fun SearchProductCard(
             Contents(
                 product = product,
                 retailers = retailers,
-                loading = loading
+                loading = loading,
+                region = region
             )
 
             AddToShoppingListBlock(
@@ -99,11 +100,12 @@ fun SearchProductCard(
 private fun Contents(
     product: Product?,
     retailers: Map<String, Retailer>,
+    region: String,
     loading: Boolean
 ) {
     val info = product?.getBestInformation()
-    val bestLocalPrice = product?.getBestLocalPrice(retailers)
-    val bestNonLocalPrice = product?.getBestNonLocalPrice(retailers)
+    val bestLocalPrice = product?.getBestLocalPrice(retailers, region)
+    val bestNonLocalPrice = product?.getBestNonLocalPrice(retailers, region)
 
     Row(
         modifier = Modifier
