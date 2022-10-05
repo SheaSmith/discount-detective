@@ -266,6 +266,7 @@ private fun RowScope.QuantitySelector(
             .align(Alignment.CenterVertically)
     ) {
 
+
         CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
             val leftShape = RoundedCornerShape(
                 topStart = 50f,
@@ -275,9 +276,11 @@ private fun RowScope.QuantitySelector(
             )
             FilledTonalIconButton(
                 onClick = {
-                    setQuantity(
-                        quantity?.plus(1) ?: 1
-                    )
+                    if (quantity == null) {
+                        setQuantity(1)
+                    } else if (quantity > 1) {
+                        setQuantity(quantity.minus(1))
+                    }
                 },
                 modifier = Modifier
                     .placeholder(
@@ -288,9 +291,12 @@ private fun RowScope.QuantitySelector(
                     )
                     .height(50.dp),
                 shape = leftShape,
-                enabled = quantity == null || quantity < 10000
+                enabled = quantity == null || quantity > 1
             ) {
-                Icon(Icons.Rounded.Add, stringResource(id = R.string.increase_quantity))
+                Icon(
+                    Icons.Rounded.Remove,
+                    stringResource(id = R.string.decrease_quantity)
+                )
             }
         }
 
@@ -345,11 +351,9 @@ private fun RowScope.QuantitySelector(
             )
             FilledTonalIconButton(
                 onClick = {
-                    if (quantity == null) {
-                        setQuantity(1)
-                    } else if (quantity > 1) {
-                        setQuantity(quantity.minus(1))
-                    }
+                    setQuantity(
+                        quantity?.plus(1) ?: 1
+                    )
                 },
                 modifier = Modifier
                     .placeholder(
@@ -360,12 +364,9 @@ private fun RowScope.QuantitySelector(
                     )
                     .height(50.dp),
                 shape = rightShape,
-                enabled = quantity == null || quantity > 1
+                enabled = quantity == null || quantity < 10000
             ) {
-                Icon(
-                    Icons.Rounded.Remove,
-                    stringResource(id = R.string.decrease_quantity)
-                )
+                Icon(Icons.Rounded.Add, stringResource(id = R.string.increase_quantity))
             }
         }
     }
