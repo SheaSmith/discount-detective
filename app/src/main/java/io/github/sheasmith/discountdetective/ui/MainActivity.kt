@@ -33,6 +33,8 @@ import kotlinx.coroutines.flow.stateIn
 class MainActivity : AppCompatActivity() {
     /**
      * The function called when the activity is created.
+     *
+     * @param savedInstanceState The saved instance state.
      */
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @ExperimentalGetImage
