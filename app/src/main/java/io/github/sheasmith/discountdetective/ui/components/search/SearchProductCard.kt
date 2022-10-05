@@ -87,7 +87,8 @@ fun SearchProductCard(
                     modifier = Modifier.padding(8.dp),
                 ) {
                     Contents(
-                        product = product, retailers = retailers, loading = loading
+                        product = product, retailers = retailers, loading = loading,
+                        region = region
                     )
                 }
             }
@@ -113,11 +114,14 @@ fun SearchProductCard(
 
 @Composable
 private fun Contents(
-    product: Product?, retailers: Map<String, Retailer>, loading: Boolean
+    product: Product?,
+    retailers: Map<String, Retailer>,
+    region: String,
+    loading: Boolean
 ) {
     val info = product?.getBestInformation()
-    val bestLocalPrice = product?.getBestLocalPrice(retailers)
-    val bestNonLocalPrice = product?.getBestNonLocalPrice(retailers)
+    val bestLocalPrice = product?.getBestLocalPrice(retailers, region)
+    val bestNonLocalPrice = product?.getBestNonLocalPrice(retailers, region)
 
     Row(
         modifier = Modifier

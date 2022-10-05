@@ -48,7 +48,7 @@ class ShoppingListViewModel @Inject constructor(
      */
     fun changeShoppingListChecked(item: ShoppingListItem) {
         viewModelScope.launch {
-            shoppingListRepository.updateChecked(item)
+            shoppingListRepository.update(item)
         }
     }
 

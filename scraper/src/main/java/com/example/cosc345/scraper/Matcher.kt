@@ -6,9 +6,7 @@ import com.example.cosc345.scraper.scrapers.foodstuffs.NewWorldScraper
 import com.example.cosc345.scraper.scrapers.foodstuffs.PakNSaveScraper
 import com.example.cosc345.scraper.scrapers.myfoodlink.FreshChoiceScraper
 import com.example.cosc345.scraper.scrapers.myfoodlink.SuperValueScraper
-import com.example.cosc345.scraper.scrapers.shopify.LeckiesButcheryScraper
-import com.example.cosc345.scraper.scrapers.shopify.PrincesStreetButcherScraper
-import com.example.cosc345.scraper.scrapers.shopify.YogijisFoodMartScraper
+import com.example.cosc345.scraper.scrapers.shopify.*
 import com.example.cosc345.scraper.scrapers.wixstores.SpeltBakeryScraper
 import com.example.cosc345.scraper.scrapers.woocommerce.*
 import com.example.cosc345.shared.models.Product
@@ -49,7 +47,11 @@ class Matcher {
             FourSquareScraper(),
             RobertsonsMeatsScraper(),
             VeggieBoysScraper(),
-            WarehouseScraper()
+            WarehouseScraper(),
+            CompleatWellnessScraper(),
+            PrimeRangeFreshScraper(),
+            KingsFishMarketScraper(),
+            TastiBitzScraper()
         )
 
         val retailers = mutableMapOf<String, Retailer>()
