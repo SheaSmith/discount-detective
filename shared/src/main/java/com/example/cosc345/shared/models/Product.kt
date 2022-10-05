@@ -26,6 +26,7 @@ data class Product(
      * Get the best local price for a particular product.
      *
      * @param retailers The map of retailers to determine whether a price is local or not.
+     * @param region The users current region.
      * @return A pair, with the first item being the dollar component of the price, and the second being the cents and the sale type.
      */
     fun getBestLocalPrice(retailers: Map<String, Retailer>, region: String): Pair<String, String>? {
@@ -48,6 +49,7 @@ data class Product(
      * Get the best non-local price for a particular product.
      *
      * @param retailers The map of retailers to determine whether a price is local or not.
+     * @param region The users current region.
      * @return A pair, with the first item being the dollar component of the price, and the second being the cents and the sale type.
      */
     fun getBestNonLocalPrice(
@@ -80,6 +82,8 @@ data class Product(
      * Find the lowest prices based on a filtered subset of the products for this product.
      *
      * @param products The products to find the lowest price of.
+     * @param retailers The map of all retailers.
+     * @param region The users current region.
      * @return A pair, with the dollars component (e.g. "$10" for $10.00/kg) as the first value, and
      * the cents component (for example, ".00/kg" for "$10.00/kg) as the second value.
      */
