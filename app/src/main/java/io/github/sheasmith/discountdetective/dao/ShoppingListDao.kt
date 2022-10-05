@@ -35,5 +35,19 @@ interface ShoppingListDao {
      * @param shoppingListItem item to be updated
      */
     @Update
-    suspend fun updateChecked(shoppingListItem: ShoppingListItem)
+    suspend fun update(shoppingListItem: ShoppingListItem)
+
+    /**
+     * Get an item from the shopping list, if it exists.
+     * @param productId The ID of the product in the shopping list.
+     * @param retailerProductInformationId The retailer product information ID of the product.
+     * @param storeId The ID of the store.
+     * @return The shopping list item, if it exists.
+     */
+    @Query("SELECT * FROM shopping_list WHERE productId = :productId AND retailerProductInformationId = :retailerProductInformationId AND storeId = :storeId")
+    suspend fun getShoppingListItem(
+        productId: String,
+        retailerProductInformationId: String,
+        storeId: String
+    ): ShoppingListItem?
 }

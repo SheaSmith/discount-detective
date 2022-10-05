@@ -30,7 +30,7 @@ data class ShoppingListItem(
     /**
      * The quantity added to the shopping list.
      */
-    val quantity: Int,
+    var quantity: Int,
 
     /**
      * If the item has been checked in the shopping list
