@@ -254,7 +254,7 @@ private fun AddToShoppingListDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RowScope.QuantitySelector(
+fun RowScope.QuantitySelector(
     quantity: Int?,
     setQuantity: (Int?) -> Unit,
     loading: Boolean

@@ -39,6 +39,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.ui.components.StatusBarLargeTopAppBar
+import io.github.sheasmith.discountdetective.ui.components.product.QuantitySelector
 import io.github.sheasmith.discountdetective.viewmodel.ShoppingListViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
@@ -186,6 +187,8 @@ private fun ProductCard(
 
     val openDialog = remember { mutableStateOf(false) }
 
+    var quantity by remember { mutableStateOf(shoppingListItem.third.quantity) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -259,13 +262,19 @@ private fun ProductCard(
                         ) {
                             Text("Dismiss")
                         }
-                        TextButton(
-                            onClick = {
-                                openDialog.value = false
-                            }
-                        ) {
-                            Text(text = "Edit")
-                        }
+
+                        QuantitySelector(
+                            quantity = quantity,
+                            setQuantity = {
+                                if (it != null) {
+                                    shoppingListItem.third.quantity = it
+                                    quantity = it
+                                }
+                                viewModel.updateShoppingListItem(shoppingListItem.third)
+                            },
+                            loading = false
+                        )
+
                     }
                 )
             }
@@ -274,7 +283,7 @@ private fun ProductCard(
                 checked = isChecked,
                 onCheckedChange = {
                     shoppingListItem.third.checked = it
-                    viewModel.changeShoppingListChecked(shoppingListItem.third)
+                    viewModel.updateShoppingListItem(shoppingListItem.third)
                     isChecked = it
                 },
                 modifier = Modifier
