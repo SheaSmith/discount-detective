@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -183,6 +184,8 @@ private fun ProductCard(
     var isChecked by remember { mutableStateOf(shoppingListItem.third.checked) }
     isChecked = shoppingListItem.third.checked
 
+    val openDialog = remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,20 +215,58 @@ private fun ProductCard(
             // product info block
             ProductInfo(product = shoppingListItem)
 
-            // delete button
             IconButton(
-                onClick = {
-                    viewModel.delete(shoppingListItem.third)
-                },
-                modifier = Modifier
-                    .size(
-                        width = 30.dp,
-                        height = 30.dp
-                    )
+                onClick = { openDialog.value = true }
             ) {
                 Icon(
                     Icons.Filled.Close,
-                    contentDescription = "Close"
+                    contentDescription = "Dialog"
+                )
+            }
+            // edit button
+            if (openDialog.value) {
+                AlertDialog(
+                    onDismissRequest = {
+                        // Dismiss the dialog when the user clicks outside the dialog or on the back
+                        // button. If you want to disable that functionality, simply use an empty
+                        // onDismissRequest.
+                        openDialog.value = false
+                    },
+                    icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+                    title = {
+                        Text(text = "Title")
+                    },
+                    text = {
+                        Text(
+                            "Update or delete a product "
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                openDialog.value = false
+                                viewModel.delete(shoppingListItem.third)
+                            }
+                        ) {
+                            Text("Confirm Deletion")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                openDialog.value = false
+                            }
+                        ) {
+                            Text("Dismiss")
+                        }
+                        TextButton(
+                            onClick = {
+                                openDialog.value = false
+                            }
+                        ) {
+                            Text(text = "Edit")
+                        }
+                    }
                 )
             }
 
