@@ -1,5 +1,6 @@
 package io.github.sheasmith.discountdetective.ui.components.search
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,39 +59,55 @@ fun SearchProductCard(
 ) {
     val product = productPair?.second
 
-    Card(
-        onClick = {
-            if (product != null) {
-                navController.navigate("products/${productPair.first}")
-            }
-        },
-        enabled = !loading,
+    OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = CardDefaults.elevatedCardColors(
-            disabledContainerColor = Color.Transparent
+            disabledContainerColor = Color.Transparent,
         ),
-        elevation = if (loading) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation(),
-        shape = CardDefaults.elevatedShape
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Contents(
-                product = product,
-                retailers = retailers,
-                loading = loading
-            )
+        Column {
+            ElevatedCard(
+                onClick = {
+                    if (product != null) {
+                        navController.navigate("products/${productPair.first}")
+                    }
+                },
+                enabled = !loading,
+                colors = CardDefaults.elevatedCardColors(
+                    disabledContainerColor = Color.Transparent
+                ),
+                elevation = if (loading) CardDefaults.cardElevation() else CardDefaults.elevatedCardElevation(
+                    defaultElevation = 4.dp
+                )
+            ) {
+                Box(
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    Contents(
+                        product = product, retailers = retailers, loading = loading,
+                        region = region
+                    )
+                }
+            }
 
-            AddToShoppingListBlock(
-                snackbarHostState,
-                productPair,
-                retailers,
-                loading,
-                onAddToShoppingList,
-                coroutineScope,
-                region
-            )
-
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                AddToShoppingListBlock(
+                    snackbarHostState,
+                    productPair,
+                    retailers,
+                    loading,
+                    onAddToShoppingList,
+                    coroutineScope,
+                    region
+                )
+            }
         }
     }
 }
@@ -99,11 +116,12 @@ fun SearchProductCard(
 private fun Contents(
     product: Product?,
     retailers: Map<String, Retailer>,
+    region: String,
     loading: Boolean
 ) {
     val info = product?.getBestInformation()
-    val bestLocalPrice = product?.getBestLocalPrice(retailers)
-    val bestNonLocalPrice = product?.getBestNonLocalPrice(retailers)
+    val bestLocalPrice = product?.getBestLocalPrice(retailers, region)
+    val bestNonLocalPrice = product?.getBestNonLocalPrice(retailers, region)
 
     Row(
         modifier = Modifier
@@ -150,8 +168,7 @@ private fun Contents(
 
                 val minimumHeightState = remember { MinimumHeightState() }
                 val minimumHeightStateModifier = Modifier.minimumHeightModifier(
-                    minimumHeightState,
-                    density
+                    minimumHeightState, density
                 )
 
                 SearchProductPricingBlock(
