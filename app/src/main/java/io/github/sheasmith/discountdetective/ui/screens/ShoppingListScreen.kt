@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.rounded.RemoveShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.ui.components.StatusBarLargeTopAppBar
+import io.github.sheasmith.discountdetective.ui.components.search.ErrorUi
 import io.github.sheasmith.discountdetective.viewmodel.ShoppingListViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
@@ -93,14 +95,13 @@ fun ShoppingListScreen(
                 retailers = retailers
             )
         } else {
-            Text(
-                text = stringResource(id = R.string.empty_shopping_list),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                fontWeight = FontWeight.Bold
-            )
+            Box(modifier = Modifier.padding(innerPadding)) {
+                ErrorUi(
+                    title = R.string.empty_shopping_list,
+                    description = R.string.empty_shopping_list_description,
+                    icon = Icons.Rounded.RemoveShoppingCart
+                )
+            }
         }
     }
 }
