@@ -203,7 +203,7 @@ private fun ProductCard(
         Row(
             modifier = Modifier
                 .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -341,7 +341,8 @@ private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricing
                     .joinToString(" ")
             }",
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleSmall
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.width(300.dp)
         )
 
         val price = product.second.getDisplayPrice(product.first)
