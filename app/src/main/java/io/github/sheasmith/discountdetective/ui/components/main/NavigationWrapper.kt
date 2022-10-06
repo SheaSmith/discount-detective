@@ -63,7 +63,8 @@ fun NavigationWrapper(
                     )
                 }
             },
-            drawerState = drawerState
+            drawerState = drawerState,
+            gesturesEnabled = navigationType != NavigationType.BOTTOM_NAVIGATION
         ) {
             MainContent(
                 navController,
