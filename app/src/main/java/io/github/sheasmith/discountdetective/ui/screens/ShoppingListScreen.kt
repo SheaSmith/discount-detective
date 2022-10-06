@@ -229,6 +229,7 @@ private fun ProductCard(
                 editDialog(shoppingListItem, openDialog, viewModel)
             }
 
+
             Checkbox(
                 checked = isChecked,
                 onCheckedChange = {
@@ -257,15 +258,13 @@ private fun editDialog(
         },
         icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
         title = {
-            Text(text = "Edit Item Preferences")
-        },
-        text = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(text = "Select Quantity")
                 Row(
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     QuantitySelector(
