@@ -271,10 +271,8 @@ private fun editDialog(
                         quantity = quantity,
                         setQuantity = {
                             if (it != null) {
-                                shoppingListItem.third.quantity = it
                                 quantity = it
                             }
-                            viewModel.updateShoppingListItem(shoppingListItem.third)
                         },
                         loading = false,
                     )
@@ -285,6 +283,8 @@ private fun editDialog(
             TextButton(
                 onClick = {
                     openDialog.value = false
+                    shoppingListItem.third.quantity = quantity
+                    viewModel.updateShoppingListItem(shoppingListItem.third)
                 }
             ) {
                 Text("Confirm")
@@ -295,7 +295,7 @@ private fun editDialog(
                     viewModel.delete(shoppingListItem.third)
                 }
             ) {
-                Text("Delete")
+                Text("Delete item")
             }
         },
         dismissButton = {
