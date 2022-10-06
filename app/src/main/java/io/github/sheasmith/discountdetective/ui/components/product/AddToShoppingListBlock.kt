@@ -302,7 +302,7 @@ fun RowScope.QuantitySelector(
 
         Box(
             modifier = Modifier
-                .fillMaxHeight()
+                .height(50.dp)
                 .background(MaterialTheme.colorScheme.surface)
                 .placeholder(
                     visible = loading,
