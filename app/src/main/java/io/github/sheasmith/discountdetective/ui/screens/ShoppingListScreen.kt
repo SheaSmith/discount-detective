@@ -258,11 +258,27 @@ private fun editDialog(
         },
         icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
         title = {
+            Text(text = "Adjust Quantity")
+        },
+        text = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .padding(10.dp)
             ) {
-                Text(text = "Modify Quantity")
+                Text(
+                    text = " Adjust the quantity of ${
+                        arrayOf(
+                            shoppingListItem.first.brandName,
+                            shoppingListItem.first.name,
+                            shoppingListItem.first.variant,
+                            shoppingListItem.first.quantity
+                        ).filterNotNull()
+                            .joinToString(" ")
+                    }",
+                    modifier = Modifier.padding(10.dp)
+                )
                 Row(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
@@ -289,6 +305,10 @@ private fun editDialog(
             ) {
                 Text("Confirm")
             }
+
+        },
+        dismissButton = {
+
             TextButton(
                 onClick = {
                     openDialog.value = false
@@ -297,14 +317,12 @@ private fun editDialog(
             ) {
                 Text("Delete item")
             }
-        },
-        dismissButton = {
             TextButton(
                 onClick = {
                     openDialog.value = false
                 }
             ) {
-                Text("Dismiss")
+                Text("Cancel")
             }
         },
     )
