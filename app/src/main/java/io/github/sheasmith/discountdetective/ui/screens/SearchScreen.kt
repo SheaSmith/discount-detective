@@ -4,6 +4,7 @@ package io.github.sheasmith.discountdetective.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChatBubble
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material.icons.rounded.SignalWifiOff
@@ -23,8 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +37,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import coil.compose.AsyncImage
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.ui.Navigation
@@ -133,6 +138,8 @@ fun SearchScreen(
             )
         }
     ) { innerPadding ->
+
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(
@@ -164,6 +171,8 @@ fun SearchScreen(
                 indexingCard(hasIndexed)
 
                 if (loading) {
+
+
                     items(10) {
                         SearchProductCard(
                             null,
@@ -176,6 +185,8 @@ fun SearchScreen(
                         )
                     }
                 } else if (retailers.isNotEmpty() && productResults.itemCount != 0) {
+                    tutorialCard()
+
                     items(
                         items = productResults,
                         key = { (first, _) -> first }
@@ -246,6 +257,34 @@ private fun LazyListScope.suggestionsList(
                     focusManager.clearFocus()
                 }
         )
+    }
+}
+
+private fun LazyListScope.tutorialCard() {
+    item {
+        AnimatedVisibility(visible = true) {
+            Card(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.icon_no_bg),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(48.dp),
+                    )
+                    Text(
+                        text = stringResource(R.string.product_view_tutorial),
+                        modifier = Modifier.padding(start = 8.dp)
+
+                    )
+                }
+            }
+        }
     }
 }
 

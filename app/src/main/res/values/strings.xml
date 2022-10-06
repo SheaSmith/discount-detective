@@ -26,6 +26,7 @@
     <string name="retailer">Retailer</string>
     <string name="price">Price</string>
     <string name="discount_price">Discount Price</string>
+    <string name="product_view_tutorial">Tap on products to view their retailer information.</string>
     <string name="still_indexing">The app is currently processing all of the products to make the search faster. Until this has finished, search results will be slower and less comprehensive. This optimisation should be done in a few minutes.</string>
     <string name="notification_channel_id">discount-detective</string>
     <string name="notification_content">Optimising products for searching</string>
