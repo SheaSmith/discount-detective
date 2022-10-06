@@ -186,7 +186,6 @@ private fun ProductCard(
 
     val openDialog = remember { mutableStateOf(false) }
 
-    var quantity by remember { mutableStateOf(shoppingListItem.third.quantity) }
 
     Card(
         modifier = Modifier
@@ -222,66 +221,12 @@ private fun ProductCard(
             ) {
                 Icon(
                     Icons.Filled.Edit,
-                    contentDescription = "Dialog"
+                    contentDescription = "Dialog edit box"
                 )
             }
             // edit dialog
             if (openDialog.value) {
-                AlertDialog(
-                    onDismissRequest = {
-                        openDialog.value = false
-                    },
-                    icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-                    title = {
-                        Text(text = "Edit item preferences")
-                    },
-                    text = {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(text = "Select Quantity")
-                            Row {
-                                QuantitySelector(
-                                    quantity = quantity,
-                                    setQuantity = {
-                                        if (it != null) {
-                                            shoppingListItem.third.quantity = it
-                                            quantity = it
-                                        }
-                                        viewModel.updateShoppingListItem(shoppingListItem.third)
-                                    },
-                                    loading = false,
-                                )
-                            }
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                openDialog.value = false
-                            }
-                        ) {
-                            Text("Confirm")
-                        }
-                        TextButton(
-                            onClick = {
-                                openDialog.value = false
-                                viewModel.delete(shoppingListItem.third)
-                            }
-                        ) {
-                            Text("Delete")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = {
-                                openDialog.value = false
-                            }
-                        ) {
-                            Text("Dismiss")
-                        }
-                    },
-                )
+                editDialog(shoppingListItem, openDialog, viewModel)
             }
 
             Checkbox(
@@ -296,6 +241,74 @@ private fun ProductCard(
             )
         }
     }
+}
+
+@Composable
+private fun editDialog(
+    shoppingListItem: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
+    openDialog: MutableState<Boolean>,
+    viewModel: ShoppingListViewModel
+) {
+    var quantity by remember { mutableStateOf(shoppingListItem.third.quantity) }
+
+    AlertDialog(
+        onDismissRequest = {
+            openDialog.value = false
+        },
+        icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+        title = {
+            Text(text = "Edit Item Preferences")
+        },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(text = "Select Quantity")
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    QuantitySelector(
+                        quantity = quantity,
+                        setQuantity = {
+                            if (it != null) {
+                                shoppingListItem.third.quantity = it
+                                quantity = it
+                            }
+                            viewModel.updateShoppingListItem(shoppingListItem.third)
+                        },
+                        loading = false,
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    openDialog.value = false
+                }
+            ) {
+                Text("Confirm")
+            }
+            TextButton(
+                onClick = {
+                    openDialog.value = false
+                    viewModel.delete(shoppingListItem.third)
+                }
+            ) {
+                Text("Delete")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    openDialog.value = false
+                }
+            ) {
+                Text("Dismiss")
+            }
+        },
+    )
 }
 
 @Composable
