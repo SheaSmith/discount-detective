@@ -256,7 +256,7 @@ private fun editDialog(
         },
         icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
         title = {
-            Text(text = "Adjust Quantity")
+            Text(text = "Edit Quantity")
         },
         text = {
             Column(
@@ -264,7 +264,7 @@ private fun editDialog(
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
                 Text(
-                    text = " Adjust the quantity of ${
+                    text = " Adjust the quantity of the ${
                         arrayOf(
                             shoppingListItem.first.brandName,
                             shoppingListItem.first.name,
@@ -272,7 +272,7 @@ private fun editDialog(
                             shoppingListItem.first.quantity
                         ).filterNotNull()
                             .joinToString(" ")
-                    }",
+                    } item.",
                     modifier = Modifier.padding(10.dp)
                 )
                 Row(
