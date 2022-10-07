@@ -30,6 +30,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,7 +39,6 @@ import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import com.example.cosc345.shared.models.Region
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.ui.Navigation
@@ -77,7 +77,7 @@ fun SearchScreen(
         rememberTopAppBarState()
     )
 
-    val showDialog = remember { mutableStateOf(false) }
+    val showDialog = remember { mutableStateOf(true) }
 
     val focusManager = LocalFocusManager.current
     var showSuggestions by remember {
@@ -144,10 +144,12 @@ fun SearchScreen(
         }
     ) { innerPadding ->
 
-        RegionSelectorDialog(
-            showDialog = showDialog,
-            viewModel = viewModel
-        )
+        if (showDialog.value) {
+            RegionSelectorDialog(
+                showDialog = showDialog,
+                viewModel = viewModel
+            )
+        }
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(
@@ -232,6 +234,11 @@ private fun RegionSelectorDialog(
     viewModel: SearchViewModel
 ) {
 
+    var selectedRegion by remember {
+        mutableStateOf<String?>(null)
+    }
+    val regionList = stringArrayResource(R.array.array_city)
+
     AlertDialog(
         onDismissRequest = {
             showDialog.value = false
@@ -242,9 +249,10 @@ private fun RegionSelectorDialog(
             TextButton(
                 onClick = {
                     showDialog.value = false
+                    selectedRegion?.let { viewModel.setRegion(it) }
                 }
             ) {
-
+                Text(text = "Confirm")
             }
         },
         dismissButton = {
@@ -255,9 +263,6 @@ private fun RegionSelectorDialog(
             }
         },
         text = {
-            val regionList = listOf(Region)
-
-            val (selectedOption, onOptionSelected) = remember { mutableStateOf(regionList[1]) }
 
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 regionList.forEach { region ->
@@ -265,17 +270,22 @@ private fun RegionSelectorDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .selectable(
-                                selected = (region == selectedOption),
-                                onClick = {}
+                                selected = (region == selectedRegion),
+                                onClick = {
+                                    selectedRegion = region
+                                }
                             ),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = (region == selectedOption),
-                            onClick = { viewModel.setRegion(selectedOption.toString()) }
+                            selected = region == selectedRegion,
+                            onClick = {
+                                selectedRegion = region
+                            }
                         )
+
+                        Text(text = region)
                     }
-                    Text(region.toString())
                 }
             }
         }
