@@ -288,6 +288,7 @@ private fun EditDialog(
                             }
                         },
                         loading = false,
+                        saleType = shoppingListItem.first.saleType
                     )
                 }
             }
