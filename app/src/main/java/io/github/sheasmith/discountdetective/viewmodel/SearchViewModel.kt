@@ -168,7 +168,7 @@ class SearchViewModel @Inject constructor(
         productId: String,
         retailerProductInfoId: String,
         storeId: String,
-        quantity: Int
+        quantity: Double
     ) {
         viewModelScope.launch {
             shoppingListRepository.addToShoppingList(

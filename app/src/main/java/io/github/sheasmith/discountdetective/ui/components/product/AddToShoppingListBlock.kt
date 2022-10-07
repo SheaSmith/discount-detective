@@ -26,10 +26,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.cosc345.shared.models.Product
 import com.example.cosc345.shared.models.Retailer
+import com.example.cosc345.shared.models.SaleType
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.placeholder
 import io.github.sheasmith.discountdetective.R
+import io.github.sheasmith.discountdetective.extensions.fromPrettyDouble
+import io.github.sheasmith.discountdetective.extensions.toPrettyString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,12 +52,12 @@ fun AddToShoppingListBlock(
     productPair: Pair<String, Product>?,
     retailers: Map<String, Retailer>?,
     loading: Boolean,
-    onAddToShoppingList: ((String, String, String, Int) -> Unit)?,
+    onAddToShoppingList: ((String, String, String, Double) -> Unit)?,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     region: String
 ) {
     var quantity by remember {
-        mutableStateOf<Int?>(1)
+        mutableStateOf<Double?>(1.0)
     }
 
     var showDialog by remember {
@@ -74,11 +77,16 @@ fun AddToShoppingListBlock(
             region = region
         )
 
-        QuantitySelector(quantity = quantity, setQuantity = {
-            if ((it ?: 0) <= 10000) {
-                quantity = it
-            }
-        }, loading = loading)
+        QuantitySelector(
+            quantity = quantity,
+            setQuantity = {
+                if ((it ?: 0.0) <= 10000.0) {
+                    quantity = it
+                }
+            },
+            saleType = productPair?.second?.getBestInformation()?.saleType,
+            loading = loading
+        )
 
         Spacer(modifier = Modifier.weight(1.0f))
 
@@ -115,8 +123,8 @@ private fun AddToShoppingListDialog(
     productPair: Pair<String, Product>?,
     coroutineScope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
-    onAddToShoppingList: ((String, String, String, Int) -> Unit)?,
-    quantity: Int?,
+    onAddToShoppingList: ((String, String, String, Double) -> Unit)?,
+    quantity: Double?,
     region: String
 ) {
     var selectedPricingPair by remember {
@@ -145,7 +153,7 @@ private fun AddToShoppingListDialog(
                             productPair.first,
                             selectedPricingPair!!.first,
                             selectedPricingPair!!.second,
-                            quantity ?: 1
+                            quantity ?: 1.0
                         )
                     }
                 }) {
@@ -238,7 +246,7 @@ private fun AddToShoppingListDialog(
                                             retailerName,
                                             if (storeName == retailerName) "" else storeName,
                                             (pricing.getPrice(info) * (quantity
-                                                ?: 1)).toDouble() / 100f
+                                                ?: 1.0)) / 100f
                                         )
                                     )
                                 }
@@ -255,8 +263,9 @@ private fun AddToShoppingListDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RowScope.QuantitySelector(
-    quantity: Int?,
-    setQuantity: (Int?) -> Unit,
+    quantity: Double?,
+    saleType: String?,
+    setQuantity: (Double?) -> Unit,
     loading: Boolean
 ) {
     Row(
@@ -277,9 +286,9 @@ private fun RowScope.QuantitySelector(
             FilledTonalIconButton(
                 onClick = {
                     if (quantity == null) {
-                        setQuantity(1)
+                        setQuantity(1.0)
                     } else if (quantity > 1) {
-                        setQuantity(quantity.minus(1))
+                        setQuantity(quantity.minus(if (saleType == SaleType.WEIGHT) 0.1 else 1.0))
                     }
                 },
                 modifier = Modifier
@@ -312,11 +321,15 @@ private fun RowScope.QuantitySelector(
                 )
         ) {
             val cursorColor = MaterialTheme.colorScheme.primary
+            var addDot by remember {
+                mutableStateOf(false)
+            }
 
             BasicTextField(
-                value = quantity?.toString() ?: "",
+                value = "${quantity?.toPrettyString() ?: ""}${if (addDot) "." else ""}",
                 onValueChange = {
-                    val number = it.toIntOrNull()
+                    addDot = it.endsWith('.') && saleType == SaleType.WEIGHT
+                    val number = it.fromPrettyDouble()
                     if (number != null && number > 0) {
                         setQuantity(number)
                     } else if (it.isBlank()) {
@@ -335,7 +348,7 @@ private fun RowScope.QuantitySelector(
                     .padding(vertical = 8.dp, horizontal = 16.dp)
                     .onFocusChanged {
                         if (!it.isFocused && quantity == null) {
-                            setQuantity(1)
+                            setQuantity(1.0)
                         }
                     },
                 cursorBrush = SolidColor(cursorColor)
@@ -352,7 +365,7 @@ private fun RowScope.QuantitySelector(
             FilledTonalIconButton(
                 onClick = {
                     setQuantity(
-                        quantity?.plus(1) ?: 1
+                        quantity?.plus(if (saleType == SaleType.WEIGHT) 0.1 else 1.0) ?: 1.0
                     )
                 },
                 modifier = Modifier

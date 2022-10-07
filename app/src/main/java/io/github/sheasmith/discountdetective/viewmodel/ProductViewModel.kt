@@ -1,5 +1,6 @@
 package io.github.sheasmith.discountdetective.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cosc345.shared.models.Product
@@ -23,7 +24,7 @@ class ProductViewModel @Inject constructor(
     retailersRepository: RetailersRepository,
     private val productRepository: ProductRepository,
     private val shoppingListRepository: ShoppingListRepository,
-    private val preferencesRepository: PreferencesRepository
+    preferencesRepository: PreferencesRepository
 ) : ViewModel() {
     /**
      * The currently opened product.
@@ -38,7 +39,7 @@ class ProductViewModel @Inject constructor(
     /**
      * Users current region.
      */
-    val region = preferencesRepository.getRegion()
+    val region: LiveData<String> = preferencesRepository.getRegion()
 
     init {
         viewModelScope.launch {
@@ -99,7 +100,7 @@ class ProductViewModel @Inject constructor(
         productId: String,
         retailerProductInfoId: String,
         storeId: String,
-        quantity: Int
+        quantity: Double
     ) {
         viewModelScope.launch {
             shoppingListRepository.addToShoppingList(
