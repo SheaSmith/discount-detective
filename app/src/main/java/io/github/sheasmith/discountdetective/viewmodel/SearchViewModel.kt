@@ -97,6 +97,11 @@ class SearchViewModel @Inject constructor(
     val hasIndexed: LiveData<Boolean> = searchRepository.hasIndexedBefore().asLiveData()
 
     /**
+     * Whether the user search indexing has used the barcode scan function before.
+     */
+    val hasUsedBarcodeScan: LiveData<Boolean> = searchRepository.hasUsedBarcodeScan().asLiveData()
+
+    /**
      * Run a query on either firebase or app search.
      */
     fun query() {

@@ -46,7 +46,7 @@ class ShoppingListViewModel @Inject constructor(
      * by copy then delete and insert so compose tracks changes
      * @param item the shoppinglist item that has been checked
      */
-    fun changeShoppingListChecked(item: ShoppingListItem) {
+    fun updateShoppingListItem(item: ShoppingListItem) {
         viewModelScope.launch {
             shoppingListRepository.update(item)
         }

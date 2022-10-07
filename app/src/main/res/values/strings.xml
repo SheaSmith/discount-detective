@@ -47,4 +47,5 @@
     <string name="empty_shopping_list">Empty Shopping List</string>
     <string name="drag_handle">Drag handle</string>
     <string name="empty_shopping_list_description">Your shopping list is currently empty. Add some items to it from the search page.</string>
+    <string name="has_used_barcode">Tip! If you want to search for a product already in your pantry, then you can use the barcode scan function. You can do this by clicking the barcode icon in the search bar above.</string>
 </resources>

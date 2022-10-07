@@ -11,8 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.rounded.RemoveShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,6 +38,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.ui.components.StatusBarLargeTopAppBar
+import io.github.sheasmith.discountdetective.ui.components.product.QuantitySelector
 import io.github.sheasmith.discountdetective.ui.components.search.ErrorUi
 import io.github.sheasmith.discountdetective.viewmodel.ShoppingListViewModel
 import org.burnoutcrew.reorderable.ReorderableItem
@@ -184,6 +184,9 @@ private fun ProductCard(
     var isChecked by remember { mutableStateOf(shoppingListItem.third.checked) }
     isChecked = shoppingListItem.third.checked
 
+    val openDialog = remember { mutableStateOf(false) }
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -199,53 +202,126 @@ private fun ProductCard(
         // master row layout
         Row(
             modifier = Modifier
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .padding(8.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Filled.DragHandle,
-                contentDescription = stringResource(id = R.string.drag_handle),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .fillMaxSize(0.1f)
-            )
             // product info block
             ProductInfo(product = shoppingListItem)
 
-            // delete button
             IconButton(
-                onClick = {
-                    viewModel.delete(shoppingListItem.third)
-                },
-                modifier = Modifier
-                    .size(
-                        width = 30.dp,
-                        height = 30.dp
-                    )
+                onClick = { openDialog.value = true }
             ) {
                 Icon(
-                    Icons.Filled.Close,
-                    contentDescription = "Close"
+                    Icons.Filled.Edit,
+                    contentDescription = "Dialog edit box"
                 )
             }
+            // edit dialog
+            if (openDialog.value) {
+                EditDialog(shoppingListItem, openDialog, viewModel)
+            }
+
 
             Checkbox(
                 checked = isChecked,
                 onCheckedChange = {
                     shoppingListItem.third.checked = it
-                    viewModel.changeShoppingListChecked(shoppingListItem.third)
+                    viewModel.updateShoppingListItem(shoppingListItem.third)
                     isChecked = it
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
+                }
             )
         }
     }
 }
 
 @Composable
-private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>) {
+private fun EditDialog(
+    shoppingListItem: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
+    openDialog: MutableState<Boolean>,
+    viewModel: ShoppingListViewModel
+) {
+    var quantity by remember { mutableStateOf(shoppingListItem.third.quantity) }
+
+    AlertDialog(
+        onDismissRequest = {
+            openDialog.value = false
+        },
+        icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+        title = {
+            Text(text = "Edit Item Details")
+        },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                Text(
+                    text = "Adjust the quantity of the ${
+                        arrayOf(
+                            shoppingListItem.first.brandName,
+                            shoppingListItem.first.name,
+                            shoppingListItem.first.variant,
+                            shoppingListItem.first.quantity
+                        ).filterNotNull()
+                            .joinToString(" ")
+                    } item.",
+                    modifier = Modifier.padding(10.dp)
+                )
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    QuantitySelector(
+                        quantity = quantity,
+                        setQuantity = {
+                            if (it != null) {
+                                quantity = it
+                            }
+                        },
+                        loading = false,
+                        saleType = shoppingListItem.first.saleType
+                    )
+                }
+            }
+        },
+        dismissButton = {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        viewModel.delete(shoppingListItem.third)
+                    }
+                ) {
+                    Text("Delete item")
+                }
+                Spacer(modifier = Modifier.weight(1.0f))
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                    }
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        shoppingListItem.third.quantity = quantity
+                        viewModel.updateShoppingListItem(shoppingListItem.third)
+                    }
+                ) {
+                    Text("Confirm")
+                }
+            }
+        },
+        confirmButton = {}
+    )
+}
+
+@Composable
+private fun RowScope.ProductInfo(product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>) {
     AsyncImage(
         model = product.first.image,
         contentDescription = stringResource(id = R.string.content_description_product_image),
@@ -259,10 +335,10 @@ private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricing
     //brand-name, product name and pricing info
     Column(
         modifier = Modifier
-            .fillMaxWidth(0.8f)
+            .weight(1.0f)
             .padding(horizontal = 10.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Start
+        horizontalAlignment = Alignment.Start,
     ) {
         Text(
             text = "${product.third.quantity}x ${
@@ -275,14 +351,16 @@ private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricing
                     .joinToString(" ")
             }",
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleSmall
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.fillMaxWidth()
         )
 
         val price = product.second.getDisplayPrice(product.first)
         Text(
             text = "${price.first}${price.second}",
             fontWeight = FontWeight.Normal,
-            style = MaterialTheme.typography.titleSmall
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

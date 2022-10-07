@@ -2,6 +2,7 @@
 
 package io.github.sheasmith.discountdetective.ui.screens
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
@@ -86,6 +87,7 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val hasIndexed by viewModel.hasIndexed.observeAsState()
+    val hasUsedBarcode by viewModel.hasUsedBarcodeScan.observeAsState()
     val region by viewModel.region.observeAsState()
 
     val barcodeResult = (navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
@@ -175,6 +177,7 @@ fun SearchScreen(
                 )
             } else {
                 indexingCard(hasIndexed)
+                hasUsedBarcodeCard(hasIndexed, hasUsedBarcode)
 
                 if (loading) {
                     items(10) {
@@ -322,19 +325,32 @@ private fun LazyListScope.suggestionsList(
 private fun LazyListScope.indexingCard(hasIndexed: Boolean?) {
     item {
         AnimatedVisibility(visible = hasIndexed == false) {
-            Card(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                Row(
-                    modifier = Modifier.padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        Icons.Rounded.Info,
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Text(text = stringResource(R.string.still_indexing))
-                }
-            }
+            InformationCard(stringRes = R.string.still_indexing)
+        }
+    }
+}
+
+private fun LazyListScope.hasUsedBarcodeCard(hasIndexed: Boolean?, hasUsedBarcode: Boolean?) {
+    item {
+        AnimatedVisibility(visible = hasIndexed == true && hasUsedBarcode != true) {
+            InformationCard(stringRes = R.string.has_used_barcode)
+        }
+    }
+}
+
+@Composable
+private fun InformationCard(@StringRes stringRes: Int) {
+    Card(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Row(
+            modifier = Modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Rounded.Info,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(text = stringResource(stringRes))
         }
     }
 }

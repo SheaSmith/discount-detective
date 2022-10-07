@@ -260,9 +260,16 @@ private fun AddToShoppingListDialog(
     }
 }
 
+/**
+ *  Function for displaying the quantity selector element.
+ *
+ *  @param quantity The initial quantity.
+ *  @param setQuantity callback that modifies the quantity parameter.
+ *  @param loading Whether the parent view is loading or not.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RowScope.QuantitySelector(
+fun RowScope.QuantitySelector(
     quantity: Double?,
     saleType: String?,
     setQuantity: (Double?) -> Unit,
@@ -311,7 +318,7 @@ private fun RowScope.QuantitySelector(
 
         Box(
             modifier = Modifier
-                .fillMaxHeight()
+                .height(50.dp)
                 .background(MaterialTheme.colorScheme.surface)
                 .placeholder(
                     visible = loading,
