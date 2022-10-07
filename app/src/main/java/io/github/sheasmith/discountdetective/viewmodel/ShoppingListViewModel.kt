@@ -7,6 +7,7 @@ import com.example.cosc345.shared.models.Retailer
 import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.StorePricingInformation
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sheasmith.discountdetective.exceptions.NoInternetException
 import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.repository.ProductRepository
 import io.github.sheasmith.discountdetective.repository.RetailersRepository
@@ -32,7 +33,7 @@ class ShoppingListViewModel @Inject constructor(
     /**
      * All shoppingList items in the database
      */
-    private val allProducts: LiveData<List<ShoppingListItem>> =
+    val allProducts: LiveData<List<ShoppingListItem>> =
         shoppingListRepository.shoppingList
 
     /**
@@ -40,6 +41,11 @@ class ShoppingListViewModel @Inject constructor(
      */
     val shoppingList: MutableStateFlow<List<Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>>?> =
         MutableStateFlow(null)
+
+    /**
+     * If there is no internet or internet.
+     */
+    var noInternet: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     /**
      * Update the state of the checkbox in the shoppingList
@@ -64,22 +70,37 @@ class ShoppingListViewModel @Inject constructor(
 
         viewModelScope.launch {
             allProducts.observeForever { shoppingListItems ->
-                viewModelScope.launch {
-                    shoppingList.value = shoppingListItems.mapNotNull { shoppingListInfo ->
-                        val product = productRepository.getProductFromID(shoppingListInfo.productId)
+                load(shoppingListItems)
+            }
+        }
+    }
 
-                        if (product != null) {
-                            val key =
-                                product.information!!.first { info -> info.id == shoppingListInfo.retailerProductInformationId && info.pricing!!.any { it.store == shoppingListInfo.storeId } }
-                            val value =
-                                key.pricing!!.first { it.store == shoppingListInfo.storeId }
+    /**
+     * Loads the shopping list again.
+     *
+     * @param shoppingListItems List of items in the shopping lists.
+     */
+    fun load(shoppingListItems: List<ShoppingListItem>) {
+        noInternet.value = false
+        viewModelScope.launch {
+            shoppingList.value = shoppingListItems.mapNotNull { shoppingListInfo ->
+                try {
+                    val product = productRepository.getProductFromID(shoppingListInfo.productId)
 
-                            Triple(key, value, shoppingListInfo)
-                        } else {
-                            shoppingListRepository.deleteFromShoppingList(shoppingListInfo)
-                            null
-                        }
+                    if (product != null) {
+                        val key =
+                            product.information!!.first { info -> info.id == shoppingListInfo.retailerProductInformationId && info.pricing!!.any { it.store == shoppingListInfo.storeId } }
+                        val value =
+                            key.pricing!!.first { it.store == shoppingListInfo.storeId }
+
+                        Triple(key, value, shoppingListInfo)
+                    } else {
+                        shoppingListRepository.deleteFromShoppingList(shoppingListInfo)
+                        null
                     }
+                } catch (e: NoInternetException) {
+                    noInternet.value = true
+                    null
                 }
             }
         }

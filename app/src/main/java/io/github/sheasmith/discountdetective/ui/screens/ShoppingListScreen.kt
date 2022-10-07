@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.rounded.RemoveShoppingCart
+import androidx.compose.material.icons.rounded.SignalWifiOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -68,6 +69,8 @@ fun ShoppingListScreen(
         rememberTopAppBarState()
     )
 
+    val noInternet by viewModel.noInternet.collectAsState()
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -83,7 +86,17 @@ fun ShoppingListScreen(
             )
         }
     ) { innerPadding ->
-        if (products?.isNotEmpty() == true && retailers.isNotEmpty()) {
+        if (noInternet) {
+            Box(modifier = Modifier.padding(innerPadding)) {
+                ErrorUi(
+                    title = R.string.no_internet,
+                    description = R.string.no_internet_description,
+                    icon = Icons.Rounded.SignalWifiOff,
+                    onRetry = {
+                        viewModel.load(viewModel.allProducts.value!!)
+                    })
+            }
+        } else if (products?.isNotEmpty() == true && retailers.isNotEmpty()) {
             val grouped = products!!.groupBy {
                 Pair(it.first.retailer!!, it.second.store!!)
             }.mapValues { it.value }
