@@ -202,8 +202,8 @@ private fun ProductCard(
         // master row layout
         Row(
             modifier = Modifier
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+                .padding(8.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -211,7 +211,7 @@ private fun ProductCard(
                 contentDescription = stringResource(id = R.string.drag_handle),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .fillMaxSize(0.1f)
+                    .size(20.dp)
             )
             // product info block
             ProductInfo(product = shoppingListItem)
@@ -236,9 +236,7 @@ private fun ProductCard(
                     shoppingListItem.third.checked = it
                     viewModel.updateShoppingListItem(shoppingListItem.third)
                     isChecked = it
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
+                }
             )
         }
     }
@@ -264,8 +262,6 @@ private fun editDialog(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .padding(10.dp)
             ) {
                 Text(
                     text = " Adjust the quantity of ${
@@ -305,10 +301,8 @@ private fun editDialog(
             ) {
                 Text("Confirm")
             }
-
         },
         dismissButton = {
-
             TextButton(
                 onClick = {
                     openDialog.value = false
@@ -329,7 +323,7 @@ private fun editDialog(
 }
 
 @Composable
-private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>) {
+private fun RowScope.ProductInfo(product: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>) {
     AsyncImage(
         model = product.first.image,
         contentDescription = stringResource(id = R.string.content_description_product_image),
@@ -343,10 +337,10 @@ private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricing
     //brand-name, product name and pricing info
     Column(
         modifier = Modifier
-            .fillMaxWidth(0.8f)
+            .weight(1.0f)
             .padding(horizontal = 10.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Start
+        horizontalAlignment = Alignment.Start,
     ) {
         Text(
             text = "${product.third.quantity}x ${
@@ -360,14 +354,15 @@ private fun ProductInfo(product: Triple<RetailerProductInformation, StorePricing
             }",
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.width(300.dp)
+            modifier = Modifier.fillMaxWidth()
         )
 
         val price = product.second.getDisplayPrice(product.first)
         Text(
             text = "${price.first}${price.second}",
             fontWeight = FontWeight.Normal,
-            style = MaterialTheme.typography.titleSmall
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
