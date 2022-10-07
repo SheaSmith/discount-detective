@@ -41,7 +41,7 @@ class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
     private val retailersRepository: RetailersRepository,
     private val shoppingListRepository: ShoppingListRepository,
-    preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     /**
@@ -154,6 +154,10 @@ class SearchViewModel @Inject constructor(
 
         if (runSearch)
             query()
+    }
+
+    fun setRegion(region: String) {
+        preferencesRepository.setRegion(region)
     }
 
     /**

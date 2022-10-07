@@ -11,6 +11,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.rounded.Info
@@ -34,6 +37,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.example.cosc345.shared.models.Region
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.ui.Navigation
@@ -58,7 +62,7 @@ import kotlinx.coroutines.launch
 @Preview
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    navController: NavHostController = rememberAnimatedNavController()
+    navController: NavHostController = rememberAnimatedNavController(),
 ) {
     val search by viewModel.searchQuery.collectAsState()
     val retailers by viewModel.retailers.collectAsState()
@@ -71,6 +75,9 @@ fun SearchScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
     )
+
+    val showDialog = remember { mutableStateOf(false) }
+
     val focusManager = LocalFocusManager.current
     var showSuggestions by remember {
         viewModel.showSuggestions
@@ -134,6 +141,11 @@ fun SearchScreen(
             )
         }
     ) { innerPadding ->
+
+        RegionSelectorDialog(
+            showDialog = showDialog,
+            viewModel = viewModel
+        )
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(
@@ -212,25 +224,56 @@ fun SearchScreen(
 }
 
 @Composable
-private fun RegionSelector(
-    showDialog: Boolean,
-    onSetShowDialog: (Boolean) -> Unit
+private fun RegionSelectorDialog(
+    showDialog: MutableState<Boolean>,
+    viewModel: SearchViewModel
 ) {
 
     AlertDialog(
         onDismissRequest = {
-            onSetShowDialog(false)
+            showDialog.value = false
         },
         title = { Text("Select Your Region ") },
         icon = { Icon(Icons.Filled.Map, null) },
         confirmButton = {
+            TextButton(
+                onClick = {
+                    showDialog.value = false
+                }
+            ) {
 
+            }
         },
         dismissButton = {
             TextButton(onClick = {
-                onSetShowDialog(false)
+                showDialog.value = false
             }) {
                 Text(stringResource(R.string.cancel))
+            }
+        },
+        text = {
+            val regionList = listOf(Region)
+
+            val (selectedOption, onOptionSelected) = remember { mutableStateOf(regionList[1]) }
+
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                regionList.forEach { region ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = (region == selectedOption),
+                                onClick = {}
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (region == selectedOption),
+                            onClick = { viewModel.setRegion(selectedOption.toString()) }
+                        )
+                    }
+                    Text(region.toString())
+                }
             }
         }
     )

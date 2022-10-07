@@ -28,6 +28,11 @@ class PreferencesRepository @Inject constructor(@ApplicationContext context: Con
         return sharedPreferences.stringLiveData("city", Region.DUNEDIN)
     }
 
+    fun setRegion(region: String) {
+        sharedPreferences.edit().putString("city", region)
+        sharedPreferences.edit().apply()
+    }
+
     /**
      * Gets the dark/light mode preference value that the user has set using the live data class.
      *
