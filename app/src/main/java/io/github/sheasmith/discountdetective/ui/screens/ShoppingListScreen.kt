@@ -36,6 +36,7 @@ import com.example.cosc345.shared.models.RetailerProductInformation
 import com.example.cosc345.shared.models.StorePricingInformation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
+import io.github.sheasmith.discountdetective.extensions.toPrettyString
 import io.github.sheasmith.discountdetective.models.ShoppingListItem
 import io.github.sheasmith.discountdetective.ui.components.StatusBarLargeTopAppBar
 import io.github.sheasmith.discountdetective.ui.components.product.QuantitySelector
@@ -341,7 +342,7 @@ private fun RowScope.ProductInfo(product: Triple<RetailerProductInformation, Sto
         horizontalAlignment = Alignment.Start,
     ) {
         Text(
-            text = "${product.third.quantity}x ${
+            text = "${product.third.quantity.toPrettyString()}x ${
                 arrayOf(
                     product.first.brandName,
                     product.first.name,
