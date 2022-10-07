@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -54,7 +55,7 @@ fun RetailerSlot(
 
             Row(
                 modifier = Modifier
-                    .weight(0.78f) // this was changed from 1.0 to make room for the info button
+                    .weight(0.8f) // this was changed from 1.0 to make room for the info button
                     .align(Alignment.CenterVertically)
                     .padding(end = 10.dp), verticalAlignment = Alignment.CenterVertically
             ) {
@@ -67,9 +68,10 @@ fun RetailerSlot(
                 )
             }
 
-            Box(
+            Row(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .weight(0.2f)
             ) {
                 Icon(
                     Icons.Outlined.Info,
@@ -77,6 +79,7 @@ fun RetailerSlot(
                     modifier = Modifier
                         .padding(end = 8.dp)
                         .clickable { showRetailer = !showRetailer }
+                        .alpha(0.6f)
                 )
 
                 DropdownMenu(expanded = showRetailer, onDismissRequest = { showRetailer = false }) {
@@ -106,9 +109,9 @@ fun RetailerSlot(
                         )
                     }
                 }
-            }
 
-            Spacer(Modifier.width(5.0.dp))
+                Spacer(Modifier.width(5.0.dp))
+            }
 
             Column(
                 modifier = Modifier
