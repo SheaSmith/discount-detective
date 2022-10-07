@@ -37,7 +37,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.github.sheasmith.discountdetective.R
 import io.github.sheasmith.discountdetective.ui.Navigation
 import io.github.sheasmith.discountdetective.ui.components.StatusBarCenterAlignedTopAppBar
-import io.github.sheasmith.discountdetective.ui.components.search.SearchError
+import io.github.sheasmith.discountdetective.ui.components.search.ErrorUi
 import io.github.sheasmith.discountdetective.ui.components.search.SearchProductCard
 import io.github.sheasmith.discountdetective.ui.components.search.SearchTopAppBar
 import io.github.sheasmith.discountdetective.viewmodel.SearchViewModel
@@ -212,7 +212,7 @@ fun SearchScreen(
 
 private fun LazyListScope.noInternetError(viewModel: SearchViewModel) {
     item {
-        SearchError(
+        ErrorUi(
             title = R.string.no_internet,
             description = R.string.no_internet_description,
             icon = Icons.Rounded.SignalWifiOff,
@@ -271,7 +271,7 @@ private fun LazyListScope.indexingCard(hasIndexed: Boolean?) {
 
 private fun LazyListScope.noResultsError() {
     item {
-        SearchError(
+        ErrorUi(
             title = R.string.no_results,
             description = R.string.no_results_description,
             icon = Icons.Rounded.SearchOff

@@ -2,6 +2,7 @@
 
 package io.github.sheasmith.discountdetective.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -158,8 +159,12 @@ fun ProductScreen(
 
         content = { padding ->
             LazyColumn(contentPadding = padding) {
+
                 item {
-                    ProductImage(image = product?.second?.getBestInformation()?.image)
+                    val image = product?.second?.getBestInformation()?.image
+                    AnimatedVisibility(visible = image != null) {
+                        ProductImage(image = image)
+                    }
                 }
 
                 item {
