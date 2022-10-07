@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.rounded.RemoveShoppingCart
 import androidx.compose.material3.*
@@ -207,13 +206,6 @@ private fun ProductCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Filled.DragHandle,
-                contentDescription = stringResource(id = R.string.drag_handle),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(20.dp)
-            )
             // product info block
             ProductInfo(product = shoppingListItem)
 
