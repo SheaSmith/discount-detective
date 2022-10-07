@@ -54,7 +54,7 @@ fun RetailerSlot(
 
             Row(
                 modifier = Modifier
-                    .weight(1.0f)
+                    .weight(0.78f) // this was changed from 1.0 to make room for the info button
                     .align(Alignment.CenterVertically)
                     .padding(end = 10.dp), verticalAlignment = Alignment.CenterVertically
             ) {
@@ -62,51 +62,53 @@ fun RetailerSlot(
 
                 Spacer(Modifier.width(10.0.dp))
 
-                Box() {
-                    Icon(
-                        Icons.Outlined.Info,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .clickable { showRetailer = !showRetailer }
-                    )
-
-                    DropdownMenu(expanded = showRetailer, onDismissRequest = { showRetailer = false }) {
-                        DropdownMenuItem(text = { Text(retailer.name!!) }, onClick = { }, enabled = false
-                        )
-
-                        if (store.latitude != null && store.longitude != null) {
-                            DropdownMenuItem(
-                                text = {
-                                    Text("Show on Map")
-                                },
-                                onClick = {
-                                    val storeName =
-                                        if (retailer.name == store.name) retailer.name else "${retailer.name} ${store.name}"
-
-                                    val geoLocation =
-                                        Uri.parse("geo:0,0?q=${store.latitude!!},${store.longitude!!}(${storeName})&z=12")
-
-                                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        data = geoLocation
-                                    }
-
-                                    if (intent.resolveActivity(context.packageManager) != null) {
-                                        ContextCompat.startActivity(context, intent, null)
-                                    }
-                                },
-                            )
-                        }
-                    }
-                }
-
-                Spacer(Modifier.width(5.0.dp))
-
                 Text(
                     text = store.name!!, fontSize = 14.sp, lineHeight = 16.sp, maxLines = 3
                 )
-
             }
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+            ) {
+                Icon(
+                    Icons.Outlined.Info,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .clickable { showRetailer = !showRetailer }
+                )
+
+                DropdownMenu(expanded = showRetailer, onDismissRequest = { showRetailer = false }) {
+                    DropdownMenuItem(text = { Text(retailer.name!!) }, onClick = { }, enabled = false
+                    )
+
+                    if (store.latitude != null && store.longitude != null) {
+                        DropdownMenuItem(
+                            text = {
+                                Text("Show on Map")
+                            },
+                            onClick = {
+                                val storeName =
+                                    if (retailer.name == store.name) retailer.name else "${retailer.name} ${store.name}"
+
+                                val geoLocation =
+                                    Uri.parse("geo:0,0?q=${store.latitude!!},${store.longitude!!}(${storeName})&z=12")
+
+                                val intent = Intent(Intent.ACTION_VIEW).apply {
+                                    data = geoLocation
+                                }
+
+                                if (intent.resolveActivity(context.packageManager) != null) {
+                                    ContextCompat.startActivity(context, intent, null)
+                                }
+                            },
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.width(5.0.dp))
 
             Column(
                 modifier = Modifier
