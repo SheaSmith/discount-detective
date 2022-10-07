@@ -252,6 +252,13 @@ private fun AddToShoppingListDialog(
     }
 }
 
+/**
+ *  Function for displaying the quantity selector element.
+ *
+ *  @param quantity The initial quantity.
+ *  @param setQuantity function that modifies the quantity parameter.
+ *  @param loading Whether the parent view is loading or not.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RowScope.QuantitySelector(

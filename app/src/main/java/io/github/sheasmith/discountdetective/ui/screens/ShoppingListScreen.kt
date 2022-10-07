@@ -227,7 +227,7 @@ private fun ProductCard(
             }
             // edit dialog
             if (openDialog.value) {
-                editDialog(shoppingListItem, openDialog, viewModel)
+                EditDialog(shoppingListItem, openDialog, viewModel)
             }
 
 
@@ -244,7 +244,7 @@ private fun ProductCard(
 }
 
 @Composable
-private fun editDialog(
+private fun EditDialog(
     shoppingListItem: Triple<RetailerProductInformation, StorePricingInformation, ShoppingListItem>,
     openDialog: MutableState<Boolean>,
     viewModel: ShoppingListViewModel
