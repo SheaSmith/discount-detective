@@ -7,13 +7,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -39,6 +39,8 @@ fun RetailerSlot(
     productInformation: RetailerProductInformation
 ) {
     val store = retailer.stores!!.first { it.id == pricingInformation.store }
+    var showRetailer by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier
@@ -53,7 +55,7 @@ fun RetailerSlot(
 
             Row(
                 modifier = Modifier
-                    .weight(1.0f)
+                    .weight(0.8f) // this was changed from 1.0 to make room for the info button
                     .align(Alignment.CenterVertically)
                     .padding(end = 10.dp), verticalAlignment = Alignment.CenterVertically
             ) {
@@ -64,7 +66,51 @@ fun RetailerSlot(
                 Text(
                     text = store.name!!, fontSize = 14.sp, lineHeight = 16.sp, maxLines = 3
                 )
+            }
 
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .weight(0.2f)
+            ) {
+                Icon(
+                    Icons.Outlined.Info,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .clickable { showRetailer = !showRetailer }
+                        .alpha(0.6f)
+                )
+
+                DropdownMenu(expanded = showRetailer, onDismissRequest = { showRetailer = false }) {
+                    DropdownMenuItem(text = { Text(retailer.name!!) }, onClick = { }, enabled = false
+                    )
+
+                    if (store.latitude != null && store.longitude != null) {
+                        DropdownMenuItem(
+                            text = {
+                                Text("Show on Map")
+                            },
+                            onClick = {
+                                val storeName =
+                                    if (retailer.name == store.name) retailer.name else "${retailer.name} ${store.name}"
+
+                                val geoLocation =
+                                    Uri.parse("geo:0,0?q=${store.latitude!!},${store.longitude!!}(${storeName})&z=12")
+
+                                val intent = Intent(Intent.ACTION_VIEW).apply {
+                                    data = geoLocation
+                                }
+
+                                if (intent.resolveActivity(context.packageManager) != null) {
+                                    ContextCompat.startActivity(context, intent, null)
+                                }
+                            },
+                        )
+                    }
+                }
+
+                Spacer(Modifier.width(5.0.dp))
             }
 
             Column(
@@ -129,18 +175,13 @@ fun RetailerSlot(
 private fun RowScope.RetailerIcon(
     retailer: Retailer, store: Store
 ) {
-    var showRetailer by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-
     Surface(
         modifier = Modifier
             .padding(start = 5.dp)
             .width(45.dp)
             .height(45.dp)
-            .align(Alignment.CenterVertically)
-            .clickable {
-                showRetailer = !showRetailer
-            },
+            .align(Alignment.CenterVertically),
+
         shape = CircleShape,
         color = Color(if (isSystemInDarkTheme()) retailer.colourDark!! else retailer.colourLight!!)
     ) {
@@ -156,32 +197,5 @@ private fun RowScope.RetailerIcon(
             )
         }
 
-        DropdownMenu(expanded = showRetailer, onDismissRequest = { showRetailer = false }) {
-            DropdownMenuItem(text = { Text(retailer.name!!) }, onClick = { }, enabled = false
-            )
-
-            if (store.latitude != null && store.longitude != null) {
-                DropdownMenuItem(
-                    text = {
-                        Text("Show on Map")
-                    },
-                    onClick = {
-                        val storeName =
-                            if (retailer.name == store.name) retailer.name else "${retailer.name} ${store.name}"
-
-                        val geoLocation =
-                            Uri.parse("geo:0,0?q=${store.latitude!!},${store.longitude!!}(${storeName})&z=12")
-
-                        val intent = Intent(Intent.ACTION_VIEW).apply {
-                            data = geoLocation
-                        }
-
-                        if (intent.resolveActivity(context.packageManager) != null) {
-                            ContextCompat.startActivity(context, intent, null)
-                        }
-                    },
-                )
-            }
-        }
     }
 }

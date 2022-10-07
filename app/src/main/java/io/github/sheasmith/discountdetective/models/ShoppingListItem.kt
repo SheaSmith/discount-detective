@@ -30,7 +30,7 @@ data class ShoppingListItem(
     /**
      * The quantity added to the shopping list.
      */
-    var quantity: Int,
+    var quantity: Double,
 
     /**
      * If the item has been checked in the shopping list
