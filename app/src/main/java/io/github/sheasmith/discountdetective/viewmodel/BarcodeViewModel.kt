@@ -23,7 +23,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.barcode.common.Barcode
+import io.github.sheasmith.discountdetective.settings.indexSettingsDataStore
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutionException
 
 /** View model for interacting with CameraX.  */
@@ -97,5 +100,13 @@ class BarcodeViewModel
 
     companion object {
         private const val TAG = "CameraXViewModel"
+    }
+
+    init {
+        viewModelScope.launch {
+            application.indexSettingsDataStore.updateData {
+                it.toBuilder().setHasUsedBarcode(true).build()
+            }
+        }
     }
 }

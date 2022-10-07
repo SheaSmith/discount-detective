@@ -8,4 +8,5 @@ import "google/protobuf/timestamp.proto";
 message IndexSettings {
   int64 last_updated = 1;
   bool run_before = 2;
+  bool has_used_barcode = 3;
 }

@@ -181,4 +181,11 @@ class SearchRepository @Inject constructor(
     fun hasIndexedBefore(): Flow<Boolean> {
         return context.indexSettingsDataStore.data.map { it.runBefore }.distinctUntilChanged()
     }
+
+    /**
+     * Get whether the index has been run or not, so we can display a warning if it hasn't yet.
+     */
+    fun hasUsedBarcodeScan(): Flow<Boolean> {
+        return context.indexSettingsDataStore.data.map { it.hasUsedBarcode }.distinctUntilChanged()
+    }
 }
