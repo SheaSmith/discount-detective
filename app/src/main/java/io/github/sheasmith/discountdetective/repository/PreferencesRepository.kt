@@ -28,10 +28,20 @@ class PreferencesRepository @Inject constructor(@ApplicationContext context: Con
         return sharedPreferences.stringLiveData("city", Region.DUNEDIN)
     }
 
+    /**
+     * Set the region preference that the user specifies
+     *
+     * @param region the selected region
+     */
     fun setRegion(region: String) {
         sharedPreferences.edit().putString("city", region).apply()
     }
 
+    /**
+     * Whether or not a region has been selected by the user
+     *
+     * @return A boolean representing if a region has been chosen
+     */
     fun isSelected(): Boolean {
         return sharedPreferences.contains("city")
     }

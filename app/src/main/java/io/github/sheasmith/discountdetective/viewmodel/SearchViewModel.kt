@@ -161,10 +161,20 @@ class SearchViewModel @Inject constructor(
             query()
     }
 
+    /**
+     * Set the region as chosen by the user
+     *
+     * @param region the region chosen by then user
+     */
     fun setRegion(region: String) {
         preferencesRepository.setRegion(region.lowercase())
     }
 
+    /**
+     * Whether or not the user has selected a region
+     *
+     * @return a boolean representing if the user has chosen a region
+     */
     fun isSelected(): Boolean {
         return preferencesRepository.isSelected()
     }
