@@ -227,7 +227,7 @@ private fun RegionSelectorDialog(
     viewModel: SearchViewModel
 ): Boolean {
 
-    var showDialog by remember { mutableStateOf(!viewModel.isSelected()) }
+    var showDialog by remember { mutableStateOf(!viewModel.isRegionSelected()) }
 
     var selectedRegion by remember {
         mutableStateOf<String?>(null)

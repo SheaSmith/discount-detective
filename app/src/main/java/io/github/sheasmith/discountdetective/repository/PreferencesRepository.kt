@@ -42,7 +42,7 @@ class PreferencesRepository @Inject constructor(@ApplicationContext context: Con
      *
      * @return A boolean representing if a region has been chosen
      */
-    fun isSelected(): Boolean {
+    fun isRegionSelected(): Boolean {
         return sharedPreferences.contains("city")
     }
 

@@ -175,8 +175,8 @@ class SearchViewModel @Inject constructor(
      *
      * @return a boolean representing if the user has chosen a region
      */
-    fun isSelected(): Boolean {
-        return preferencesRepository.isSelected()
+    fun isRegionSelected(): Boolean {
+        return preferencesRepository.isRegionSelected()
     }
 
     /**
