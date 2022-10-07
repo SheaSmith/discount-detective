@@ -256,7 +256,7 @@ private fun editDialog(
         },
         icon = { Icon(Icons.Filled.Edit, contentDescription = null) },
         title = {
-            Text(text = "Edit Quantity")
+            Text(text = "Edit Item Details")
         },
         text = {
             Column(
@@ -264,7 +264,7 @@ private fun editDialog(
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
                 Text(
-                    text = " Adjust the quantity of the ${
+                    text = "Adjust the quantity of the ${
                         arrayOf(
                             shoppingListItem.first.brandName,
                             shoppingListItem.first.name,
@@ -291,34 +291,38 @@ private fun editDialog(
                 }
             }
         },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    openDialog.value = false
-                    shoppingListItem.third.quantity = quantity
-                    viewModel.updateShoppingListItem(shoppingListItem.third)
-                }
-            ) {
-                Text("Confirm")
-            }
-        },
         dismissButton = {
-            TextButton(
-                onClick = {
-                    openDialog.value = false
-                    viewModel.delete(shoppingListItem.third)
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Delete item")
-            }
-            TextButton(
-                onClick = {
-                    openDialog.value = false
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        viewModel.delete(shoppingListItem.third)
+                    }
+                ) {
+                    Text("Delete item")
                 }
-            ) {
-                Text("Cancel")
+                Spacer(modifier = Modifier.weight(1.0f))
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        shoppingListItem.third.quantity = quantity
+                        viewModel.updateShoppingListItem(shoppingListItem.third)
+                    }
+                ) {
+                    Text("Confirm")
+                }
             }
         },
+        confirmButton = {}
     )
 }
 
