@@ -237,7 +237,6 @@ private fun RegionSelectorDialog(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {
-                showDialog = false
             },
             title = { Text("Select Your Region ") },
             icon = { Icon(Icons.Filled.Map, null) },
@@ -251,15 +250,7 @@ private fun RegionSelectorDialog(
                     Text(text = "Confirm")
                 }
             },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDialog = false
-                }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
             text = {
-
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     regionList.forEach { region ->
                         Row(
@@ -279,7 +270,6 @@ private fun RegionSelectorDialog(
                                     selectedRegion = region
                                 }
                             )
-
                             Text(text = region)
                         }
                     }
