@@ -29,6 +29,24 @@ class PreferencesRepository @Inject constructor(@ApplicationContext context: Con
     }
 
     /**
+     * Set the region preference that the user specifies
+     *
+     * @param region the selected region
+     */
+    fun setRegion(region: String) {
+        sharedPreferences.edit().putString("city", region).apply()
+    }
+
+    /**
+     * Whether or not a region has been selected by the user
+     *
+     * @return A boolean representing if a region has been chosen
+     */
+    fun isRegionSelected(): Boolean {
+        return sharedPreferences.contains("city")
+    }
+
+    /**
      * Gets the dark/light mode preference value that the user has set using the live data class.
      *
      * @return A live data string of the current dark/light mode.

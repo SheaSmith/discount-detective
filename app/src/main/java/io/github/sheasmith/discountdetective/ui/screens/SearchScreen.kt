@@ -12,7 +12,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material.icons.rounded.SignalWifiOff
@@ -26,6 +30,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,7 +63,7 @@ import kotlinx.coroutines.launch
 @Preview
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    navController: NavHostController = rememberAnimatedNavController()
+    navController: NavHostController = rememberAnimatedNavController(),
 ) {
     val search by viewModel.searchQuery.collectAsState()
     val retailers by viewModel.retailers.collectAsState()
@@ -71,6 +76,7 @@ fun SearchScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         rememberTopAppBarState()
     )
+
     val focusManager = LocalFocusManager.current
     var showSuggestions by remember {
         viewModel.showSuggestions
@@ -135,6 +141,9 @@ fun SearchScreen(
             )
         }
     ) { innerPadding ->
+
+        RegionSelectorDialog(viewModel = viewModel)
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(
@@ -211,6 +220,64 @@ fun SearchScreen(
         }
 
     }
+}
+
+@Composable
+private fun RegionSelectorDialog(
+    viewModel: SearchViewModel
+): Boolean {
+
+    var showDialog by remember { mutableStateOf(!viewModel.isRegionSelected()) }
+
+    var selectedRegion by remember {
+        mutableStateOf<String?>(null)
+    }
+    val regionList = stringArrayResource(R.array.array_city)
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+            },
+            title = { Text("Select Your Region ") },
+            icon = { Icon(Icons.Filled.Map, null) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                        selectedRegion?.let { viewModel.setRegion(it) }
+                    }
+                ) {
+                    Text(text = "Confirm")
+                }
+            },
+            text = {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    regionList.forEach { region ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = (region == selectedRegion),
+                                    onClick = {
+                                        selectedRegion = region
+                                    }
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = region == selectedRegion,
+                                onClick = {
+                                    selectedRegion = region
+                                }
+                            )
+                            Text(text = region)
+                        }
+                    }
+                }
+            }
+        )
+    }
+    return showDialog
 }
 
 private fun LazyListScope.noInternetError(viewModel: SearchViewModel) {

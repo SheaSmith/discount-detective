@@ -41,7 +41,7 @@ class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
     private val retailersRepository: RetailersRepository,
     private val shoppingListRepository: ShoppingListRepository,
-    preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     /**
@@ -159,6 +159,24 @@ class SearchViewModel @Inject constructor(
 
         if (runSearch)
             query()
+    }
+
+    /**
+     * Set the region as chosen by the user
+     *
+     * @param region the region chosen by then user
+     */
+    fun setRegion(region: String) {
+        preferencesRepository.setRegion(region.lowercase())
+    }
+
+    /**
+     * Whether or not the user has selected a region
+     *
+     * @return a boolean representing if the user has chosen a region
+     */
+    fun isRegionSelected(): Boolean {
+        return preferencesRepository.isRegionSelected()
     }
 
     /**
