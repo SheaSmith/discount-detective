@@ -310,7 +310,7 @@ private fun EditDialog(
                         openDialog.value = false
                     }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
                 TextButton(
                     onClick = {
