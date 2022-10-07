@@ -29,8 +29,11 @@ class PreferencesRepository @Inject constructor(@ApplicationContext context: Con
     }
 
     fun setRegion(region: String) {
-        sharedPreferences.edit().putString("city", region)
-        sharedPreferences.edit().apply()
+        sharedPreferences.edit().putString("city", region).apply()
+    }
+
+    fun isSelected(): Boolean {
+        return sharedPreferences.contains("city")
     }
 
     /**

@@ -162,7 +162,11 @@ class SearchViewModel @Inject constructor(
     }
 
     fun setRegion(region: String) {
-        preferencesRepository.setRegion(region)
+        preferencesRepository.setRegion(region.lowercase())
+    }
+
+    fun isSelected(): Boolean {
+        return preferencesRepository.isSelected()
     }
 
     /**

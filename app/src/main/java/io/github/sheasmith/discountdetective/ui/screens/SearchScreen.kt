@@ -77,8 +77,6 @@ fun SearchScreen(
         rememberTopAppBarState()
     )
 
-    val showDialog = remember { mutableStateOf(true) }
-
     val focusManager = LocalFocusManager.current
     var showSuggestions by remember {
         viewModel.showSuggestions
@@ -144,12 +142,8 @@ fun SearchScreen(
         }
     ) { innerPadding ->
 
-        if (showDialog.value) {
-            RegionSelectorDialog(
-                showDialog = showDialog,
-                viewModel = viewModel
-            )
-        }
+        RegionSelectorDialog(viewModel = viewModel)
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(
@@ -230,67 +224,70 @@ fun SearchScreen(
 
 @Composable
 private fun RegionSelectorDialog(
-    showDialog: MutableState<Boolean>,
     viewModel: SearchViewModel
-) {
+): Boolean {
+
+    var showDialog by remember { mutableStateOf(!viewModel.isSelected()) }
 
     var selectedRegion by remember {
         mutableStateOf<String?>(null)
     }
     val regionList = stringArrayResource(R.array.array_city)
 
-    AlertDialog(
-        onDismissRequest = {
-            showDialog.value = false
-        },
-        title = { Text("Select Your Region ") },
-        icon = { Icon(Icons.Filled.Map, null) },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    showDialog.value = false
-                    selectedRegion?.let { viewModel.setRegion(it) }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialog = false
+            },
+            title = { Text("Select Your Region ") },
+            icon = { Icon(Icons.Filled.Map, null) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                        selectedRegion?.let { viewModel.setRegion(it) }
+                    }
+                ) {
+                    Text(text = "Confirm")
                 }
-            ) {
-                Text(text = "Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                showDialog.value = false
-            }) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        text = {
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            text = {
 
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                regionList.forEach { region ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .selectable(
-                                selected = (region == selectedRegion),
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    regionList.forEach { region ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = (region == selectedRegion),
+                                    onClick = {
+                                        selectedRegion = region
+                                    }
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = region == selectedRegion,
                                 onClick = {
                                     selectedRegion = region
                                 }
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = region == selectedRegion,
-                            onClick = {
-                                selectedRegion = region
-                            }
-                        )
+                            )
 
-                        Text(text = region)
+                            Text(text = region)
+                        }
                     }
                 }
             }
-        }
-    )
-
+        )
+    }
+    return showDialog
 }
 
 private fun LazyListScope.noInternetError(viewModel: SearchViewModel) {
