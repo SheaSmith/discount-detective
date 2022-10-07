@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material.icons.rounded.SignalWifiOff
@@ -208,6 +209,32 @@ fun SearchScreen(
         }
 
     }
+}
+
+@Composable
+private fun RegionSelector(
+    showDialog: Boolean,
+    onSetShowDialog: (Boolean) -> Unit
+) {
+
+    AlertDialog(
+        onDismissRequest = {
+            onSetShowDialog(false)
+        },
+        title = { Text("Select Your Region ") },
+        icon = { Icon(Icons.Filled.Map, null) },
+        confirmButton = {
+
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                onSetShowDialog(false)
+            }) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
+
 }
 
 private fun LazyListScope.noInternetError(viewModel: SearchViewModel) {
