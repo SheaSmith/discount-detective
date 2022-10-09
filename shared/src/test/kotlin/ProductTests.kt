@@ -56,7 +56,8 @@ class ProductTests {
                 stores = listOf(
                     Store(
                         "test-countdown",
-                        "Test"
+                        "Test",
+                        region = Region.DUNEDIN
                     )
                 )
             ),
@@ -66,7 +67,8 @@ class ProductTests {
                 stores = listOf(
                     Store(
                         "test-leckies",
-                        "Test"
+                        "Test",
+                        region = Region.DUNEDIN
                     )
                 )
             )
@@ -111,7 +113,7 @@ class ProductTests {
             )
         )
 
-        assert(product.getBestLocalPrice(retailers)?.first?.contains("2") == true)
+        assert(product.getBestLocalPrice(retailers, Region.DUNEDIN)?.first?.contains("2") == true)
     }
 
     /**
@@ -127,7 +129,8 @@ class ProductTests {
                 stores = listOf(
                     Store(
                         "test-countdown",
-                        "Test"
+                        "Test",
+                        region = Region.DUNEDIN
                     )
                 )
             ),
@@ -137,7 +140,8 @@ class ProductTests {
                 stores = listOf(
                     Store(
                         "test-leckies",
-                        "Test"
+                        "Test",
+                        region = Region.DUNEDIN
                     )
                 )
             )
@@ -182,7 +186,12 @@ class ProductTests {
             )
         )
 
-        assert(product.getBestNonLocalPrice(retailers)?.first?.contains("2") == true)
+        assert(
+            product.getBestNonLocalPrice(
+                retailers,
+                Region.DUNEDIN
+            )?.first?.contains("2") == true
+        )
     }
 
     /**
@@ -198,7 +207,8 @@ class ProductTests {
                 stores = listOf(
                     Store(
                         "test-countdown",
-                        "Test"
+                        "Test",
+                        region = Region.DUNEDIN
                     )
                 )
             ),
@@ -208,7 +218,8 @@ class ProductTests {
                 stores = listOf(
                     Store(
                         "test-leckies",
-                        "Test"
+                        "Test",
+                        region = Region.DUNEDIN
                     )
                 )
             )
@@ -253,7 +264,7 @@ class ProductTests {
             )
         )
 
-        assert(product.getBestNonLocalPrice(retailers) == null)
+        assert(product.getBestNonLocalPrice(retailers, Region.DUNEDIN) == null)
     }
 
     /**
@@ -269,7 +280,8 @@ class ProductTests {
                 stores = listOf(
                     Store(
                         "test-countdown",
-                        "Test"
+                        "Test",
+                        region = Region.DUNEDIN
                     )
                 )
             ),
@@ -279,7 +291,8 @@ class ProductTests {
                 stores = listOf(
                     Store(
                         "test-leckies",
-                        "Test"
+                        "Test",
+                        region = Region.DUNEDIN
                     )
                 )
             )
@@ -324,6 +337,6 @@ class ProductTests {
             )
         )
 
-        assert(product.getBestLocalPrice(retailers) == null)
+        assert(product.getBestLocalPrice(retailers, Region.DUNEDIN) == null)
     }
 }
